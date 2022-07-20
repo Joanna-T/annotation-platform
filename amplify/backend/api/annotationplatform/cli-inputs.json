@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "annotationplatform",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "C:\\Users\\joann\\Documents\\Uni_Work\\Individual Project\\Text Annotation platform\\Final_project\\annotation-platform\\amplify\\backend\\api\\annotationplatform\\schema.graphql",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 7
+    },
+    "additionalAuthTypes": [
+      {
+        "mode": "AMAZON_COGNITO_USER_POOLS",
+        "cognitoUserPoolId": "authannotationplatformac3c8d5b"
+      }
+    ]
+  }
+}

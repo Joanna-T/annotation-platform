@@ -1,0 +1,27 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-annotationplatform-dev-212708-authRole",
+      "UnauthRoleArn": "arn:aws:iam::474076373312:role/amplify-annotationplatform-dev-212708-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::474076373312:role/amplify-annotationplatform-dev-212708-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-annotationplatform-dev-212708-deployment",
+      "UnauthRoleName": "amplify-annotationplatform-dev-212708-unauthRole",
+      "StackName": "amplify-annotationplatform-dev-212708",
+      "StackId": "arn:aws:cloudformation:eu-west-2:474076373312:stack/amplify-annotationplatform-dev-212708/06a1c650-ef45-11ec-b873-027c59494a30",
+      "AmplifyAppId": "dga9il4i162cv"
+    },
+    "categories": {
+      "auth": {
+        "annotationplatformac3c8d5b": {},
+        "true": {}
+      },
+      "function": {
+        "AdminQueries4b39eb17": {
+          "deploymentBucketName": "amplify-annotationplatform-dev-212708-deployment",
+          "s3Key": "amplify-builds/AdminQueries4b39eb17-437568717a4a725a5a71-build.zip"
+        }
+      }
+    }
+  }
+}

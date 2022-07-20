@@ -1,0 +1,479 @@
+import { Button, Grid, GridRow, Segment } from "semantic-ui-react";
+import { ResponsiveBar } from "nivo/lib/components/charts/bar";
+import BarChart from "./BarChart";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { API, Storage } from "aws-amplify";
+// const keys = ['hot dogs', 'burgers', 'sandwich', 'kebab', 'fries', 'donut'];
+// const commonProps = {
+//     width: 900,
+//     height: 500,
+//     margin: { top: 60, right: 110, bottom: 60, left: 80 },
+//     data: generateCountriesData(keys, { size: 7 }) as BarDatum[],
+//     indexBy: 'country',
+//     keys,
+//     padding: 0.2,
+//     labelTextColor: 'inherit:darker(1.4)',
+//     labelSkipWidth: 16,
+//     labelSkipHeight: 16,
+// }
+
+const HeatMap = ({documentLabels, documentText, tag}) => {
+  const [highlightedText, setHighlightedText] = useState("Loading text...");
+
+  const [ labelsText, setLabelsText ] = useState({})
+  const label = [{
+    start: 10,
+    end: 20
+
+  },
+  {
+    start: 25,
+    end: 30
+  }, 
+
+  {
+    start: 0,
+    end: 35
+  },
+  {
+    start: 5,
+    end: 15
+  }
+
+  ]
+  const [text1, setText] = useState("Loading text...")
+  const [labels, setLabels] = useState(documentLabels)
+  let text_1 = "There is a very very very very long sentence........................................."
+  
+
+  // useEffect(() => {
+  //   Promise.all(setText(documentText), setLabels(documentLabels)).then(() => {
+  //     insertSpan();
+  //   })
+
+    
+  // }, [documentText, documentLabels])
+
+  useEffect(() => {
+    setLabels(documentLabels)
+    //insertSpan();
+  }, [documentLabels])
+
+  useEffect(() => {
+    //insertSpan(documentText, "Summary"); 
+  }, [documentText])
+
+  useEffect(() => {
+    insertSpan(documentText, tag); 
+  }, [tag])
+
+
+  async function insertSpan(documentText, labelType) {
+
+    if (labelType in labelsText) {
+      setHighlightedText(labelsText[labelType])
+      return
+    }
+
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##")
+    console.log("InsertSpan called")
+    let text = documentText
+    let tempLabels = [...documentLabels];
+    //let text = text1;
+    for (let i = 0; i < tempLabels.length; i++) {
+      if (tempLabels[i].tag === labelType) {
+        console.log()
+        let spanElementStart = `<span style="opacity:100%;color:black;background-color:${tempLabels[i].color};mix-blend-mode:multiply;border-radius:5px">`;
+      let spanElementEnd = `</span>`;
+      text = text.slice(0, tempLabels[i].start) + spanElementStart + text.slice(tempLabels[i].start)
+      text = text.slice(0, tempLabels[i].end + spanElementStart.length) + spanElementEnd + text.slice(tempLabels[i].end + spanElementStart.length)
+      //console.log("this the html ", text)
+      for (let j = i+1; j < tempLabels.length; j++) {
+        console.log("object before alteration", tempLabels[j] )
+        if (tempLabels[j].tag !== labelType ) {
+          continue;
+        }
+        if (tempLabels[j].start >= tempLabels[i].end &&
+            tempLabels[j].end >= tempLabels[i].end) {
+              console.log("10")
+          tempLabels[j].start += spanElementStart.length 
+          tempLabels[j].start += spanElementEnd.length 
+          tempLabels[j].end += spanElementStart.length 
+          tempLabels[j].end += spanElementEnd.length 
+        }
+        else if (tempLabels[j].start >= tempLabels[i].start &&
+            tempLabels[j].start < tempLabels[i].end &&
+            tempLabels[j].end >= tempLabels[i].end ) {
+            console.log("20")
+            tempLabels[j].start += spanElementStart.length
+            tempLabels[j].end += spanElementStart.length 
+            tempLabels[j].end += spanElementEnd.length 
+
+        }
+        else if (tempLabels[j].start >= tempLabels[i].start &&
+          tempLabels[j].start < tempLabels[i].end &&
+          tempLabels[j].end < tempLabels[i].end) {
+            console.log("30")
+          tempLabels[j].start += spanElementStart.length
+          tempLabels[j].end += spanElementStart.length
+        }
+        else if ( tempLabels[j].start < tempLabels[i].start &&
+            tempLabels[j].end >= tempLabels[i].end ) {
+            console.log("40")
+            tempLabels[j].end += spanElementStart.length 
+            tempLabels[j].end += spanElementEnd.length 
+          }
+        else if ( tempLabels[j].start < tempLabels[i].start &&
+            tempLabels[j].end >= tempLabels[i].start &&
+            tempLabels[j].end < tempLabels[i].end) {
+            console.log("50")
+              tempLabels[j].end += spanElementStart.length 
+            }
+
+        console.log("altered objects", tempLabels[j])
+      }
+      }
+      
+    
+    }
+    setLabelsText(prevState => ({
+      ...prevState,
+      [tag]: text,
+    }))
+
+    setHighlightedText(text)
+    console.log("highlighted text",text)
+    //setLabels(labels)
+  }
+  
+
+  return ( 
+    <div dangerouslySetInnerHTML={{__html: highlightedText}}>
+    </div>
+   );
+}
+ 
+//export default HeatMap;
+
+const QuestionStats = ({questionAnswers}) => {
+  const colors = [
+    "hsl(142, 70%, 50%)",
+   "hsl(127, 70%, 50%)",
+     "hsl(247, 70%, 50%)",
+    "hsl(274, 70%, 50%)",
+    "hsl(331, 70%, 50%)",
+    "hsl(62, 70%, 50%)"
+  ]
+
+  const groupAnswers = () => {
+    for (let i = 0; i < questionAnswers.length; i++ ) {
+
+    }
+  }
+  let barDataQuestion = [
+    {
+      "question": "Category",
+      "category": questionAnswers.category,
+      "categorycolour": ""
+
+    }
+  ]
+  return ( <div>
+    <ResponsiveBar
+        data={barData}
+        keys={[
+            'hot dog',
+            'burger',
+            'sandwich',
+            'kebab',
+            'fries',
+            'donut'
+        ]}
+        layout="horizontal"
+        indexBy="country"
+        margin={{ top: 50, right: 50, bottom: 50, left: 60 }}
+        padding={0.3}
+        height={20}
+
+        // valueScale={{ type: 'linear' }}
+        // indexScale={{ type: 'band', round: true }}
+        // colors={{ scheme: 'nivo' }}
+        // defs={[
+        //     {
+        //         id: 'dots',
+        //         type: 'patternDots',
+        //         background: 'inherit',
+        //         color: '#38bcb2',
+        //         size: 4,
+        //         padding: 1,
+        //         stagger: true
+        //     },
+        //     {
+        //         id: 'lines',
+        //         type: 'patternLines',
+        //         background: 'inherit',
+        //         color: '#eed312',
+        //         rotation: -45,
+        //         lineWidth: 6,
+        //         spacing: 10
+        //     }
+        // ]}
+        // fill={[
+        //     {
+        //         match: {
+        //             id: 'fries'
+        //         },
+        //         id: 'dots'
+        //     },
+        //     {
+        //         match: {
+        //             id: 'sandwich'
+        //         },
+        //         id: 'lines'
+        //     }
+        // ]}
+        // borderColor="black"
+        // axisTop={null}
+        // axisRight={null}
+        // axisBottom={{
+        //     tickSize: 5,
+        //     tickPadding: 5,
+        //     tickRotation: 0,
+        //     legend: 'country',
+        //     legendPosition: 'middle',
+        //     legendOffset: 32
+        // }}
+        // axisLeft={{
+        //     tickSize: 5,
+        //     tickPadding: 5,
+        //     tickRotation: 0,
+        //     legend: 'food',
+        //     legendPosition: 'middle',
+        //     legendOffset: -40
+        // }}
+        // labelSkipWidth={12}
+        // labelSkipHeight={12}
+        // // labelTextColor={{
+        // //     from: 'color',
+        // //     modifiers: [
+        // //         [
+        // //             'darker',
+        // //             1.6
+        // //         ]
+        // //     ]
+        // // }}
+        legends={[
+            {
+                dataFrom: 'keys',
+                anchor: 'bottom-right',
+                direction: 'column',
+                justify: false,
+                translateX: 120,
+                translateY: 0,
+                itemsSpacing: 2,
+                itemWidth: 100,
+                itemHeight: 20,
+                itemDirection: 'left-to-right',
+                itemOpacity: 0.85,
+                symbolSize: 20,
+                effects: [
+                    {
+                        on: 'hover',
+                        style: {
+                            itemOpacity: 1
+                        }
+                    }
+                ]
+            }
+        ]}
+        // role="application"
+        // ariaLabel="Nivo bar chart demo"
+        // barAriaLabel={function(e){return e.id+": "+e.formattedValue+" in country: "+e.indexValue}}
+    />
+  </div> );
+}
+ 
+//export default QuestionStats;
+
+const barData = [
+    {
+      "country": "Responses",
+      "hot dog": 62,
+      "hot dogColor": "hsl(142, 70%, 50%)",
+      "burger": 32,
+      "burgerColor": "hsl(127, 70%, 50%)",
+      "sandwich": 116,
+      "sandwichColor": "hsl(247, 70%, 50%)",
+      "kebab": 103,
+      "kebabColor": "hsl(274, 70%, 50%)",
+      "fries": 81,
+      "friesColor": "hsl(331, 70%, 50%)",
+      "donut": 48,
+      "donutColor": "hsl(62, 70%, 50%)"
+    },
+   
+  ]
+
+  const customLabel = (d) => {
+    console.log("customLabel", d);
+    console.log(d.id.substr(0, 1));
+    return d.id.substr(0, 1);
+  };
+
+const keys = ['hot dogs', 'burgers', 'sandwich', 'kebab', 'fries', 'donut'];
+const commonProps = {
+    width: 900,
+    height: 500,
+    margin: { top: 60, right: 110, bottom: 60, left: 80 },
+    data: barData,
+    indexBy: 'country',
+    keys,
+    padding: 0.2,
+    labelTextColor: 'inherit:darker(1.4)',
+    labelSkipWidth: 16,
+    labelSkipHeight: 16,
+};
+
+const DisplayResults = () => {
+  const { state } = useLocation();
+  const { annotation_tasks } = state;
+
+  const [ documentText, setDocumentText ] = useState("Loading text...");
+  const [documentLabels, setDocumentLabels] = useState([])
+  const [tag, setTag] = useState("Summary")
+  const [questionAnswers, setQuestionAnswers] = useState({})
+  const [questionForms, setQuestionForms] = useState([])
+
+  const label = [{
+    start: 10,
+    end: 20
+
+  },
+  {
+    start: 25,
+    end: 30
+  }, 
+
+  {
+    start: 0,
+    end: 35
+  },
+]
+
+  useEffect(() => {
+    console.log("this is annotation tasks", annotation_tasks.labels);
+    parseLabels();
+    parseQuestionAnswers();
+    //setQuestionAnswers(JSON.parse(annotation_tasks.question_answers))
+    fetchDocument(annotation_tasks[0].document_title).then(result => {
+      setDocumentText(result);
+    })
+    // documentText.Body.text().then(string => {
+    //   console.log(string);
+    //   setDocumentText(string);
+    // })
+  },[])
+  const parseQuestionForms = () => {
+    let forms = [];
+    annotation_tasks.map((task) => {
+      forms.push(JSON.parse())
+    })
+  }
+
+  const parseQuestionAnswers = () => {
+    let answers = [];
+    for (let i = 0; i < annotation_tasks.length; i++) {
+      let parsedAnswers = JSON.parse(annotation_tasks[i].question_answers);
+      answers.push(parsedAnswers);
+    }
+    setQuestionAnswers(answers);
+  }
+
+  const parseLabels = () => {
+    let labels = []
+    for (let i = 0; i < annotation_tasks.length; i++ ) {
+      let parsedLabels = JSON.parse(annotation_tasks[i].labels);
+      labels.push(...parsedLabels);
+    }
+    setDocumentLabels(labels);
+  }
+
+  const para = "<p> hello </p>"
+
+    return ( 
+        <Grid columns={2} style={{"height": '100px'}}>
+    <Grid.Row stretched>
+    <Grid.Column width={8}>
+        <Segment style={{height: "10vh", "margin-bottom": "0%", "text-align":"left"}}>
+        <Button inverted color='orange'
+          active={ (tag == "Summary")}
+          onClick={() => setTag("Summary")}>
+        Summary
+      </Button>
+      <Button inverted color='yellow'
+      active={ (tag == "Quality")}
+      onClick={() => setTag("Quality")}>
+        Quality
+      </Button>
+      <Button inverted color='olive'
+      active={ (tag == "Relevancy")}
+      onClick={() => setTag("Relevancy")}>
+        Relevancy
+      </Button>
+        {/* <span id="1" style={{"border-radius": "4px","background-color": "pink", opacity: "100%", "mix-blend-mode": "multiply"}}>This is <span id="2" style={{"border-radius": "2px","background-color": "lightblue", opacity: "60%", "mix-blend-mode": "multiply"}}> some 
+        <span id="2" style={{"border-radius": "2px","background-color": "lightblue", opacity: "60%", "mix-blend-mode": "multiply"}}>text </span></span> 
+        some other text some other text some other text some other text </span>
+    */}
+
+          </Segment>
+        <Segment style={{"overflow": "auto","text-align": "left", "white-space": "pre-wrap", height: "90vh", "margin-top":"0%"}}>
+        {documentText && documentLabels && <HeatMap tag={tag} documentLabels={documentLabels} documentText={documentText}/>}
+          
+          </Segment>
+      </Grid.Column>
+      <Grid.Column width ={8}>
+        <Segment padded>
+            <h3>Results</h3>
+            <p>Question 1</p>
+        
+    {/* <ResponsiveBar {...commonProps} 
+    layout="horizontal" 
+    enableGridY={false} 
+    enableGridX={true}
+    valueScale={{type: "linear"}}
+    indexScale={{ type: 'band', round: true }}
+     /> */}
+     <QuestionStats questionAnswers={questionAnswers}></QuestionStats>
+      
+        </Segment>
+      </Grid.Column>
+
+    </Grid.Row>
+  </Grid>
+     );
+}
+ 
+export default DisplayResults;
+
+
+async function fetchDocument(documentFile) {
+  Storage.list('') // for listing ALL files without prefix, pass '' instead
+  .then(result => console.log("list of documents", result))
+  .catch(err => console.log(err));
+
+
+  
+  //const documentFile = documentTitle + ".txt";
+  //console.log(documentFile);
+  const text = await Storage.get(documentFile, {download: true});
+  //console.log("text", text.Body.text())
+  //console.log(text.Body.text())
+
+  text.Body.text().then(string => {
+    console.log(string);
+      //setDocumentText(string);
+  })
+  return text.Body.text();
+  
+}

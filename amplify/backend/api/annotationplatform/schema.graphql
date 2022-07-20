@@ -1,0 +1,67 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+type AnnotationTask @model 
+  @auth(
+    rules: [
+      {allow: owner, ownerField: "owner", operations: [read,update,delete]},
+      {allow: groups, groups: ["Admin"], operations: [create,read,update,delete]}
+    ]
+  ){
+  id: ID!
+  document_title: String!
+  questionID: ID! @index(name: "byQuestion")
+  question: MedicalQuestion @hasOne(fields: ["questionID"])
+  owner: String
+    @index(name:"tasksByUsername", queryField: "tasksByUsername")
+  question_answers: AWSJSON
+  labels: AWSJSON
+  questionFormID: ID!
+  questionForm: QuestionForm @hasOne(fields: ["questionFormID"])
+  completed: Boolean!
+}
+
+type AnnotationResult @model 
+  @auth(
+    rules: [
+      {allow: public, operations:[read]},
+      {allow: owner, ownerField: "owner", operations: [create,read]},
+      {allow: groups, groups: ["Admin"]}
+    ]
+  ){
+  id: ID!
+  owner: String!
+  document_title: String!
+  questionID: ID! @index(name: "byQuestion")
+  question: MedicalQuestion @hasOne(fields: ["questionID"])
+  question_answers: AWSJSON
+  labels: AWSJSON
+  questionFormID: ID!
+  questionForm: QuestionForm @hasOne(fields: ["questionFormID"])
+}
+
+type QuestionForm @model 
+@auth(
+    rules: [
+      {allow: public, operations: [read]},
+      {allow: groups, groups: ["Admin","Curators"]}
+    ]
+  ){
+  id: ID!
+  form_description: String!
+  questions: AWSJSON!
+}
+
+type MedicalQuestion @model 
+@auth(
+    rules: [
+      {allow: public, operations: [read]},
+      {allow: groups, groups: ["Admin","Curators"]}
+    ]
+  ){
+  id: ID!
+  text: String!
+  tasks: [AnnotationTask] @hasMany (indexName: "byQuestion", fields: ["id"])
+}
+

@@ -1,0 +1,16 @@
+{
+  "resourceName": "annotationdocuments",
+  "policyUUID": "6b96b3a5",
+  "bucketName": "annotationplatform69dfce1dd8d94372871fc654c35b4",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}
