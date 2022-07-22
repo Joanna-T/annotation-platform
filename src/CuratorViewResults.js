@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import TextHeatMap from "./TextHeatMap";
 import { API, Auth, Storage } from "aws-amplify";
-import { listQuestionForms, getAnnotationTask } from "./graphql/queries";
+import { listQuestionForms, getAnnotationTask, getQuestionForm } from "./graphql/queries";
 import { Link } from "react-router-dom";
 import { List, Segment, Grid, Image, Card, Button } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
@@ -14,12 +14,16 @@ const CuratorViewResults = () => {
     const [questionAnswers, setQuestionAnswers] = useState(null);
     const [documentText, setDocumentText] = useState(null);
     useEffect(() => {
-        fetchTask()
-    })
+        fetchTask().then((result) => {
+          console.log("tasks",result)
+          fetchDocument(result.document_title)
+          //fetchQuestionForm(result.questionFormID)
+        })
+    },[])
 
-    async function fetchDocument() {
-        Storage.get()
-    }
+    // async function fetchDocument() {
+    //     //Storage.get()
+    // }
 
     async function fetchTask() {
         const taskData = await API.graphql({
@@ -31,7 +35,8 @@ const CuratorViewResults = () => {
         setTask(taskData.data.getAnnotationTask);
         setDocumentLabels(JSON.parse(taskData.data.getAnnotationTask.labels))
         setQuestionAnswers(JSON.parse(taskData.data.getAnnotationTask.question_answers))
-
+        console.log(JSON.parse(taskData.data.getAnnotationTask.question_answers))
+        return taskData.data.getAnnotationTask;
 
     }
 
@@ -52,12 +57,13 @@ const CuratorViewResults = () => {
         const text = await Storage.get(documentTitle, {download: true});
 
         text.Body.text().then(string => {
+            console.log("curator document tex", )
             setDocumentText(string);
         })
     } 
     return ( 
         <Grid columns={2} style={{"height": '100px'}}>
-    {/* <Grid.Row stretched>
+    <Grid.Row stretched>
     <Grid.Column width={8}>
         <Segment style={{height: "10vh", "margin-bottom": "0%", "text-align":"left"}}>
         <Button inverted color='orange'
@@ -87,15 +93,23 @@ const CuratorViewResults = () => {
             <h3>Results</h3>
             <p>Question 1</p>
         
-
-     { questionAnswers.length && questionForms.questions &&
-       <QuestionStats questionAnswers={questionAnswers} questionForm={questionForms}></QuestionStats>
-       }
+        {
+            questionAnswers && 
+            Object.keys(questionAnswers).map((item,index) => {
+              return (
+                <div>
+                <p>{item} {": "}{questionAnswers[item]}</p>
+                </div>
+              )
+                
+            })
+        }
+     
       
         </Segment>
       </Grid.Column>
 
-    </Grid.Row> */}
+    </Grid.Row>
   </Grid>
      );
 }

@@ -1,4 +1,4 @@
-import { Button, Grid, GridRow, Segment, Icon } from "semantic-ui-react";
+import { Button, Grid, GridRow, Segment, Icon, Dropdown, Tab, Label, List } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 import BarChart from "./BarChart";
 import { useLocation } from "react-router-dom";
@@ -7,7 +7,10 @@ import { API, Storage } from "aws-amplify";
 import { getQuestionForm } from "./graphql/queries";
 // import { HeatMap } from "./HeatMap";
 import TextHeatMap from "./TextHeatMap"
-import {AnnotationPage} from "./AnnotationPage"
+import QuestionStats from "./QuestionStats";
+import InterannotatorAgreement from "./InterannotatorAgreement";
+
+
 // const keys = ['hot dogs', 'burgers', 'sandwich', 'kebab', 'fries', 'donut'];
 // const commonProps = {
 //     width: 900,
@@ -24,288 +27,25 @@ import {AnnotationPage} from "./AnnotationPage"
 
 
 
-const QuestionStats = ({questionAnswers, questionForm}) => {
-  const [formQuestions, setFormQuestions] = useState([]);
-  //const [answers, setAnswers] = useState([])
-  const [barData, setBarData] = useState([])
-  const [cohenKappaValues, setCohenKappaValues] = useState([])
 
-
-  // useEffect(() => {
-  //   if (questions.length && answers.length) {
-  //     console.log("create bar data")
-  //     createBarData();
-  //   }
-    
-  // },[])
-
-  useEffect(() => {
-    console.log("BAR DATA")
-    console.log(barData)
-  }, [barData])
-
-  useEffect(() => {
-    console.log("Answers", questionAnswers);
-    console.log("form", questionForm)
-    createBarData(questionAnswers, questionForm)
-  }, [])
-
-  // useEffect(() => {
-  //   console.log("ANSWERS")
-  //   console.log(questionAnswers)
-  //   if (questionAnswers) {
-  //     setAnswers(questionAnswers)
-  //     createBarData();
-  //   }
-    
-  // },[questionAnswers])
-
-  // useEffect(() => {
-  //   console.log("question form data", questionForm.questions)
-  //   let parsedQuestions = []
-  //   if (questionForm.questions) {
-  //     console.log("question form", questionForm)
-  //     parsedQuestions = JSON.parse(questionForm.questions)
-  //     if (answers.length) {
-  //       createBarData(parsedQuestions)
-  //     }
-  //     setQuestions(parsedQuestions)
-      
-  //     return
-
-  //   }
-  //   setQuestions(parsedQuestions)
-    
-  // }, [questionForm])
-
-  async function createBarData(answers, inputQuestionsForm) {
-    let questions = JSON.parse(inputQuestionsForm.questions);
-    setFormQuestions(questions)
-    console.log("createBarData");
-    let allDataItems = [];
-    let kappaValues = [];
-    for (let i = 0; i < questions.length; i++) {
-      let newQuestion = {
-        "category": questions[i].question_description,
-
-      }
-      for (let j = 0; j < questions[i].options.length; j++) {
-
-        const relevantAnswers = answers.filter(answer =>
-          answer[questions[i].question_description] === questions[i].options[j])
-
-        newQuestion[questions[i].options[j]] = relevantAnswers.length;
-        newQuestion[questions[i].options[j] + "colour"] = colours[j]
-        // for (let k = 0; k < answers.length; k++) {
-        //   if (answers[k])
-        // }
-      }
-      allDataItems.push(newQuestion)
-
-      // setBarData(prevState => ([
-      //   ...prevState, newQuestion
-      // ]))
-    }
-    console.log("all data item", allDataItems)
-    setBarData([...allDataItems])
-  }
-
-  const calculateCohenKappa = () => {
-
-  }
-
-  const colours = [
-    "hsl(142, 0%, 50%)",
-   "hsl(127, 70%, 50%)",
-     "hsl(247, 70%, 50%)",
-    "hsl(274, 70%, 50%)",
-    "hsl(331, 70%, 50%)",
-    "hsl(62, 70%, 50%)"
-  ]
-
-
-
-  // let barDataQuestion = [
-  //   {
-  //     "question": "Category",
-  //     "category": questionAnswers.category,
-  //     "categorycolour": ""
-
-  //   }
-  // ]
-  return ( <div style={{height: "100%"}}>
-    {/* {barData.length && formQuestions.length &&
-    <ResponsiveBar
-        data={[barData[0]]}
-        keys={formQuestions[0].options}
-        layout="horizontal"
-        indexBy="category"
-        margin={{ top: 50, right: 50, bottom: 50, left: 60 }}
-        padding={0.3}
-        height={20}
-        legends={[
-            {
-                dataFrom: 'keys',
-                anchor: 'bottom-right',
-                direction: 'column',
-                justify: false,
-                translateX: 120,
-                translateY: 0,
-                itemsSpacing: 2,
-                itemWidth: 100,
-                itemHeight: 20,
-                itemDirection: 'left-to-right',
-                itemOpacity: 0.85,
-                symbolSize: 20,
-                effects: [
-                    {
-                        on: 'hover',
-                        style: {
-                            itemOpacity: 1
-                        }
-                    }
-                ]
-            }
-        ]}
-
-    />} */}
-    {barData.map( (item, index) => {
-      return(
-        <div style={{"height": "12%"}}>
-          <p>{index+1}{". "}{formQuestions[index].question_text}</p>
-          {formQuestions[index].options.map((option, innerIndex) =>{
-            let keyColor = colours[innerIndex];
-            console.log("KEY COLORRRRRRRR", keyColor)
-            return(
-              <p style={{display:"inline"}}>{option}<Icon style={{color:keyColor}} name="circle"></Icon></p>
-              
-            )
-          })}
-        <ResponsiveBar
-        data={[item]}
-        keys={formQuestions[index].options}
-        layout="horizontal"
-        indexBy="category"
-        margin={{ top: 50, right: 50, bottom: 50, left: 70 }}
-        padding={0.3}
-        height={20}
-        colors={colours}
-
-        // valueScale={{ type: 'linear' }}
-        // indexScale={{ type: 'band', round: true }}
-        // colors={{ scheme: 'nivo' }}
-        // defs={[
-        //     {
-        //         id: 'dots',
-        //         type: 'patternDots',
-        //         background: 'inherit',
-        //         color: '#38bcb2',
-        //         size: 4,
-        //         padding: 1,
-        //         stagger: true
-        //     },
-        //     {
-        //         id: 'lines',
-        //         type: 'patternLines',
-        //         background: 'inherit',
-        //         color: '#eed312',
-        //         rotation: -45,
-        //         lineWidth: 6,
-        //         spacing: 10
-        //     }
-        // ]}
-        // fill={[
-        //     {
-        //         match: {
-        //             id: 'fries'
-        //         },
-        //         id: 'dots'
-        //     },
-        //     {
-        //         match: {
-        //             id: 'sandwich'
-        //         },
-        //         id: 'lines'
-        //     }
-        // ]}
-        // borderColor="black"
-        // axisTop={null}
-        // axisRight={null}
-        // axisBottom={{
-        //     tickSize: 5,
-        //     tickPadding: 5,
-        //     tickRotation: 0,
-        //     legend: 'country',
-        //     legendPosition: 'middle',
-        //     legendOffset: 32
-        // }}
-        // axisLeft={{
-        //     tickSize: 5,
-        //     tickPadding: 5,
-        //     tickRotation: 0,
-        //     legend: 'food',
-        //     legendPosition: 'middle',
-        //     legendOffset: -40
-        // }}
-        // labelSkipWidth={12}
-        // labelSkipHeight={12}
-        // // labelTextColor={{
-        // //     from: 'color',
-        // //     modifiers: [
-        // //         [
-        // //             'darker',
-        // //             1.6
-        // //         ]
-        // //     ]
-        // // }}
-        legends={[
-            {
-                dataFrom: 'keys',
-                anchor: 'bottom-right',
-                direction: 'column',
-                justify: false,
-                translateX: 120,
-                translateY: 0,
-                itemsSpacing: 2,
-                itemWidth: 100,
-                itemHeight: 20,
-                itemDirection: 'left-to-right',
-                itemOpacity: 0.85,
-                symbolSize: 20,
-                effects: [
-                    {
-                        on: 'hover',
-                        style: {
-                            itemOpacity: 1
-                        }
-                    }
-                ]
-            }
-        ]}
-        // role="application"
-        // ariaLabel="Nivo bar chart demo"
-        // barAriaLabel={function(e){return e.id+": "+e.formattedValue+" in country: "+e.indexValue}}
-    />
-    </div>
-      )
-    
-    })}
-  </div> );
-}
- 
 //export default QuestionStats;
 
 
 
 const DisplayResults = () => {
   const { state } = useLocation();
-  const { annotation_tasks } = state;
+  const { annotation_tasks, grouped_tasks } = state;
 
   const [ documentText, setDocumentText ] = useState("Loading text...");
   const [documentLabels, setDocumentLabels] = useState([])
   const [tag, setTag] = useState("Summary")
   const [questionAnswers, setQuestionAnswers] = useState([])
   const [questionForms, setQuestionForms] = useState([])
+  const [documentNames, setDocumentNames] = useState([
+    {key: "Loading",
+     text: "Loading",
+     value: "Loading"}
+  ])
 
   const label = [{
     start: 10,
@@ -322,6 +62,10 @@ const DisplayResults = () => {
     end: 35
   },
 ]
+
+  useEffect(() => {
+    console.log("#################################",grouped_tasks)
+  }, [grouped_tasks])
 
   useEffect(() => {
     console.log("this is annotation tasks", annotation_tasks);
@@ -366,6 +110,34 @@ const DisplayResults = () => {
     setDocumentLabels(labels);
   }
 
+  const panes = [
+    {
+      menuItem: 'Document results',
+      pane: (
+        <Tab.Pane key='document-results' style={{maxheight:"100%", overflow:"auto" }}>
+  
+          { questionAnswers.length && questionForms.questions &&
+       <QuestionStats questionAnswers={questionAnswers} questionForm={questionForms}></QuestionStats>
+       }
+        </Tab.Pane>
+      ),
+      
+    },
+    {
+      menuItem: 'Question results',
+      pane: (
+        <Tab.Pane key='question-results' style={{maxheight:"100%", overflow:"auto" }}>
+  
+          { grouped_tasks &&
+          <InterannotatorAgreement grouped_tasks={grouped_tasks}></InterannotatorAgreement>
+
+       }
+        </Tab.Pane>
+      ),
+      
+    },
+  ]
+
   const data = [
     {
       "country": "Responses",
@@ -406,10 +178,10 @@ const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
 // };
 
     return ( 
-        <Grid columns={2} style={{"height": '100px'}}>
-    <Grid.Row stretched>
-    <Grid.Column width={8}>
-        <Segment style={{height: "10vh", "margin-bottom": "0%", "text-align":"left"}}>
+        <Grid columns={2} >
+    <Grid.Row stretched >
+    <Grid.Column width={8} style={{"height": '100vh'}}>
+        <Segment style={{height: "10%", "margin-bottom": "0%", "text-align":"left"}}>
         <Button inverted color='orange'
           active={ (tag == "Summary")}
           onClick={() => setTag("Summary")}>
@@ -431,15 +203,24 @@ const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
     */}
 
           </Segment>
-        <Segment style={{"overflow": "auto","text-align": "left", "white-space": "pre-wrap", height: "90vh", "margin-top":"0%"}}>
+        <Segment style={{"overflow": "auto","text-align": "left", "white-space": "pre-wrap", height: "90%", "margin-top":"0%"}}>
         {documentText && documentLabels && <TextHeatMap tag={tag} documentLabels={documentLabels} documentText={documentText}/>}
           
           </Segment>
       </Grid.Column>
-      <Grid.Column width ={8}>
+      <Grid.Column width ={8} style={{"height": '100vh'}}>
         <Segment padded>
             <h3>Results</h3>
-            <p>Question 1</p>
+            <label>You are currently viewing document:</label>
+            <Dropdown
+            placeholder="Please choose a document to view results"
+            fluid selection options={documentNames}
+            />
+            <br></br>
+            <Tab panes={panes} renderActiveOnly={false}/>
+
+          
+            
         
     {/* <ResponsiveBar {...commonProps} 
     layout="horizontal" 
@@ -448,9 +229,14 @@ const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
     valueScale={{type: "linear"}}
     indexScale={{ type: 'band', round: true }}
      /> */}
-     { questionAnswers.length && questionForms.questions &&
+
+
+     {/* { questionAnswers.length && questionForms.questions &&
        <QuestionStats questionAnswers={questionAnswers} questionForm={questionForms}></QuestionStats>
-       }
+       } */}
+
+
+
        {/* <ResponsiveBar
         data={data}
         keys={keys}

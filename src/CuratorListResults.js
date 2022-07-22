@@ -21,7 +21,9 @@ const CuratorListResults = () => {
         })
         console.log("tasks",taskData.data.listAnnotationTasks.items);
         let allTasks = taskData.data.listAnnotationTasks.items
-        let completedTasks = allTasks.filter(task => task.completed === true);
+        //let completedTasks = allTasks.filter(task => task.completed === true);
+        let completedTasks = allTasks.filter(task => task.completed === false);
+        console.log("This is completed tasks",completedTasks)
         setTasks(completedTasks);
 
     }

@@ -1,0 +1,7 @@
+-add modal to submit for curator, reassign and assign tasks
+-items/documents  are added with .txt suffix
+-testing
+-annotator view previous tasks
+-interannotator agreeement per question
+-match colour to bar chart in view results
+-submit curator task set to permanently disabled

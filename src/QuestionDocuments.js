@@ -72,7 +72,10 @@ const QuestionDocuments = () => {
     const handleNavigate = (tasks) => {
         var s = tasks[0].document_title;
         s = s.substring(s.indexOf("/")+1);
-        navigate(`${s}`, {state: {annotation_tasks: tasks}})
+        if (groupedTasks) {
+            navigate(`${s}`, {state: {annotation_tasks: tasks, grouped_tasks: groupedTasks}})
+        }
+        
     }
 
     const handleNavigateTest = () => {
