@@ -18,8 +18,7 @@ const QuestionStats = ({questionAnswers, questionForm}) => {
     // },[])
   
     useEffect(() => {
-      console.log("BAR DATA")
-      console.log(barData)
+      console.log("BAR DATA", barData)
     }, [barData])
   
     useEffect(() => {
@@ -58,19 +57,27 @@ const QuestionStats = ({questionAnswers, questionForm}) => {
   
     async function createBarData(answers, inputQuestionsForm) {
       let questions = JSON.parse(inputQuestionsForm.questions);
+      console.log("createbardataanswers", answers)
       setFormQuestions(questions)
       console.log("createBarData");
       let allDataItems = [];
       let kappaValues = [];
       for (let i = 0; i < questions.length; i++) {
+        console.log("createBarData", questions[i])
         let newQuestion = {
           "category": questions[i].question_description,
   
         }
         for (let j = 0; j < questions[i].options.length; j++) {
   
-          const relevantAnswers = answers.filter(answer =>
-            answer[questions[i].question_description] === questions[i].options[j])
+          const relevantAnswers = answers.filter(answer =>{
+            return(
+                ((answer !== null) &&
+            (answer[questions[i].question_description] === questions[i].options[j]))
+            )
+            
+          }
+            )
   
           newQuestion[questions[i].options[j]] = relevantAnswers.length;
           newQuestion[questions[i].options[j] + "colour"] = colours[j]
@@ -84,7 +91,7 @@ const QuestionStats = ({questionAnswers, questionForm}) => {
         //   ...prevState, newQuestion
         // ]))
       }
-      console.log("all data item", allDataItems)
+      console.log("ENDcreatebardata", allDataItems)
       setBarData([...allDataItems])
     }
   
@@ -178,7 +185,7 @@ const QuestionStats = ({questionAnswers, questionForm}) => {
           margin={{ top: 50, right: 50, bottom: 50, left: 70 }}
           padding={0.3}
           height={20}
-          colors={getColor}
+          colors={colours}
   
           // valueScale={{ type: 'linear' }}
           // indexScale={{ type: 'band', round: true }}

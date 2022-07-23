@@ -11,13 +11,13 @@ const TAG_COLORS = {
 
 const AnnotationPage = ({annotationText, handleLabelChange, parentLabels}) => {
     const [tag, setTag] = useState("Quality");
-    //const [labels, setLabels] = useState([])
+    const [labels, setLabels] = useState([])
 
     //console.log(annotationText);
 
-    // useEffect(() => {
-    //   console.log("these are the labels in the child",labels)
-    // })
+    useEffect(() => {
+      console.log("these are the labels in the parent",parentLabels)
+    }, [parentLabels])
 
     // useEffect(() => {
     //   setLabels(parentLabels);
@@ -36,6 +36,7 @@ const AnnotationPage = ({annotationText, handleLabelChange, parentLabels}) => {
     }
     const handleChange = label => {
         //setLabels(label);
+        console.log(label)
         handleLabelChange(label);
     }
 
@@ -65,23 +66,26 @@ const AnnotationPage = ({annotationText, handleLabelChange, parentLabels}) => {
       </Button>
 
           <Segment style={{overflow: 'auto', maxHeight: '100vh' }}>
-          <TextAnnotator
-            style={{
-              lineHeight: 1.5,
-              "white-space": "pre-wrap",
-              "text-align": "left"
-            }}
-            content={annotationText}
-            value={parentLabels}
-            onChange={handleChange} //handles highlighting
-            getSpan={span => ({
-              ...span,
-              tag: tag,
-              color: TAG_COLORS[tag]
-            })}
-            
-     
-          />
+            {
+              parentLabels && <TextAnnotator
+              style={{
+                lineHeight: 1.5,
+                "white-space": "pre-wrap",
+                "text-align": "left"
+              }}
+              content={annotationText}
+              value={parentLabels}
+              onChange={handleChange} //handles highlighting
+              getSpan={span => ({
+                ...span,
+                tag: tag,
+                color: TAG_COLORS[tag]
+              })}
+              
+       
+            />
+            }
+          
         
           </Segment>
         

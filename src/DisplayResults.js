@@ -36,6 +36,8 @@ const DisplayResults = () => {
   const { state } = useLocation();
   const { annotation_tasks, grouped_tasks } = state;
 
+  const [allTasks, setAllTasks] = useState(null)
+  const [currentTasks, setCurrentTasks ] = useState(null)
   const [ documentText, setDocumentText ] = useState("Loading text...");
   const [documentLabels, setDocumentLabels] = useState([])
   const [tag, setTag] = useState("Summary")
@@ -64,50 +66,92 @@ const DisplayResults = () => {
 ]
 
   useEffect(() => {
-    console.log("#################################",grouped_tasks)
-  }, [grouped_tasks])
+    console.log("display results")
+    setAllTasks(findGroupedDocuments(grouped_tasks));
+    setCurrentTasks(annotation_tasks);
+  }, [])
+
+  // useEffect(() => {
+  //   console.log("grouped tasks,", grouped_tasks)
+  //   setAllTasks(findGroupedDocuments(grouped_tasks))
+  // }, [grouped_tasks])
+
+  // useEffect(() => {
+  //   console.log("this is annotation tasks", annotation_tasks);
+  //   setCurrentTasks(annotation_tasks)
+  // },[annotation_tasks])
+
 
   useEffect(() => {
-    console.log("this is annotation tasks", annotation_tasks);
-    parseLabels();
-    parseQuestionAnswers();
-    fetchQuestion();
-    //setQuestionAnswers(JSON.parse(annotation_tasks.question_answers))
-    fetchDocument(annotation_tasks[0].document_title).then(result => {
+    console.log("currentTasks", currentTasks)
+    if (currentTasks){
+      parseLabels();
+      parseQuestionAnswers();
+      fetchQuestion();
+      fetchDocument(currentTasks[0].document_title).then(result => {
       setDocumentText(result);
     })
-    // documentText.Body.text().then(string => {
-    //   console.log(string);
-    //   setDocumentText(string);
-    // })
-  },[])
+    }
+    
+
+  }, [currentTasks])
+
+
   async function fetchQuestion() {
     const form = await API.graphql({
         query: getQuestionForm,
-        variables: { id: annotation_tasks[0].questionFormID },
+        variables: { id: currentTasks[0].questionFormID },
         authMode: "AMAZON_COGNITO_USER_POOLS"
     })
-    console.log(form);
+    console.log("setQuestionForm", form.data.getQuestionForm);
     setQuestionForms(form.data.getQuestionForm);
   }
 
+  const findGroupedDocuments = (groupedTasks) => {
+    let groupedDoc = {}
+    for (let i = 0; i < groupedTasks.length; i++) {
+      console.log("grouped docs1", groupedTasks[i])
+      groupedDoc[groupedTasks[i][0].document_title] = groupedTasks[i]
+    }
+    console.log("grouped docs2", groupedDoc)
+    return groupedDoc
+  } 
+
   const parseQuestionAnswers = () => {
     let answers = [];
-    for (let i = 0; i < annotation_tasks.length; i++) {
-      let parsedAnswers = JSON.parse(annotation_tasks[i].question_answers);
+    for (let i = 0; i < currentTasks.length; i++) {
+      let parsedAnswers = JSON.parse(currentTasks[i].question_answers);
       answers.push(parsedAnswers);
     }
-    console.log("answers", answers)
+    console.log("parseQuestionAnswers", answers)
     setQuestionAnswers(answers);
   }
 
   const parseLabels = () => {
     let labels = []
-    for (let i = 0; i < annotation_tasks.length; i++ ) {
-      let parsedLabels = JSON.parse(annotation_tasks[i].labels);
+    for (let i = 0; i < currentTasks.length; i++ ) {
+      let parsedLabels = JSON.parse(currentTasks[i].labels);
       labels.push(...parsedLabels);
     }
     setDocumentLabels(labels);
+  }
+
+  const getDocumentOptions = () => {
+    let options = []
+    Object.keys(allTasks).map((document, index) => {
+      options.push({
+        key: index,
+        text: document,
+        value: document
+      })
+    })
+    return options
+  }
+
+  const handleDocumentChange = (e, {name, value}) => {
+    console.log("handleDocumentChange", allTasks)
+    setCurrentTasks(allTasks[value])
+
   }
 
   const panes = [
@@ -212,10 +256,11 @@ const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
         <Segment padded>
             <h3>Results</h3>
             <label>You are currently viewing document:</label>
-            <Dropdown
+            {allTasks ? <Dropdown
             placeholder="Please choose a document to view results"
-            fluid selection options={documentNames}
-            />
+            fluid selection options={getDocumentOptions()}
+            onChange={handleDocumentChange}
+            /> : "Loading documents..."}
             <br></br>
             <Tab panes={panes} renderActiveOnly={false}/>
 
@@ -297,7 +342,7 @@ async function fetchDocument(documentFile) {
   //console.log(text.Body.text())
 
   text.Body.text().then(string => {
-    console.log(string);
+    console.log("fetchDocument",string);
       //setDocumentText(string);
   })
   return text.Body.text();

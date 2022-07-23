@@ -40,6 +40,7 @@ const QuestionDocuments = () => {
     useEffect(() => {
         fetchTasks();
     }, [])
+
     async function fetchTasks() {
         console.log("id", id)
         const questionData = await API.graphql({
@@ -49,10 +50,37 @@ const QuestionDocuments = () => {
         })
         console.log("fetch", questionData);
         setQuestion(questionData.data);
-        sortTasks(questionData.data.getMedicalQuestion.tasks.items)
+        setGroupedTasks(
+            groupTasksByDocument(questionData.data.getMedicalQuestion.tasks.items)
+        )
+    
         //setTasks(taskData.data.getMedicalQuestion.tasks);
         //setDocuments(taskData.data.getAnnotationTask.tasks)
         
+    }
+
+    const groupTasksByDocument = (tasks) => {
+        console.log("these are tasks",tasks);
+    let finalGroupedTasks = [];
+
+    for (let i = 0; i < tasks.length; i++) {
+        let duplicateDocument = false;
+        for (let j = 0; j < finalGroupedTasks.length; j++) {
+            if (finalGroupedTasks[j][0].document_title == tasks[i].document_title) {
+                duplicateDocument = true
+            }
+        }
+
+        if (!duplicateDocument) {
+            let groupedTasks = tasks.filter(task => task.document_title == tasks[i].document_title)
+            finalGroupedTasks.push(groupedTasks)
+        }
+        
+
+    }
+
+    return finalGroupedTasks;
+
     }
 
     const sortTasks = (tasks) => {

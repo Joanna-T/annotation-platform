@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { API, Storage } from "aws-amplify";
 import { getQuestionForm } from "./graphql/queries";
+import { Segment, Icon } from "semantic-ui-react";
+import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 
 const InterannotatorAgreement = ({grouped_tasks}) => {
     const [groupedAnswers, setGroupedAnswers] = useState([]);
     const [questionForm, setQuestionForm] = useState(null);
     const [fleissKappa, setFleissKappa] = useState()
+    const [aggregatedBarData, setAggregatedBarData] = useState([]);
 
     const numAnnotators = 14;
 
@@ -59,8 +62,10 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
                 //console.log("options",i, tempOptions)
                 for (let k = 0; k < grouped_tasks[j].length; k++) {
                     let taskAnswers = JSON.parse(grouped_tasks[j][k].question_answers)
-                    console.log("taskAnswers", taskAnswers)
-
+                    console.log("taskAnswer", taskAnswers)
+                    if (taskAnswers == null) {
+                        continue;
+                    }
                     for (const [key,value] of Object.entries(taskAnswers)) {
                         console.log("pairs",key,value)
                         if (value in tempOptions) {
@@ -73,7 +78,7 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
             }
         }
 
-        console.log("asnwerObj", answerObj)
+        console.log("answerObj", answerObj)
         setGroupedAnswers(answerObj)
         return answerObj
     }
@@ -84,13 +89,14 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
         }
 
         for (const [key,value] of Object.entries(results)) {
-            kappaValues[key] = calculateFleissKappa(value, tasks)
+            kappaValues[key] = calculateFleissKappa(key, value, tasks)
         }
 
         console.log(kappaValues)
+        setFleissKappa(kappaValues)
     }
 
-    const calculateFleissKappa = (values1, tasks1) => {
+    const calculateFleissKappa = (category,values1, tasks1) => {
         //values is list of objects of form:
         // {
         //     "option1": 1,
@@ -153,6 +159,8 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
         console.log("I",I)
         console.log("results",resultTotals)
 
+        setAggregatedBarData(state => [...state, {...resultTotals, "category": category}]);
+
         let P_e_mean = 0
         for ( const [key, value] of Object.entries(resultTotals)) {
             let temp = value / numAnnotations;
@@ -172,15 +180,79 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
         if (!kappa) {
             return 0;
         }
-        return kappa
+        return kappa.toFixed(3)
 
 
     }
 
+    const likelihoodToText = (score) => {
+        if (score === 0 ) {
+            return "(Poor agreement)"
+        }
+        if (score <= 0.2) {
+            return "(Slight agreement)"
+        }
+        if (score <= 0.4 ) {
+            return "(Fair agreement)"
+        }
+        if (score <= 0.6) {
+            return "(Moderate agreement)"
+        }
+        if (score <= 0.8) {
+            return "(Substantial agreement)"
+        }
+        if (score <= 1.0 ) {
+            return "(Almost perfect agreement)"
+        }
+    }
 
-    return ( 
-        <div>Interannotator agreement</div>
-     );
+    const colours = [
+        "hsl(142, 0%, 50%)",
+       "hsl(127, 70%, 50%)",
+         "hsl(247, 70%, 50%)",
+        "hsl(274, 70%, 50%)",
+        "hsl(331, 70%, 50%)",
+        "hsl(62, 70%, 50%)"
+      ]
+
+
+    return ( <div style={{"max-height": "65vh", "overflow": "auto"}}>
+        <p>The following are aggregated results for all documents across this question.
+            IA denotes the Fleiss Kappa inter-annotator agreement for a given category. 
+        </p>
+      {aggregatedBarData.map( (item, index) => {
+        return(
+            
+          <div style={{"height": "100px"}}>
+            <p>IA:{" "}<b>{fleissKappa && fleissKappa[item["category"]]}</b>
+        {" "}{fleissKappa && likelihoodToText(fleissKappa[item["category"]])}</p>
+            {Object.keys(item).map((option, innerIndex) =>{
+              let keyColor = colours[innerIndex];
+              if (option !== "category") {
+                return(
+                    <p style={{display:"inline"}}>{option}<Icon style={{color:keyColor}} name="circle"></Icon></p>   
+                  )
+              }
+              
+            })}
+          <ResponsiveBar
+          data={[item]}
+          keys={Object.keys(item).filter(element => element !== "category")}
+          layout="horizontal"
+          indexBy="category"
+          margin={{ top: 50, right: 50, bottom: 50, left: 70 }}
+          padding={0.3}
+          height={20}
+          colors={colours}
+
+      />
+        <br></br>
+      
+      </div>
+        )
+      
+      })}
+    </div> );
 }
  
 export default InterannotatorAgreement;

@@ -5,3 +5,8 @@
 -interannotator agreeement per question
 -match colour to bar chart in view results
 -submit curator task set to permanently disabled
+-set instruction and questions viewed on page entry annotation page
+-format curator view results with questions and options
+-num annotator global variable in: InterannotatorAgreement
+-add styling to the sign in page 
+-add in completed tasks viewing page
