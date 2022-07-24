@@ -10,7 +10,7 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
     const [fleissKappa, setFleissKappa] = useState()
     const [aggregatedBarData, setAggregatedBarData] = useState([]);
 
-    const numAnnotators = 14;
+    const numAnnotators = 2;
 
     useEffect(() => {
         console.log("grouped_tasks", grouped_tasks)
@@ -96,7 +96,7 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
         setFleissKappa(kappaValues)
     }
 
-    const calculateFleissKappa = (category,values1, tasks1) => {
+    const calculateFleissKappa = (category,values, tasks) => {
         //values is list of objects of form:
         // {
         //     "option1": 1,
@@ -104,23 +104,23 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
         // }
         //tasks is annotation tasks grouped by document
 
-        let values = [
-            {"1": 0, "2": 0, "3": 0,"4": 0, "5": 14},
-            {"1": 0, "2": 2, "3": 6,"4": 4, "5": 2},
-            {"1": 0, "2": 0, "3": 3,"4": 5, "5": 6},
-            {"1": 0, "2": 3, "3": 9,"4": 2, "5": 0},
-            {"1": 2, "2": 2, "3": 8,"4": 1, "5": 1},
-            {"1": 7, "2": 7, "3": 0,"4": 0, "5": 0},
-            {"1": 3, "2": 2, "3": 6,"4": 3, "5": 0},
-            {"1": 2, "2": 5, "3": 3,"4": 2, "5": 2},
-            {"1": 6, "2": 5, "3": 2,"4": 1, "5": 0},
-            {"1": 0, "2": 2, "3": 2,"4": 3, "5": 7}
+        // let values = [
+        //     {"1": 0, "2": 0, "3": 0,"4": 0, "5": 14},
+        //     {"1": 0, "2": 2, "3": 6,"4": 4, "5": 2},
+        //     {"1": 0, "2": 0, "3": 3,"4": 5, "5": 6},
+        //     {"1": 0, "2": 3, "3": 9,"4": 2, "5": 0},
+        //     {"1": 2, "2": 2, "3": 8,"4": 1, "5": 1},
+        //     {"1": 7, "2": 7, "3": 0,"4": 0, "5": 0},
+        //     {"1": 3, "2": 2, "3": 6,"4": 3, "5": 0},
+        //     {"1": 2, "2": 5, "3": 3,"4": 2, "5": 2},
+        //     {"1": 6, "2": 5, "3": 2,"4": 1, "5": 0},
+        //     {"1": 0, "2": 2, "3": 2,"4": 3, "5": 7}
 
-        ]
+        // ]
         //console.log("fliss",tasks)
-        console.log(values)
+        console.log("values________",values)
 
-        
+        let numInstances = values.length;
 
         let I = []
         let P = []
@@ -136,6 +136,18 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
         for (let i = 0; i < values.length; i++ ) {
             let temp = 0
             let singleCategory = false;
+
+            let numAnnotationsForInstance
+            for (const [key, value] of Object.entries(values[i])) {
+                numAnnotations += value;
+            }
+
+            if (numAnnotations < numAnnotators) {
+                numInstances--;
+                continue;
+            }
+
+
             for (const [key, value] of Object.entries(values[i])) {
                 resultTotals[key] += value;
                 if (value >= numAnnotators) {
@@ -171,7 +183,7 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
 
         let tempTot = I.reduce((partialSum, a) => partialSum + a, 0);
         //let Pmean = tempTot / tasks.length;
-        let Pmean = tempTot / values.length
+        let Pmean = tempTot / numInstances
 
         console.log("pmean", Pmean)
 
@@ -180,13 +192,16 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
         if (!kappa) {
             return 0;
         }
+        // if (kappa < 0) {
+        //     return "-"
+        // }
         return kappa.toFixed(3)
 
 
     }
 
     const likelihoodToText = (score) => {
-        if (score === 0 ) {
+        if (score <= 0 ) {
             return "(Poor agreement)"
         }
         if (score <= 0.2) {
@@ -203,6 +218,9 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
         }
         if (score <= 1.0 ) {
             return "(Almost perfect agreement)"
+        }
+        if (score === "-") {
+            return "Insufficient results"
         }
     }
 

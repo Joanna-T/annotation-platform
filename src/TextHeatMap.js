@@ -43,7 +43,9 @@ const TextHeatMap = ({documentLabels, documentText, tag}) => {
     }, [documentLabels])
   
     useEffect(() => {
+      console.log("this is heatmap???????????????????", documentText)
        insertSpan(documentText, "Summary"); 
+       setLabelsText({})
     }, [documentText])
   
     useEffect(() => {
@@ -52,14 +54,15 @@ const TextHeatMap = ({documentLabels, documentText, tag}) => {
   
   
     async function insertSpan(documentText, labelType) {
-  
+      
+      console.log("InsertSpan called")
       if (labelType in labelsText && labelsText[labelType] !== "Loading text...") {
+        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##")
         setHighlightedText(labelsText[labelType])
         return
       }
   
-      console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##")
-      console.log("InsertSpan called")
+      
       let text = documentText
       let tempLabels = [...documentLabels];
       //let text = text1;

@@ -25,7 +25,7 @@ const QuestionStats = ({questionAnswers, questionForm}) => {
       console.log("Answers", questionAnswers);
       console.log("form", questionForm)
       createBarData(questionAnswers, questionForm)
-    }, [])
+    }, [questionAnswers, questionForm])
   
     // useEffect(() => {
     //   console.log("ANSWERS")
@@ -119,7 +119,30 @@ const QuestionStats = ({questionAnswers, questionForm}) => {
 
     const getColor = bar => colours1[bar.id];
   
-  
+    const orderColours = (item, option) => {
+        let index = 0
+        let zeroItemCounter = 0;
+        let indexZeroItem;
+        for (const [key,value] of Object.entries(item)) {
+            if (key === "category") {
+                continue;
+            }
+            if (value > 0 ) {
+                index++;
+                if (key === option) {
+                    return index;
+                }
+            }
+            if (value === 0) {
+                zeroItemCounter++
+                if (key === option) {
+                    indexZeroItem = zeroItemCounter;
+                }
+                
+            }
+        }
+        return indexZeroItem + index
+    }
   
     // let barDataQuestion = [
     //   {
@@ -170,7 +193,8 @@ const QuestionStats = ({questionAnswers, questionForm}) => {
           <div style={{"height": "100px"}}>
             <p>{index+1}{". "}{formQuestions[index].question_text}</p>
             {formQuestions[index].options.map((option, innerIndex) =>{
-              let keyColor = colours[innerIndex];
+              let coloursIndex = orderColours(item, option)
+              let keyColor = colours[coloursIndex - 1];
               console.log("KEY COLORRRRRRRR", keyColor)
               return(
                 <p style={{display:"inline"}}>{option}<Icon style={{color:keyColor}} name="circle"></Icon></p>
