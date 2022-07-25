@@ -3,6 +3,8 @@ import { listMedicalQuestions, getMedicalQuestion } from "./graphql/queries";
 import { createAnnotationTask } from "./graphql/mutations";
 import { Card, Grid, Segment, Label, Button } from "semantic-ui-react"; 
 import { API, Storage, Amplify, Auth } from "aws-amplify";
+import { groupTasksByDocument, findCompletedTasks } from "./documentUtils";
+import { listCurators } from "./queryUtils";
 
 
 const ReassignTasks = () => {
@@ -30,10 +32,7 @@ const ReassignTasks = () => {
     useEffect(() => {
         if (chosenQuestion) {
             console.log(chosenQuestion.tasks.items)
-            fetchQuestion().then(tasks => {
-                setGroupedTasks(groupTasksByDocument(tasks));
-            })
-            //groupTasksByDocument(chosenQuestion.tasks.items)
+            setGroupedTasks(groupTasksByDocument(chosenQuestion.tasks.items))
         }
         
     }, [chosenQuestion])
@@ -51,50 +50,21 @@ const ReassignTasks = () => {
 
     }
 
-    async function fetchQuestion() {
-        const questionData = await API.graphql({
-            query: getMedicalQuestion,
-            variables: {id: chosenQuestion.id},
-            authMode: "AMAZON_COGNITO_USER_POOLS"
+    // async function fetchQuestion() {
+    //     const questionData = await API.graphql({
+    //         query: getMedicalQuestion,
+    //         variables: {id: chosenQuestion.id},
+    //         authMode: "AMAZON_COGNITO_USER_POOLS"
 
-        })
-        console.log("tasks",questionData.data.getMedicalQuestion.tasks);
-        return questionData.data.getMedicalQuestion.tasks.items
-        //setQuestions(questionData.data.listMedicalQuestions.items);
+    //     })
+    //     console.log("tasks",questionData.data.getMedicalQuestion.tasks);
+    //     return questionData.data.getMedicalQuestion.tasks.items
+    //     //setQuestions(questionData.data.listMedicalQuestions.items);
 
-    }
+    // }
 
     //used in question documents
-    const groupTasksByDocument = (tasks) => {
-        console.log("these are tasks",tasks);
-    let finalGroupedTasks = [];
 
-    for (let i = 0; i < tasks.length; i++) {
-        let duplicateDocument = false;
-        for (let j = 0; j < finalGroupedTasks.length; j++) {
-            if (finalGroupedTasks[j][0].document_title == tasks[i].document_title) {
-                duplicateDocument = true
-            }
-        }
-
-        if (!duplicateDocument) {
-            let groupedTasks = tasks.filter(task => task.document_title == tasks[i].document_title)
-            finalGroupedTasks.push(groupedTasks)
-        }
-        
-
-    }
-
-    return finalGroupedTasks;
-
-    // let tempGroupedTasks = tasks.group(({document_title}) => document_title)
-    // for (var item in tempGroupedTasks) {
-    //     finalGroupedTasks.push(tempGroupedTasks[item])
-    // }
-    //console.log("final grouped tasks", finalGroupedTasks)
-    //setGroupedTasks(finalGroupedTasks);
-
-    }
 
     async function submitNewTasks() {
         let newTasks = []
@@ -170,26 +140,26 @@ const ReassignTasks = () => {
 
 
 
-    const findCompletedTasks = (questionID) => {
-        let completedTasks = 0
-        // tasks.forEach((item, index) => {
-        //     let numCompletedTasks = item.filter(task => task.completed === true).length;
-        //     if (numCompletedTasks >= minimumRequiredCurators) {
-        //         completedTasks++;
-        //     }
-        // })
+    // const findCompletedTasks = (groupedInputTasks, curatorNum) => {
+    //     let completedTasks = 0
+    //     // tasks.forEach((item, index) => {
+    //     //     let numCompletedTasks = item.filter(task => task.completed === true).length;
+    //     //     if (numCompletedTasks >= minimumRequiredCurators) {
+    //     //         completedTasks++;
+    //     //     }
+    //     // })
 
-        let groupedInputTasks = allQuestionTasks[questionID];
-        console.log("findCompletedtasks", groupedInputTasks)
+    //     //let groupedInputTasks = allQuestionTasks[questionID];
+    //     console.log("findCompletedtasks", groupedInputTasks)
 
-        for (let i = 0; i < groupedInputTasks.length; i++) {
-            let numCompletedTasks = groupedInputTasks[i].filter(item => item.completed === true).length;
-            if (numCompletedTasks >= minimumRequiredCurators) {
-                completedTasks++;
-            }
-        }
-        return completedTasks;
-    } 
+    //     for (let i = 0; i < groupedInputTasks.length; i++) {
+    //         let numCompletedTasks = groupedInputTasks[i].filter(item => item.completed === true).length;
+    //         if (numCompletedTasks >= curatorNum) {
+    //             completedTasks++;
+    //         }
+    //     }
+    //     return completedTasks;
+    // } 
 
     const findTotalTasks = (questionID) => {
         return allQuestionTasks[questionID].length;
@@ -218,7 +188,7 @@ const ReassignTasks = () => {
       //href={`/annotation_tasks/${task.id}`}
       header={ `Question title: ${question.text}`   }
     //   meta={`Item ${index + 1}`}
-      description={`Completed: ${findCompletedTasks(question.id)} / ${findTotalTasks(question.id)}`}
+      description={`Completed: ${findCompletedTasks(allQuestionTasks[question.id] , minimumRequiredCurators)} / ${findTotalTasks(question.id)}`}
     />
                           
                           
@@ -282,27 +252,27 @@ export default ReassignTasks;
 
 let nextToken;
 
-async function listCurators(limit){
-    let apiName = 'AdminQueries';
-    let path = '/listUsersInGroup';
-    let myInit = { 
-        queryStringParameters: {
-          "groupname": "Curators",
-          "token": nextToken
-        },
-        headers: {
-          'Content-Type' : 'application/json',
-          Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`
-        }
-    }
-    const { NextToken, ...rest } =  await API.get(apiName, path, myInit);
-    nextToken = NextToken;
-    let users = [];
-    rest.Users.map(user => users.push(user.Username))
-    console.log("curators")
-    console.log(users)
-    return users;
-  }
+// async function listCurators(limit){
+//     let apiName = 'AdminQueries';
+//     let path = '/listUsersInGroup';
+//     let myInit = { 
+//         queryStringParameters: {
+//           "groupname": "Curators",
+//           "token": nextToken
+//         },
+//         headers: {
+//           'Content-Type' : 'application/json',
+//           Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`
+//         }
+//     }
+//     const { NextToken, ...rest } =  await API.get(apiName, path, myInit);
+//     nextToken = NextToken;
+//     let users = [];
+//     rest.Users.map(user => users.push(user.Username))
+//     console.log("curators")
+//     console.log(users)
+//     return users;
+//   }
 
   async function submitTask(task) {
     let createdTasks = await API.graphql({
@@ -315,3 +285,35 @@ async function listCurators(limit){
     console.log("this is the final submitted task", createdTasks)
   
   }
+
+
+//   const groupTasksByDocument = (tasks) => {
+//     console.log("these are tasks",tasks);
+// let finalGroupedTasks = [];
+
+// for (let i = 0; i < tasks.length; i++) {
+//     let duplicateDocument = false;
+//     for (let j = 0; j < finalGroupedTasks.length; j++) {
+//         if (finalGroupedTasks[j][0].document_title == tasks[i].document_title) {
+//             duplicateDocument = true
+//         }
+//     }
+
+//     if (!duplicateDocument) {
+//         let groupedTasks = tasks.filter(task => task.document_title == tasks[i].document_title)
+//         finalGroupedTasks.push(groupedTasks)
+//     }
+    
+
+// }
+
+// return finalGroupedTasks;
+
+// // let tempGroupedTasks = tasks.group(({document_title}) => document_title)
+// // for (var item in tempGroupedTasks) {
+// //     finalGroupedTasks.push(tempGroupedTasks[item])
+// // }
+// //console.log("final grouped tasks", finalGroupedTasks)
+// //setGroupedTasks(finalGroupedTasks);
+
+// }
