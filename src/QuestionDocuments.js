@@ -149,11 +149,11 @@ const QuestionDocuments = () => {
                                   
                       ))
                   }
-      <Card onClick={() => handleNavigateTest()} href="#" style={{ "margin-bottom": 5, "text-align": "left", "padding": "2%"}}fluid color='blue' header='Option 1' />
+      {/* <Card onClick={() => handleNavigateTest()} href="#" style={{ "margin-bottom": 5, "text-align": "left", "padding": "2%"}}fluid color='blue' header='Option 1' />
       <Card href="#" style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid color='blue' header='Option 2' />
       <Card href="#" style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid color='blue' header='Option 3' />
   
-      
+       */}
                   
   
   </Card.Group>

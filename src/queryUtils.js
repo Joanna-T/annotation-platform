@@ -1,4 +1,5 @@
 import { API, Storage, Amplify, Auth } from "aws-amplify";
+import { listMedicalQuestions, getMedicalQuestion } from "./graphql/queries";
 
 let nextToken;
 
@@ -23,3 +24,15 @@ export async function listCurators(limit){
     console.log(users)
     return users;
   }
+
+  export async function fetchQuestions() {
+    const questionsData = await API.graphql({
+        query: listMedicalQuestions,
+        authMode: "AMAZON_COGNITO_USER_POOLS"
+
+    })
+    console.log("questions",questionsData.data.listMedicalQuestions.items);
+    //setQuestions(questionsData.data.listMedicalQuestions.items);
+    return questionsData.data.listMedicalQuestions.items
+
+}

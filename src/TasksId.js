@@ -1,7 +1,7 @@
 import { API, Storage } from "aws-amplify";
 //import ReactMarkDown from "react-markdown"
 import awsmobile from "./aws-exports";
-import { getAnnotationTask } from "./graphql/queries"
+import { getAnnotationTask, tasksByUsername } from "./graphql/queries"
 import { createAnnotationResult, updateAnnotationTask } from "./graphql/mutations";
 import { useHistory, useParams, useLocation } from "react-router-dom";
 import { ComponentPropsToStylePropsMap, Divider } from "@aws-amplify/ui-react";
@@ -223,10 +223,13 @@ const TasksId = () => {
         // console.log("item transferred");
 
 
-        Storage.list('', {bucket: "pansurg-curation-workflo-kendraqueryresults50d0eb-open-data/"}) // for listing ALL files without prefix, pass '' instead
+        Storage.list('', 
+        {
+            bucket: "pansurg-curation-workflo-kendraqueryresults50d0eb-open-data",
+            region: "eu-west-2"}) // for listing ALL files without prefix, pass '' instead
         .then(result => console.log("this is the result with bucket", result))
         .catch(err => console.log(err));
-        console.log("FETCH DOCUMENTS")
+   
 
         //const documentFile = documentTitle + ".txt";
         const documentFile = documentTitle;
@@ -252,6 +255,12 @@ const TasksId = () => {
         color: "white" 
 
 
+    }
+
+    if (task && task.completed === true) {
+        return (
+            <h3>This task has already been submitted</h3>
+        )
     }
 
     return (

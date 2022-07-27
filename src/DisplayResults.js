@@ -226,6 +226,7 @@ const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
     <Grid.Row stretched >
     <Grid.Column width={8} style={{"height": '100vh'}}>
         <Segment style={{height: "10%", "margin-bottom": "0%", "text-align":"left"}}>
+          <p style={{display:"inline"}}><b>Document labels:{"  "}</b></p>
         <Button inverted color='orange'
           active={ (tag == "Summary")}
           onClick={() => setTag("Summary")}>
@@ -257,7 +258,7 @@ const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
             <h3>Results</h3>
             <label>You are currently viewing document:</label>
             {allTasks ? <Dropdown
-            placeholder="Please choose a document to view results"
+            defaultValue = {annotation_tasks.length ? annotation_tasks[0].document_title : "Loading documents"}
             fluid selection options={getDocumentOptions()}
             onChange={handleDocumentChange}
             /> : "Loading documents..."}

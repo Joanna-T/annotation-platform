@@ -2,11 +2,27 @@
 -items/documents  are added with .txt suffix
 -testing
 -annotator view previous tasks
--interannotator agreeement per question
--match colour to bar chart in view results
 -submit curator task set to permanently disabled
 -set instruction and questions viewed on page entry annotation page
 -format curator view results with questions and options
--num annotator global variable in: InterannotatorAgreement
+-num annotator global variable in: InterannotatorAgreement, reassign tasks
 -add styling to the sign in page 
--add in completed tasks viewing page
+-add in completed tasks viewing page (admin)
+    -refactor to make list question options a component and pass it into completed documents 
+-add completed tasks number in active tasks list (aDmin)
+-error message if opening curator task that has been completed
+-change completed tasks to list completed: true (curator)
+-set initial value on drop down for results (admin)
+-make base component for styling (grid components)
+
+
+Done 
+-match colour to bar chart in view results [x]
+-interannotator agreeement per question [recheck]
+
+
+
+
+
+NOTE:
+-when adding new task, need inital labels value to not be null ie. "[]"

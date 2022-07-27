@@ -175,7 +175,7 @@ const AssignTasks = () => {
         {chosenQuestionForm ? chosenQuestionForm.form_description : "Please pick a question form from below"}
       </Label></p>
             <Segment style={{overflow: "auto",maxHeight: '30vh'}}>
-              {questionForms && (questionForms.map((form, index) =>{
+              {questionForms ? (questionForms.map((form, index) =>{
                   return(
                 <Card style={{ "margin-bottom": 5, "text-align": "left", "padding": "2%"}}fluid >
                 <Accordion>
@@ -204,6 +204,7 @@ const AssignTasks = () => {
                     </Card>
                   )
                 }))
+                : "Loading forms..."
                 
               }
             
@@ -223,7 +224,7 @@ const AssignTasks = () => {
             </p>
             <Segment style={{overflow: "auto",maxHeight: '30vh'}}>
             {
-              folders && (folders.map((folder, index) => {
+              folders ? (folders.map((folder, index) => {
                 return (
                   <Card style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "3%"}}fluid>
                   <p>{folder}
@@ -235,6 +236,7 @@ const AssignTasks = () => {
                   </Card>
                 )
               }))
+              : "Loading folders..."
               
               
             }

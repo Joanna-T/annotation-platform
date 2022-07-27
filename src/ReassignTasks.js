@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { listMedicalQuestions, getMedicalQuestion } from "./graphql/queries";
 import { createAnnotationTask } from "./graphql/mutations";
-import { Card, Grid, Segment, Label, Button } from "semantic-ui-react"; 
+import { Card, Grid, Segment, Label, Button, Icon } from "semantic-ui-react"; 
 import { API, Storage, Amplify, Auth } from "aws-amplify";
 import { groupTasksByDocument, findCompletedTasks } from "./documentUtils";
-import { listCurators } from "./queryUtils";
+import { listCurators, fetchQuestions } from "./queryUtils";
+//import * as queryUtils from "./queryUtils"
+import { submitTask } from "./mutationUtils";
+
 
 
 const ReassignTasks = () => {
@@ -18,6 +21,7 @@ const ReassignTasks = () => {
     const minimumRequiredCurators = 2;
 
     useEffect(() => {
+        //queryUtils.fetchQuestions().then(result => {
         fetchQuestions().then(result => {
             findIncompleteQuestions(result);
         })
@@ -29,26 +33,20 @@ const ReassignTasks = () => {
     //     }
     // }, [questions])
 
-    useEffect(() => {
-        if (chosenQuestion) {
-            console.log(chosenQuestion.tasks.items)
-            setGroupedTasks(groupTasksByDocument(chosenQuestion.tasks.items))
-        }
-        
-    }, [chosenQuestion])
 
 
-    async function fetchQuestions() {
-        const questionsData = await API.graphql({
-            query: listMedicalQuestions,
-            authMode: "AMAZON_COGNITO_USER_POOLS"
 
-        })
-        console.log("questions",questionsData.data.listMedicalQuestions.items);
-        //setQuestions(questionsData.data.listMedicalQuestions.items);
-        return questionsData.data.listMedicalQuestions.items
+    // async function fetchQuestions() {
+    //     const questionsData = await API.graphql({
+    //         query: listMedicalQuestions,
+    //         authMode: "AMAZON_COGNITO_USER_POOLS"
 
-    }
+    //     })
+    //     console.log("questions",questionsData.data.listMedicalQuestions.items);
+    //     //setQuestions(questionsData.data.listMedicalQuestions.items);
+    //     return questionsData.data.listMedicalQuestions.items
+
+    // }
 
     // async function fetchQuestion() {
     //     const questionData = await API.graphql({
@@ -68,6 +66,7 @@ const ReassignTasks = () => {
 
     async function submitNewTasks() {
         let newTasks = []
+        //queryUtils.listCurators().then(curatorList => {
         listCurators().then(curatorList => {
             if (groupedTasks) {
                 for (let i = 0; i < groupedTasks.length; i++) {
@@ -91,21 +90,21 @@ const ReassignTasks = () => {
                             possibleCurators)
                     }
                     for (let j = 0; j < numRequiredReassignments; i++) {
-                        // newTasks.push({
-                        //     owner: possibleCurators[j],
-                        //     document_title: groupedTasks[i][0].document_title,
-                        //     questionID: groupedTasks[i][0].questionID,
-                        //     questionFormID: groupedTasks[i][0].questionFormID
-
-                        // })
-
-                        submitTask({
+                        newTasks.push({
                             owner: possibleCurators[j],
                             document_title: groupedTasks[i][0].document_title,
                             questionID: groupedTasks[i][0].questionID,
                             questionFormID: groupedTasks[i][0].questionFormID
 
                         })
+
+                        // submitTask({
+                        //     owner: possibleCurators[j],
+                        //     document_title: groupedTasks[i][0].document_title,
+                        //     questionID: groupedTasks[i][0].questionID,
+                        //     questionFormID: groupedTasks[i][0].questionFormID
+
+                        // })
     
                     }
 
@@ -114,8 +113,11 @@ const ReassignTasks = () => {
             }
         })
 
+        return newTasks
+
     }
 
+    //
     const findIncompleteQuestions = (questions) => {
         let questionItems = {};
         let tempIncompleteQuestions = []
@@ -163,7 +165,6 @@ const ReassignTasks = () => {
 
     const findTotalTasks = (questionID) => {
         return allQuestionTasks[questionID].length;
-        return 0;
     }
     return ( 
          
@@ -173,12 +174,15 @@ const ReassignTasks = () => {
         <Grid.Column width={3}>
           </Grid.Column>
           <Grid.Column width={10}>
-              <Segment>
-              <h3>Below are annotation question tasks which are yet to be completed</h3> 
-              <p>Please choose a task to reassign</p>
+                <Segment basic>
+                <h3>Below are annotation question tasks which are yet to be completed</h3> 
+                </Segment>
+              <Segment style={{textAlign: "left"}}>
+              
+              <p><Icon name='hand point right' />Please choose a task to reassign</p>
               <Segment style={{"overflow": "auto", "max-height": "30%"}}>
           <Card.Group>
-             {incompleteQuestions && allQuestionTasks &&
+             {incompleteQuestions && allQuestionTasks ?
                       incompleteQuestions.map((question,index) =>(
                       
                           <Card
@@ -195,6 +199,7 @@ const ReassignTasks = () => {
   
                           
                       ))
+                      :"Loading annotation questions..."
                   }
   
   </Card.Group>
@@ -206,8 +211,8 @@ const ReassignTasks = () => {
       </Label></p>
       <Segment style={{"overflow": "auto", "max-height": "30%"}}>
           <Card.Group>
-             {groupedTasks &&
-                      groupedTasks.map((tasks,index) =>(
+             {chosenQuestion ?
+                      allQuestionTasks[chosenQuestion.id].map((tasks,index) =>(
                       
                           <Card
                           fluid 
@@ -215,12 +220,14 @@ const ReassignTasks = () => {
       header={ `Document title: ${tasks[0].document_title}`   }
     //   meta={`Item ${index + 1}`}
       description={`Completed: ${tasks.filter(task => task.completed === true).length} / ${tasks.length}`}
-    />
-                          
-                          
-  
-                          
+    />           
                       ))
+                       : 
+                       <Card
+                       fluid
+                       description={"Please select a document to view results"}>
+                        
+                       </Card>
                   }
   
   </Card.Group>
@@ -231,7 +238,7 @@ const ReassignTasks = () => {
         color={chosenQuestion ? "blue" : "grey"}
         onClick={() => {
             if (chosenQuestion) {
-                submitNewTasks();
+                submitNewTasks().forEach(result => submitTask(result))
             }
         }}
         >
@@ -250,7 +257,7 @@ const ReassignTasks = () => {
  
 export default ReassignTasks;
 
-let nextToken;
+//let nextToken;
 
 // async function listCurators(limit){
 //     let apiName = 'AdminQueries';
@@ -274,17 +281,17 @@ let nextToken;
 //     return users;
 //   }
 
-  async function submitTask(task) {
-    let createdTasks = await API.graphql({
-      query: createAnnotationTask,
-      variables: {
-          input: task
-      },
-      authMode: "AMAZON_COGNITO_USER_POOLS"
-  })
-    console.log("this is the final submitted task", createdTasks)
+//   async function submitTask(task) {
+//     let createdTasks = await API.graphql({
+//       query: createAnnotationTask,
+//       variables: {
+//           input: task
+//       },
+//       authMode: "AMAZON_COGNITO_USER_POOLS"
+//   })
+//     console.log("this is the final submitted task", createdTasks)
   
-  }
+//   }
 
 
 //   const groupTasksByDocument = (tasks) => {
