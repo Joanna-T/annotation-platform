@@ -3,7 +3,7 @@ import { listMedicalQuestions, getMedicalQuestion } from "./graphql/queries";
 import { createAnnotationTask } from "./graphql/mutations";
 import { Card, Grid, Segment, Label, Button, Icon } from "semantic-ui-react"; 
 import { API, Storage, Amplify, Auth } from "aws-amplify";
-import { groupTasksByDocument, findCompletedTasks } from "./documentUtils";
+import { groupTasksByDocument, findCompletedTasks, createReassignedTasks } from "./documentUtils";
 import { listCurators, fetchQuestions } from "./queryUtils";
 //import * as queryUtils from "./queryUtils"
 import { submitTask } from "./mutationUtils";
@@ -237,8 +237,11 @@ const ReassignTasks = () => {
   <Button 
         color={chosenQuestion ? "blue" : "grey"}
         onClick={() => {
+            console.log("clicked")
+            console.log(chosenQuestion)
+            console.log(groupedTasks)
             if (chosenQuestion) {
-                submitNewTasks().forEach(result => submitTask(result))
+                createReassignedTasks(allQuestionTasks[chosenQuestion.id]).forEach(result => submitTask(result))
             }
         }}
         >

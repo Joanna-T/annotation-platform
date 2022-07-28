@@ -3,7 +3,7 @@ import { listMedicalQuestions, getMedicalQuestion } from "./graphql/queries";
 
 let nextToken;
 
-export async function listCurators(limit){
+export async function listCurators(){
     let apiName = 'AdminQueries';
     let path = '/listUsersInGroup';
     let myInit = { 
