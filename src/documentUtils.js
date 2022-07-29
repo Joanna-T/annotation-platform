@@ -1,6 +1,8 @@
 import { listCurators } from "./queryUtils";
 //import * as queryUtils from "./queryUtils"
 
+
+//returns arrays tasks grouped by document
 export const groupTasksByDocument = (tasks) => {
     console.log("these are tasks",tasks);
 let finalGroupedTasks = [];
@@ -105,10 +107,10 @@ export async function createReassignedTasks(groupedTasks ) {
 
 
             }
-        
-    })
-    console.log("newTasks", newTasks)
-
     return newTasks
+    })
+    //console.log("newTasks", newTasks)
+
+    
 
 }

@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { listMedicalQuestions, getMedicalQuestion } from "./graphql/queries";
 import { createAnnotationTask } from "./graphql/mutations";
-import { Card, Grid, Segment, Label, Button, Icon } from "semantic-ui-react"; 
+import { Card, Grid, Segment, Label, Button, Icon, Message, Modal } from "semantic-ui-react"; 
 import { API, Storage, Amplify, Auth } from "aws-amplify";
 import { groupTasksByDocument, findCompletedTasks, createReassignedTasks } from "./documentUtils";
 import { listCurators, fetchQuestions } from "./queryUtils";
 //import * as queryUtils from "./queryUtils"
 import { submitTask } from "./mutationUtils";
+import Layout from "./Layout";
 
 
 
@@ -17,6 +18,8 @@ const ReassignTasks = () => {
     const [chosenQuestion, setChosenQuestion] = useState(null);
     //object with full list of incomplete questions and tasks grouped by document
     const [allQuestionTasks, setAllQuestionTasks] = useState(null);
+    const [warningMessage, setWarningMessage] = useState(false)
+    const [open, setOpen] = useState(false)
 
     const minimumRequiredCurators = 2;
 
@@ -168,15 +171,20 @@ const ReassignTasks = () => {
     }
     return ( 
          
-        <Grid padded style={{height: '100vh'}}>
-  
-        <Grid.Row style={{height: '100%'}}>
-        <Grid.Column width={3}>
-          </Grid.Column>
-          <Grid.Column width={10}>
+        <Layout>
+          
                 <Segment basic>
-                <h3>Below are annotation question tasks which are yet to be completed</h3> 
+                <h4>Below are annotation question tasks which are yet to be completed</h4> 
                 </Segment>
+                {
+            warningMessage && (
+              <Message
+                color="red"
+                onDismiss={() => setWarningMessage(false)}
+                content='Please choose a question to reassign.'
+              />
+            )
+            }
               <Segment style={{textAlign: "left"}}>
               
               <p><Icon name='hand point right' />Please choose a task to reassign</p>
@@ -234,27 +242,59 @@ const ReassignTasks = () => {
   
 
   </Segment>
-  <Button 
+  {/* <Button 
         color={chosenQuestion ? "blue" : "grey"}
         onClick={() => {
-            console.log("clicked")
-            console.log(chosenQuestion)
-            console.log(groupedTasks)
             if (chosenQuestion) {
                 createReassignedTasks(allQuestionTasks[chosenQuestion.id]).forEach(result => submitTask(result))
             }
         }}
         >
             Reassign incomplete tasks
+            </Button> */}
+            { !chosenQuestion ?
+      <Button 
+        color='grey'
+        onClick={() => {
+            setWarningMessage(true);
+        }}
+        >
+            Reassign tasks
             </Button>
+      : 
+      <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      onOpen={() => setOpen(true)}
+      trigger={<Button 
+       color='blue' > 
+           Reassign tasks
+           </Button>}
+      //content='You will not be able to make any more changes to this annotation task.'
+      //actions={['Submit', { key: 'done', content: 'Back to annotating', positive: true }]}
+    >
+    <Modal.Header> Are you sure you want to reassign these tasks?</Modal.Header>
+    <Modal.Actions>
+        <Button color="green" onClick={() => {
+            createReassignedTasks(allQuestionTasks[chosenQuestion.id]).forEach(result => submitTask(result))
+        }}>
+        Submit
+        </Button>
+        <Button
+        color="red"
+        labelPosition='right'
+        icon='checkmark'
+        onClick={() => setOpen(false)}>
+          Back to form
+        </Button>
+    </Modal.Actions>
+
+    </Modal>
+      }
   </Segment>
   
               
-          </Grid.Column>
-          <Grid.Column width={3}>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+  </Layout>
      );
 }
  

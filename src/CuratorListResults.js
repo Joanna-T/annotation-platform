@@ -4,58 +4,38 @@ import { API, Auth } from "aws-amplify";
 import { listAnnotationTasks,listQuestionForms } from "./graphql/queries";
 import { Link } from "react-router-dom";
 import { List, Segment, Grid, Image, Card } from "semantic-ui-react";
+import Layout from "./Layout";
+import { fetchTasks } from "./queryUtils";
 
 const CuratorListResults = () => {
     const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
-        fetchTasks();
+        fetchTasks()
+        .then(result => {
+            setTasks(result.filter(task => task.completed === true));
+        })
         //fetchQuestions();
     },[])
 
-    async function fetchTasks() {
-        const taskData = await API.graphql({
-            query: listAnnotationTasks,
-            authMode: "AMAZON_COGNITO_USER_POOLS"
+    // async function fetchTasks() {
+    //     const taskData = await API.graphql({
+    //         query: listAnnotationTasks,
+    //         authMode: "AMAZON_COGNITO_USER_POOLS"
 
-        })
-        console.log("tasks",taskData.data.listAnnotationTasks.items);
-        let allTasks = taskData.data.listAnnotationTasks.items
-        //let completedTasks = allTasks.filter(task => task.completed === true);
-        let completedTasks = allTasks.filter(task => task.completed === false);
-        console.log("This is completed tasks",completedTasks)
-        setTasks(completedTasks);
+    //     })
+    //     console.log("tasks",taskData.data.listAnnotationTasks.items);
+    //     return taskData.data.listAnnotationTasks.items
 
-    }
+    // }
     return ( 
         <div className="completed-tasks">
             
-        <Grid padded style={{height: '100vh'}}>
-  <Grid.Row style={{height: '15%'}}>
-  <Grid.Column width={3}>
-    </Grid.Column>
-    <Grid.Column width={10}>
-        <Segment tertiary color="blue" inverted>
-    <p>The following are previously completed annotation tasks. 
-
-        
-    </p>
-    </Segment>
-    </Grid.Column>
-    <Grid.Column width={3}>
-    </Grid.Column>
-  </Grid.Row>
-
-  <Grid.Row style={{height: '85%'}}>
-  <Grid.Column width={3}>
-    </Grid.Column>
-    <Grid.Column width={10}>
+        <Layout>
+        <Segment inverted color="blue" tertiary>
+            The following are previously completed tasks.
+        </Segment>
     <Card.Group>
-<Card href="#" style={{ "margin-bottom": 5, "text-align": "left", "padding": "2%"}}fluid color='blue' header='Option 1' />
-<Card href="#" style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid color='blue' header='Option 2' />
-<Card href="#" style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid color='blue' header='Option 3' />
-
-
             {
                 tasks.map((task,index) =>(
                 
@@ -75,14 +55,8 @@ const CuratorListResults = () => {
             }
 
 </Card.Group>
-
         
-    </Grid.Column>
-    <Grid.Column width={3}>
-    </Grid.Column>
-  </Grid.Row>
-</Grid>
-        
+</Layout>
     </div>
      );
 }

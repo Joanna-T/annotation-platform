@@ -26,6 +26,9 @@ import {
     Popup
   } from 'semantic-ui-react';
 import { Navigate } from "react-router-dom";
+import { updateTask } from "./mutationUtils";
+import { fetchTask } from "./queryUtils";
+
 //import { Prompt } from "react-router";
 
 //to create an annotation task 
@@ -54,6 +57,7 @@ const SideBar = props => {
   };
 
 const TasksId = () => {
+    const navigate = useNavigate();
     const { id } = useParams();
     const [task, setTask] = useState(null);
     // const [document, setDocument] = useState();
@@ -63,13 +67,15 @@ const TasksId = () => {
 
 
     //const [visible, setVisible] = useState(false);
-    const [instructionsVisible, setInstructionsVisible] = useState(false);
-    const [questionsVisible, setQuestionsVisible] = useState(false);
+    const [instructionsVisible, setInstructionsVisible] = useState(true);
+    const [questionsVisible, setQuestionsVisible] = useState(true);
     const [instructionWidth, setInstructionWidth] = useState(2);
     const [mainWidth, setMainWidth] = useState(12);
     const [questionsWidth, setQuestionWidth] = useState(2);
     const [parentLabels, setParentLabels] = useState([{ start: 15, end: 20, tag: "SUMMARY" }]);
     
+    const [open, setOpen] = useState(false);
+
     const handleAnswerChange = (e => {
         const questionDescription = e.target.name;
         const questionValue = e.target.value;
@@ -79,7 +85,7 @@ const TasksId = () => {
     })
 
     async function handleSubmit() {
-
+        //////////////////////////////////
         const annotationResult = {
             document_title: task.document_title,
             questionID: task.questionID,
@@ -88,6 +94,8 @@ const TasksId = () => {
             labels: task.labels,
             questionFormID: task.questionFormID
         }
+
+        //remove?
         await API.graphql({
             query: createAnnotationResult,
             variables: {
@@ -95,10 +103,46 @@ const TasksId = () => {
             },
             authMode: "AMAZON_COGNITO_USER_POOLS"
         })
-        Navigate("/");
+        ////////////////////////////////////////
+
+        var taskToUpdate = {
+            id: task.id,
+            completed: true
+        }
+
+        updateTask(taskToUpdate)
+
+        // await API.graphql({
+        //     query: updateAnnotationTask,
+        //     variables: {
+        //         input: taskToUpdate
+        //     },
+        //     authMode: "AMAZON_COGNITO_USER_POOLS"
+        // })
+        navigate("/");
     }
+
+
     useEffect(() => {
-        fetchTask();
+        fetchTask(id)
+        .then(result => {
+            //console.log("fetch", taskData);
+            setTask(result);
+
+            const parsedQuestions = JSON.parse(result.questionForm.questions);
+            setQuestions(parsedQuestions)
+
+            const savedAnswers = JSON.parse(result.question_answers);
+            setAnswers(savedAnswers);
+
+            const savedLabels = JSON.parse(result.labels);
+            setParentLabels(savedLabels);
+            
+            return fetchDocument(result.document_title);
+        })
+        .then(documentString => {
+            setDocumentText(documentString)
+        })
         console.log("useEffect", task);
     },[])
 
@@ -158,14 +202,15 @@ const TasksId = () => {
             id: task.id,
             question_answers:submittedAnswers
         }
-
-        await API.graphql({
-            query: updateAnnotationTask,
-            variables: {
-                input: finalStoredAnswer
-            },
-            authMode: "AMAZON_COGNITO_USER_POOLS"
-        })
+        
+        updateTask(finalStoredAnswer)
+        // await API.graphql({
+        //     query: updateAnnotationTask,
+        //     variables: {
+        //         input: finalStoredAnswer
+        //     },
+        //     authMode: "AMAZON_COGNITO_USER_POOLS"
+        // })
         console.log("answer submitted")
         
     }
@@ -181,48 +226,41 @@ const TasksId = () => {
             labels:submittedLabels
         }
 
-        await API.graphql({
-            query: updateAnnotationTask,
-            variables: {
-                input: finalStoredAnswer
-            },
-            authMode: "AMAZON_COGNITO_USER_POOLS"
-        })
+        updateTask(finalStoredAnswer)
+
+        // await API.graphql({
+        //     query: updateAnnotationTask,
+        //     variables: {
+        //         input: finalStoredAnswer
+        //     },
+        //     authMode: "AMAZON_COGNITO_USER_POOLS"
+        // })
         console.log("answer submitted")
         
     }
 
-    async function fetchTask() {
-        const taskData = await API.graphql({
-            query: getAnnotationTask,
-            variables: { id },
-            authMode: "AMAZON_COGNITO_USER_POOLS"
-        })
-        console.log("fetch", taskData);
-        setTask(taskData.data.getAnnotationTask);
+    // async function updateTask(inputTask) {
+    //     await API.graphql({
+    //         query: updateAnnotationTask,
+    //         variables: {
+    //             input: inputTask
+    //         },
+    //         authMode: "AMAZON_COGNITO_USER_POOLS"
+    //     })
+    // }
 
-        const parsedQuestions = JSON.parse(taskData.data.getAnnotationTask.questionForm.questions);
-        setQuestions(parsedQuestions)
-        console.log("qqqqqqqqqq",parsedQuestions);
+    // async function fetchTask(taskId) {
+    //     const taskData = await API.graphql({
+    //         query: getAnnotationTask,
+    //         variables: { id: taskId },
+    //         authMode: "AMAZON_COGNITO_USER_POOLS"
+    //     })
 
-        const savedAnswers = JSON.parse(taskData.data.getAnnotationTask.question_answers);
-        setAnswers(savedAnswers);
-
-        const savedLabels = JSON.parse(taskData.data.getAnnotationTask.labels);
-        setParentLabels(savedLabels);
-        console.log("These are the initial parent labels", savedLabels)
-
-
-        fetchDocument(taskData.data.getAnnotationTask.document_title);
-        
-    }
+    //     return taskData.data.getAnnotationTask;
+      
+    // }
 
     async function fetchDocument(documentTitle) {
-
-        // const result = await Storage.put("test.txt", "Hello");
-        // console.log("item transferred");
-
-
         Storage.list('', 
         {
             bucket: "pansurg-curation-workflo-kendraqueryresults50d0eb-open-data",
@@ -232,13 +270,15 @@ const TasksId = () => {
    
 
         //const documentFile = documentTitle + ".txt";
-        const documentFile = documentTitle;
         //console.log(documentFile);
         const text = await Storage.get(documentTitle, {download: true});
+        
+        const finalString = await text.Body.text();
 
-        text.Body.text().then(string => {
-            setDocumentText(string);
-        })
+        return finalString
+        // text.Body.text().then(string => {
+        //     setDocumentText(string);
+        // })
     }  
 
     const handleLabelChange = (labels) => {
@@ -296,7 +336,7 @@ const TasksId = () => {
         
       </Grid.Column>
       <Grid.Column width={3}>
-      {answers && questions && Object.keys(answers).length === questions.length ? 
+      {answers && questions && Object.keys(answers).length !== questions.length ? //change thus 
       <Popup content='Please answer all questions to submit this task' trigger={
       <Button 
         color='grey'
@@ -305,15 +345,35 @@ const TasksId = () => {
             </Button>} />
       : 
       <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      onOpen={() => setOpen(true)}
       trigger={<Button 
-       color='blue' 
-       onClick={handleSubmit}>
+       color='blue' > 
            Submit
            </Button>}
-      header='Are you sure you want to submit?'
-      content='You will not be able to make any more changes to this annotation task.'
-      actions={['Submit', { key: 'done', content: 'Back to annotating', positive: true }]}
-    />
+      //content='You will not be able to make any more changes to this annotation task.'
+      //actions={['Submit', { key: 'done', content: 'Back to annotating', positive: true }]}
+    >
+    <Modal.Header> Are you sure you want to submit?</Modal.Header>
+    <Modal.Description>
+        <Segment>You will not be able to make any more changes to this annotation task.</Segment>
+
+    </Modal.Description>
+    <Modal.Actions>
+        <Button color="green" onClick={handleSubmit}>
+        Submit
+        </Button>
+        <Button
+        color="red"
+        labelPosition='right'
+        icon='checkmark'
+        onClick={() => setOpen(false)}>
+          Back to annotation
+        </Button>
+    </Modal.Actions>
+
+    </Modal>
       }
       
       </Grid.Column>

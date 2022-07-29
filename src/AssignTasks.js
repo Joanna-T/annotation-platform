@@ -11,8 +11,10 @@ import { Segment,
         Accordion,
         Icon,
         Checkbox,
-        Message} from "semantic-ui-react";
+        Message,
+        Modal} from "semantic-ui-react";
 import { Navigate, useNavigate } from "react-router-dom";
+import Layout from "./Layout";
 
 const object = {
     "hello": "there",
@@ -47,6 +49,7 @@ const AssignTasks = () => {
     
 
     const [ activeIndex, setActiveIndex] = useState(null);
+    const [ open, setOpen ] = useState(false)
     const [ warningMessage, setWarningMessage ] = useState(false);
 
     const navigate = useNavigate();
@@ -119,10 +122,10 @@ const AssignTasks = () => {
     }
 
     async function handleSubmit() {
-      if (!chosenFolder || !chosenQuestionForm || !medicalQuestion) {
-        setWarningMessage(true);
-        return
-      }
+      // if (!chosenFolder || !chosenQuestionForm || !medicalQuestion) {
+      //   setWarningMessage(true);
+      //   return
+      // }
       Promise.all([submitQuestion(medicalQuestion),listCurators()])
       .then(results => {
         distributeAnnotationTasks(chosenQuestionForm, chosenFolder, results[0], results[1]);
@@ -131,26 +134,8 @@ const AssignTasks = () => {
       .catch(err => console.log(err))
     }
     return ( 
-        <Grid padded style={{height: '100vh'}}>
-      <Grid.Row style={{height: '10%'}}>
-        <Grid.Column width={3}>
-    
-        </Grid.Column>
-        <Grid.Column width={10}>
-          <h4>Please fill in the details below to create a new annotation task.
-              Click "Create tasks" to submit details.
-          </h4>
-        </Grid.Column>
-        <Grid.Column width={3}>
-        <Button color='black'>Create tasks</Button>
-        </Grid.Column>
-      </Grid.Row>
-
-      <Grid.Row style={{height: '90%'}}>
-        <Grid.Column width={2}>
-    
-        </Grid.Column>
-        <Grid.Column width={12}>
+      //   
+      <Layout>
           {
             warningMessage && (
               <Message
@@ -160,6 +145,11 @@ const AssignTasks = () => {
               />
             )
           }
+          <Segment basic>
+          <h4>Please fill in the details below to create a new annotation task.
+              Click "Create tasks" to submit details.
+          </h4>
+          </Segment>
           <Segment style={{overflow: 'auto', "text-align": "left" }}>
               <p>
               <Icon name='hand point right' />
@@ -243,20 +233,46 @@ const AssignTasks = () => {
             
             </Segment>
 
-            <Button color='black' onClick={handleSubmit}>Create tasks</Button>
+            { !chosenFolder || !chosenQuestionForm || !medicalQuestion ?
+      <Button 
+        color='grey'
+        onClick={() => {
+            setWarningMessage(true);
+        }}
+        >
+            Submit
+            </Button>
+      : 
+      <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      onOpen={() => setOpen(true)}
+      trigger={<Button 
+       color='blue' > 
+           Submit
+           </Button>}
+      //content='You will not be able to make any more changes to this annotation task.'
+      //actions={['Submit', { key: 'done', content: 'Back to annotating', positive: true }]}
+    >
+    <Modal.Header> Are you sure you want to create new tasks?</Modal.Header>
+    <Modal.Actions>
+        <Button color="green" onClick={handleSubmit}>
+        Submit
+        </Button>
+        <Button
+        color="red"
+        labelPosition='right'
+        icon='checkmark'
+        onClick={() => setOpen(false)}>
+          Back to form
+        </Button>
+    </Modal.Actions>
+
+    </Modal>
+      }
           </Segment>
-
-          
-
-
-
-        </Grid.Column>
-        <Grid.Column width={2}>
-        </Grid.Column>
-      </Grid.Row>
-
-
-    </Grid>
+          </Layout>
+       
      );
 }
 

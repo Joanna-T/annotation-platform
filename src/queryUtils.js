@@ -1,5 +1,5 @@
 import { API, Storage, Amplify, Auth } from "aws-amplify";
-import { listMedicalQuestions, getMedicalQuestion } from "./graphql/queries";
+import { listMedicalQuestions, getMedicalQuestion,listAnnotationTasks, getAnnotationTask } from "./graphql/queries";
 
 let nextToken;
 
@@ -34,5 +34,28 @@ export async function listCurators(){
     console.log("questions",questionsData.data.listMedicalQuestions.items);
     //setQuestions(questionsData.data.listMedicalQuestions.items);
     return questionsData.data.listMedicalQuestions.items
+
+}
+
+export async function fetchTasks() {
+  const taskData = await API.graphql({
+      query: listAnnotationTasks,
+      authMode: "AMAZON_COGNITO_USER_POOLS"
+
+  })
+  console.log("tasks",taskData.data.listAnnotationTasks.items);
+  return taskData.data.listAnnotationTasks.items
+  
+
+}
+
+export async function fetchTask(taskId) {
+  const taskData = await API.graphql({
+      query: getAnnotationTask,
+      variables: { id: taskId },
+      authMode: "AMAZON_COGNITO_USER_POOLS"
+  })
+
+  return taskData.data.getAnnotationTask;
 
 }

@@ -1,26 +1,32 @@
--add modal to submit for curator, reassign and assign tasks
 -items/documents  are added with .txt suffix
 -testing
 -annotator view previous tasks
--submit curator task set to permanently disabled
--set instruction and questions viewed on page entry annotation page
 -format curator view results with questions and options
 -num annotator global variable in: InterannotatorAgreement, reassign tasks
 -add styling to the sign in page 
 -add in completed tasks viewing page (admin)
     -refactor to make list question options a component and pass it into completed documents 
--add completed tasks number in active tasks list (aDmin)
--error message if opening curator task that has been completed
 -change completed tasks to list completed: true (curator)
--set initial value on drop down for results (admin)
--make base component for styling (grid components)
-
+-add title/main text extraction to display
+-make barchart a component
+-add in route passing in information to completed tasks (admin)
+-refactor all fetch requests into util file
 
 Done 
 -match colour to bar chart in view results [x]
 -interannotator agreeement per question [recheck]
+-add modal to submit for curator, reassign and assign tasks
+-submit curator task set to permanently disabled
+-set instruction and questions viewed on page entry annotation page
+-error message if opening curator task that has been completed
+-add completed tasks number in active tasks list (aDmin)
+-set initial value on drop down for results (admin)
+-make base component for styling (grid components)
 
 
+
+left off from:
+refactoring fetchdocument in tasksid
 
 
 

@@ -10,7 +10,7 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
     const [fleissKappa, setFleissKappa] = useState()
     const [aggregatedBarData, setAggregatedBarData] = useState([]);
 
-    const numAnnotators = 2;
+    const numAnnotators = process.env.REACT_APP_NUMBER_CURATORS;
 
     useEffect(() => {
         console.log("grouped_tasks", grouped_tasks)
