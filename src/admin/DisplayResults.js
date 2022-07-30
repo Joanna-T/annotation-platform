@@ -1,14 +1,16 @@
 import { Button, Grid, GridRow, Segment, Icon, Dropdown, Tab, Label, List } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
-import BarChart from "./BarChart";
+import BarChart from "../BarChart";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { API, Storage } from "aws-amplify";
-import { getQuestionForm } from "./graphql/queries";
+import { getQuestionForm } from "../graphql/queries";
 // import { HeatMap } from "./HeatMap";
-import TextHeatMap from "./TextHeatMap"
-import QuestionStats from "./QuestionStats";
-import InterannotatorAgreement from "./InterannotatorAgreement";
+import TextHeatMap from "../TextHeatMap"
+import QuestionStats from "../QuestionStats";
+import InterannotatorAgreement from "../InterannotatorAgreement";
+import { fetchQuestionForm } from "../queryUtils";
+import { fetchDocument } from "../queryUtils";
 
 
 // const keys = ['hot dogs', 'burgers', 'sandwich', 'kebab', 'fries', 'donut'];
@@ -87,7 +89,10 @@ const DisplayResults = () => {
     if (currentTasks){
       parseLabels();
       parseQuestionAnswers();
-      fetchQuestion();
+      fetchQuestionForm(currentTasks[0].questionFormID)
+      .then(form => {
+        setQuestionForms(form)
+      })
       fetchDocument(currentTasks[0].document_title).then(result => {
       setDocumentText(result);
     })
@@ -97,15 +102,6 @@ const DisplayResults = () => {
   }, [currentTasks])
 
 
-  async function fetchQuestion() {
-    const form = await API.graphql({
-        query: getQuestionForm,
-        variables: { id: currentTasks[0].questionFormID },
-        authMode: "AMAZON_COGNITO_USER_POOLS"
-    })
-    console.log("setQuestionForm", form.data.getQuestionForm);
-    setQuestionForms(form.data.getQuestionForm);
-  }
 
   const findGroupedDocuments = (groupedTasks) => {
     let groupedDoc = {}
@@ -182,32 +178,32 @@ const DisplayResults = () => {
     },
   ]
 
-  const data = [
-    {
-      "country": "Responses",
-      "hot dog": 62,
-      "hot dogColor": "hsl(142, 70%, 50%)",
-      "burger": 32,
-      "burgerColor": "hsl(127, 70%, 50%)",
-      "sandwich": 116,
-      "sandwichColor": "hsl(247, 70%, 50%)",
-      "kebab": 103,
-      "kebabColor": "hsl(274, 70%, 50%)",
-      "fries": 81,
-      "friesColor": "hsl(331, 70%, 50%)",
-      "donut": 48,
-      "donutColor": "hsl(62, 70%, 50%)"
-    },
+//   const data = [
+//     {
+//       "country": "Responses",
+//       "hot dog": 62,
+//       "hot dogColor": "hsl(142, 70%, 50%)",
+//       "burger": 32,
+//       "burgerColor": "hsl(127, 70%, 50%)",
+//       "sandwich": 116,
+//       "sandwichColor": "hsl(247, 70%, 50%)",
+//       "kebab": 103,
+//       "kebabColor": "hsl(274, 70%, 50%)",
+//       "fries": 81,
+//       "friesColor": "hsl(331, 70%, 50%)",
+//       "donut": 48,
+//       "donutColor": "hsl(62, 70%, 50%)"
+//     },
    
-  ]
+//   ]
 
-  const customLabel = (d) => {
-    console.log("customLabel", d);
-    console.log(d.id.substr(0, 1));
-    return d.id.substr(0, 1);
-  };
+//   const customLabel = (d) => {
+//     console.log("customLabel", d);
+//     console.log(d.id.substr(0, 1));
+//     return d.id.substr(0, 1);
+//   };
 
-const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
+// const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
 // const commonProps = {
 //     width: 900,
 //     height: 500,
@@ -225,7 +221,7 @@ const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
         <Grid columns={2} >
     <Grid.Row stretched >
     <Grid.Column width={8} style={{"height": '100vh'}}>
-        <Segment style={{height: "10%", "margin-bottom": "0%", "text-align":"left"}}>
+        <Segment style={{"margin-bottom": "0%", "text-align":"left"}}>
           <p style={{display:"inline"}}><b>Document labels:{"  "}</b></p>
         <Button inverted color='orange'
           active={ (tag == "Summary")}
@@ -254,7 +250,7 @@ const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
           </Segment>
       </Grid.Column>
       <Grid.Column width ={8} style={{"height": '100vh'}}>
-        <Segment padded>
+        <Segment color="blue" inverted tertiary>
             <h3>Results</h3>
             <label>You are currently viewing document:</label>
             {allTasks ? <Dropdown
@@ -263,7 +259,7 @@ const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
             onChange={handleDocumentChange}
             /> : "Loading documents..."}
             <br></br>
-            <Tab panes={panes} renderActiveOnly={false}/>
+            <Tab  menu={{color:"blue",attached:true, tabular:true}}panes={panes} renderActiveOnly={false}/>
 
           
             
@@ -328,24 +324,3 @@ const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
  
 export default DisplayResults;
 
-
-async function fetchDocument(documentFile) {
-  // Storage.list('') // for listing ALL files without prefix, pass '' instead
-  // .then(result => console.log("list of documents", result))
-  // .catch(err => console.log(err));
-
-
-  
-  //const documentFile = documentTitle + ".txt";
-  //console.log(documentFile);
-  const text = await Storage.get(documentFile, {download: true});
-  //console.log("text", text.Body.text())
-  //console.log(text.Body.text())
-
-  text.Body.text().then(string => {
-    console.log("fetchDocument",string);
-      //setDocumentText(string);
-  })
-  return text.Body.text();
-  
-}

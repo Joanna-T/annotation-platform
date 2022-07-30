@@ -67,58 +67,58 @@ const ReassignTasks = () => {
     //used in question documents
 
 
-    async function submitNewTasks() {
-        let newTasks = []
-        //queryUtils.listCurators().then(curatorList => {
-        listCurators().then(curatorList => {
-            if (groupedTasks) {
-                for (let i = 0; i < groupedTasks.length; i++) {
-                    let numRequiredReassignments 
-                    let numCompletedTasks = groupedTasks[i].filter(tasks =>tasks.completed === true).length;
+    // async function submitNewTasks() {
+    //     let newTasks = []
+    //     //queryUtils.listCurators().then(curatorList => {
+    //     listCurators().then(curatorList => {
+    //         if (groupedTasks) {
+    //             for (let i = 0; i < groupedTasks.length; i++) {
+    //                 let numRequiredReassignments 
+    //                 let numCompletedTasks = groupedTasks[i].filter(tasks =>tasks.completed === true).length;
 
-                    if (numCompletedTasks < minimumRequiredCurators) {
-                        numRequiredReassignments = minimumRequiredCurators - numCompletedTasks;
-                    }
-                    else {
-                        continue;
-                    }
-                    let currentCurators = groupedTasks[i].map(item => item.owner);
-                    let possibleCurators = curatorList.filter(curator => !currentCurators.includes(curator))
+    //                 if (numCompletedTasks < minimumRequiredCurators) {
+    //                     numRequiredReassignments = minimumRequiredCurators - numCompletedTasks;
+    //                 }
+    //                 else {
+    //                     continue;
+    //                 }
+    //                 let currentCurators = groupedTasks[i].map(item => item.owner);
+    //                 let possibleCurators = curatorList.filter(curator => !currentCurators.includes(curator))
                     
-                    if ( possibleCurators < numRequiredReassignments) {
-                        console.log("insufficient curators")
-                        console.log(groupedTasks[i][0].document_title,
-                            groupedTasks[i][0].questionID,
-                            groupedTasks[i][0].questionFormID,
-                            possibleCurators)
-                    }
-                    for (let j = 0; j < numRequiredReassignments; i++) {
-                        newTasks.push({
-                            owner: possibleCurators[j],
-                            document_title: groupedTasks[i][0].document_title,
-                            questionID: groupedTasks[i][0].questionID,
-                            questionFormID: groupedTasks[i][0].questionFormID
+    //                 if ( possibleCurators < numRequiredReassignments) {
+    //                     console.log("insufficient curators")
+    //                     console.log(groupedTasks[i][0].document_title,
+    //                         groupedTasks[i][0].questionID,
+    //                         groupedTasks[i][0].questionFormID,
+    //                         possibleCurators)
+    //                 }
+    //                 for (let j = 0; j < numRequiredReassignments; i++) {
+    //                     newTasks.push({
+    //                         owner: possibleCurators[j],
+    //                         document_title: groupedTasks[i][0].document_title,
+    //                         questionID: groupedTasks[i][0].questionID,
+    //                         questionFormID: groupedTasks[i][0].questionFormID
 
-                        })
+    //                     })
 
-                        // submitTask({
-                        //     owner: possibleCurators[j],
-                        //     document_title: groupedTasks[i][0].document_title,
-                        //     questionID: groupedTasks[i][0].questionID,
-                        //     questionFormID: groupedTasks[i][0].questionFormID
+    //                     // submitTask({
+    //                     //     owner: possibleCurators[j],
+    //                     //     document_title: groupedTasks[i][0].document_title,
+    //                     //     questionID: groupedTasks[i][0].questionID,
+    //                     //     questionFormID: groupedTasks[i][0].questionFormID
 
-                        // })
+    //                     // })
     
-                    }
+    //                 }
 
 
-                }
-            }
-        })
+    //             }
+    //         }
+    //     })
 
-        return newTasks
+    //     return newTasks
 
-    }
+    // }
 
     //
     const findIncompleteQuestions = (questions) => {

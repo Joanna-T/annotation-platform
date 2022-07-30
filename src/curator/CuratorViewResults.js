@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import TextHeatMap from "./TextHeatMap";
+import TextHeatMap from "../TextHeatMap";
 import { API, Auth, Storage } from "aws-amplify";
-import { listQuestionForms, getAnnotationTask, getQuestionForm } from "./graphql/queries";
+import { listQuestionForms, getAnnotationTask, getQuestionForm } from "../graphql/queries";
 import { Link } from "react-router-dom";
 import { List, Segment, Grid, Image, Card, Button } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
+import { fetchTask, fetchDocument } from "../queryUtils";
 
 const CuratorViewResults = () => {
     const { id } = useParams();
@@ -13,54 +14,23 @@ const CuratorViewResults = () => {
     const [documentLabels, setDocumentLabels] = useState(null);
     const [questionAnswers, setQuestionAnswers] = useState(null);
     const [documentText, setDocumentText] = useState(null);
+
+  
     useEffect(() => {
-        fetchTask().then((result) => {
+        fetchTask(id).then((result) => {
+          setTask(result);
+          setDocumentLabels(JSON.parse(result.labels))
+          setQuestionAnswers(JSON.parse(result.question_answers))
+        
           console.log("tasks",result)
-          fetchDocument(result.document_title)
+          return fetchDocument(result.document_title)
           //fetchQuestionForm(result.questionFormID)
+        }).then((documentString) => {
+          setDocumentText(documentString)
         })
     },[])
 
-    // async function fetchDocument() {
-    //     //Storage.get()
-    // }
 
-    async function fetchTask() {
-        const taskData = await API.graphql({
-            query: getAnnotationTask,
-            variables: { id },
-            authMode: "AMAZON_COGNITO_USER_POOLS"
-        })
-
-        setTask(taskData.data.getAnnotationTask);
-        setDocumentLabels(JSON.parse(taskData.data.getAnnotationTask.labels))
-        setQuestionAnswers(JSON.parse(taskData.data.getAnnotationTask.question_answers))
-        console.log(JSON.parse(taskData.data.getAnnotationTask.question_answers))
-        return taskData.data.getAnnotationTask;
-
-    }
-
-    async function fetchDocument(documentTitle) {
-
-        // const result = await Storage.put("test.txt", "Hello");
-        // console.log("item transferred");
-
-
-        // Storage.list('', {level: "annotation_documents"}) // for listing ALL files without prefix, pass '' instead
-        // .then(result => console.log("this is the result", result))
-        // .catch(err => console.log(err));
-        // console.log("FETCH DOCUMENTS")
-
-        //const documentFile = documentTitle + ".txt";
-        const documentFile = documentTitle;
-        //console.log(documentFile);
-        const text = await Storage.get(documentTitle, {download: true});
-
-        text.Body.text().then(string => {
-            console.log("curator document tex", )
-            setDocumentText(string);
-        })
-    } 
     return ( 
         <Grid columns={2} style={{"height": '100px'}}>
     <Grid.Row stretched>

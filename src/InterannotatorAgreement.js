@@ -3,6 +3,7 @@ import { API, Storage } from "aws-amplify";
 import { getQuestionForm } from "./graphql/queries";
 import { Segment, Icon } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
+import { fetchQuestionForm } from "./queryUtils";
 
 const InterannotatorAgreement = ({grouped_tasks}) => {
     const [groupedAnswers, setGroupedAnswers] = useState([]);
@@ -14,23 +15,24 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
 
     useEffect(() => {
         console.log("grouped_tasks", grouped_tasks)
-        fetchQuestionForm()
+        fetchQuestionForm(grouped_tasks[0][0].questionFormID)
         .then(result => {
+            setQuestionForm(result)
             let answers =  groupAnswers(JSON.parse(result.questions))
             calculateAllFleissKappa(answers, grouped_tasks)
         })
     }, [grouped_tasks])
 
-    async function fetchQuestionForm() {
-        const form = await API.graphql({
-            query: getQuestionForm,
-            variables: { id: grouped_tasks[0][0].questionFormID },
-            authMode: "AMAZON_COGNITO_USER_POOLS"
-        })
-        console.log(form);
-        setQuestionForm(form.data.getQuestionForm);
-        return form.data.getQuestionForm
-      }
+    // async function fetchQuestionForm() {
+    //     const form = await API.graphql({
+    //         query: getQuestionForm,
+    //         variables: { id: grouped_tasks[0][0].questionFormID },
+    //         authMode: "AMAZON_COGNITO_USER_POOLS"
+    //     })
+    //     console.log(form);
+    //     //setQuestionForm(form.data.getQuestionForm);
+    //     return form.data.getQuestionForm
+    //   }
 
     const groupAnswers = (questions) => {
         //groups answers into form 

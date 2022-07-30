@@ -1,5 +1,10 @@
 import { API, Storage, Amplify, Auth } from "aws-amplify";
-import { listMedicalQuestions, getMedicalQuestion,listAnnotationTasks, getAnnotationTask } from "./graphql/queries";
+import { listMedicalQuestions, 
+         getMedicalQuestion,
+         listAnnotationTasks, 
+         getAnnotationTask,
+         listQuestionForms,
+         getQuestionForm } from "./graphql/queries";
 
 let nextToken;
 
@@ -58,4 +63,60 @@ export async function fetchTask(taskId) {
 
   return taskData.data.getAnnotationTask;
 
+}
+
+
+export async function fetchDocument(documentTitle) {
+  // Storage.list('', 
+  // {
+  //     //bucket: "pansurg-curation-workflo-kendraqueryresults50d0eb-open-data",
+  //     bucket: process.env.REACT_APP_S3_BUCKET,
+  //     region: "eu-west-2"}) // for listing ALL files without prefix, pass '' instead
+  // .then(result => console.log("this is the result with bucket", result))
+  // .catch(err => console.log(err));
+
+
+  //const documentFile = documentTitle + ".txt";
+  //console.log(documentFile);
+  const text = await Storage.get(documentTitle, {download: true});
+  
+  const finalString = await text.Body.text();
+
+  return finalString
+  // text.Body.text().then(string => {
+  //     setDocumentText(string);
+  // })
+}  
+
+export async function fetchQuestionForms() {
+  const formData = await API.graphql({
+    query: listQuestionForms,
+    authMode: "AMAZON_COGNITO_USER_POOLS"
+
+})
+console.log("question forms",formData.data.listQuestionForms.items);
+return formData.data.listQuestionForms.items
+//setQuestionForms(formData.data.listQuestionForms.items);
+}
+
+
+export async function fetchQuestion(questionId) {
+  const questionData = await API.graphql({
+    query: getMedicalQuestion,
+    variables: { id:questionId },
+    authMode: "AMAZON_COGNITO_USER_POOLS"
+  })
+  console.log("fetch", questionData);
+  return questionData.data.getMedicalQuestion
+}
+
+export async function fetchQuestionForm(questionFormId) {
+  const form = await API.graphql({
+      query: getQuestionForm,
+      variables: { id: questionFormId},
+      authMode: "AMAZON_COGNITO_USER_POOLS"
+  })
+  console.log("setQuestionForm", form.data.getQuestionForm);
+  return form.data.getQuestionForm
+  //setQuestionForms(form.data.getQuestionForm);
 }

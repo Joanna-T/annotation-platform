@@ -1,13 +1,10 @@
-import { listMedicalQuestions } from "./graphql/queries";
 import { useState, useEffect } from "react";
-import { API, Auth } from "aws-amplify";
-import { listAnnotationTasks,listQuestionForms } from "./graphql/queries";
-import { Link } from "react-router-dom";
-import { List, Segment, Grid, Image, Card } from "semantic-ui-react";
-import { findCompletedTasks, groupTasksByDocument } from "./documentUtils";
-import Layout from "./Layout";
+import { Segment, Card, } from "semantic-ui-react";
+import { findCompletedTasks, groupTasksByDocument } from "../documentUtils";
+import Layout from "../Layout";
+import { fetchQuestions } from "../queryUtils";
 
-const ActiveTasks = () => {
+const CompletedTasks = () => {
     const [questions, setQuestions] = useState([]);
     //const [questionNumber, setQuestionNumber] = useState(false);
     useEffect(() => {
@@ -17,7 +14,7 @@ const ActiveTasks = () => {
             result.forEach(item => {
                 let groupedTasks = groupTasksByDocument(item.tasks.items);
                 let completedTasks = findCompletedTasks(groupedTasks)
-                if (completedTasks <= process.env.REACT_APP_NUMBER_CURATORS) { 
+                if (completedTasks >= process.env.REACT_APP_NUMBER_CURATORS) { 
                     item["total_tasks"] = groupedTasks.length;
                     item["complete_tasks"] = completedTasks
                     questionsArray.push(item)
@@ -29,17 +26,17 @@ const ActiveTasks = () => {
         //fetchQuestions();
     },[])
 
-    async function fetchQuestions() {
-        const questionData = await API.graphql({
-            query: listMedicalQuestions,
-            authMode: "AMAZON_COGNITO_USER_POOLS"
+    // async function fetchQuestions() {
+    //     const questionData = await API.graphql({
+    //         query: listMedicalQuestions,
+    //         authMode: "AMAZON_COGNITO_USER_POOLS"
 
-        })
-        console.log("question",questionData.data.listMedicalQuestions.items);
-        return questionData.data.listMedicalQuestions.items
-        //setQuestions(questionData.data.listMedicalQuestions.items);
+    //     })
+    //     console.log("question",questionData.data.listMedicalQuestions.items);
+    //     return questionData.data.listMedicalQuestions.items
+    //     //setQuestions(questionData.data.listMedicalQuestions.items);
 
-    }
+    // }
 
     if (questions.length === 0) {
         return (
@@ -47,6 +44,7 @@ const ActiveTasks = () => {
                 <Segment>
                 No tasks to show currently.
                 </Segment>
+                
             </Layout>
         )
     }
@@ -56,7 +54,7 @@ const ActiveTasks = () => {
             
             <Layout>
             <Segment color="blue" tertiary inverted>     
-            <p>The following are all annotation tasks that are currently in progress.</p>
+            <p>The following are all completed annotation tasks.</p>
             
             </Segment>
         <Card.Group>
@@ -67,10 +65,10 @@ const ActiveTasks = () => {
                         <Card
                         fluid color="blue"
                         style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}}
-    href={`/active_tasks/${question.id}`}
+    href={`/completed_tasks/${question.id}`}
     header={ `Question title: ${question.text}`   }
     meta={`Question ${index + 1}`}
-    description={`Progress: ${question.complete_tasks}/${question.total_tasks} documents annotated completely`}
+    //description={`Progress: ${question.complete_tasks}/${question.total_tasks} documents annotated completely`}
   />
                            
                     )})
@@ -92,4 +90,4 @@ const ActiveTasks = () => {
      );
 }
  
-export default ActiveTasks;
+export default CompletedTasks;

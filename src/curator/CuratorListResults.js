@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import CompletedTasks from "./CompletedTasks";
+import CompletedTasks from "../admin/CompletedTasks";
 import { API, Auth } from "aws-amplify";
-import { listAnnotationTasks,listQuestionForms } from "./graphql/queries";
+import { listAnnotationTasks,listQuestionForms } from "../graphql/queries";
 import { Link } from "react-router-dom";
 import { List, Segment, Grid, Image, Card } from "semantic-ui-react";
-import Layout from "./Layout";
-import { fetchTasks } from "./queryUtils";
+import Layout from "../Layout";
+import { fetchTasks } from "../queryUtils";
 
 const CuratorListResults = () => {
     const [tasks, setTasks] = useState([]);

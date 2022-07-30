@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Auth, Hub } from "aws-amplify";
 import {  Authenticator } from "@aws-amplify/ui-react";
 import { useNavigate, Link } from "react-router-dom";
-import { Menu, Icon } from "semantic-ui-react";
+import { Menu, Icon, Dropdown } from "semantic-ui-react";
 
 
 const Navbar = () => {

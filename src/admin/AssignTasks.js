@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { listQuestionForms } from "./graphql/queries";
-import { createAnnotationTask, createMedicalQuestion } from "./graphql/mutations";
+import { listQuestionForms } from "../graphql/queries";
+import { createAnnotationTask, createMedicalQuestion } from "../graphql/mutations";
 import { API, Storage, Amplify, Auth } from "aws-amplify";
 import { Segment,
          Grid,
@@ -14,7 +14,10 @@ import { Segment,
         Message,
         Modal} from "semantic-ui-react";
 import { Navigate, useNavigate } from "react-router-dom";
-import Layout from "./Layout";
+import Layout from "../Layout";
+import { fetchQuestionForms, listCurators } from "../queryUtils";
+import { submitQuestion, submitTask } from "../mutationUtils";
+import { distributeAnnotationTasks } from "./assignTaskUtils";
 
 const object = {
     "hello": "there",
@@ -55,8 +58,12 @@ const AssignTasks = () => {
     const navigate = useNavigate();
     useEffect(() => {
       //distributeAnnotationTasks(testQuestionForm, testDocuments, testQuestion, testUsers);
-      fetchDocumentFolders();
-      fetchQuestionForms();
+      fetchDocumentFolders()
+
+      fetchQuestionForms()
+      .then(questions => {
+        setQuestionForms(questions)
+      })
       //listCurators();
     }, [])
 
@@ -65,7 +72,7 @@ const AssignTasks = () => {
     }, [medicalQuestion])
 
     async function fetchDocumentFolders() {
-      Storage.list('') // for listing ALL files without prefix, pass '' instead
+      Storage.list('') // add bucket name after this has been configured
       .then(result => {
         let files = []
         let folders = []
@@ -80,22 +87,25 @@ const AssignTasks = () => {
           }
         })
         const filteredFolders = folders.filter(folder => folder.includes("/"))
+        console.log("filteredFolders",filteredFolders)
+        //return filteredFolders
         setFolders(filteredFolders)
-        console.log("folder1", folders)
-        return {files, folders}
+        //console.log("folder1", folders)
+        //return {files, folders}
       })
       .catch(err => console.log(err));
     }
 
-    async function fetchQuestionForms() {
-      const formData = await API.graphql({
-        query: listQuestionForms,
-        authMode: "AMAZON_COGNITO_USER_POOLS"
+    // async function fetchQuestionForms() {
+    //   const formData = await API.graphql({
+    //     query: listQuestionForms,
+    //     authMode: "AMAZON_COGNITO_USER_POOLS"
 
-    })
-    console.log("question forms",formData.data.listQuestionForms.items);
-    setQuestionForms(formData.data.listQuestionForms.items);
-    }
+    // })
+    // console.log("question forms",formData.data.listQuestionForms.items);
+    // return formData.data.listQuestionForms.items
+    // //setQuestionForms(formData.data.listQuestionForms.items);
+    // }
 
     const handleAccordionClick = (index) => {
         console.log(index);
@@ -128,13 +138,17 @@ const AssignTasks = () => {
       // }
       Promise.all([submitQuestion(medicalQuestion),listCurators()])
       .then(results => {
-        distributeAnnotationTasks(chosenQuestionForm, chosenFolder, results[0], results[1]);
+        distributeAnnotationTasks(chosenQuestionForm, chosenFolder, results[0], results[1])
+        .then(newTasks => {
+          newTasks.forEach(task => {
+            submitTask(task)
+          })
+        })
         navigate("/");
       })
       .catch(err => console.log(err))
     }
-    return ( 
-      //   
+    return (  
       <Layout>
           {
             warningMessage && (
@@ -276,126 +290,128 @@ const AssignTasks = () => {
      );
 }
 
-async function submitQuestion(question) {
-  const questionObj = {
-    text: question
-  }
+// async function submitQuestion(question) {
+//   const questionObj = {
+//     text: question
+//   }
 
-  const createdQuestion  = await API.graphql({
-    query: createMedicalQuestion,
-    variables: {
-        input: questionObj
-    },
-    authMode: "AMAZON_COGNITO_USER_POOLS"
-})
-  console.log("this is the created question", createdQuestion.data.createMedicalQuestion);
-  return createdQuestion.data.createMedicalQuestion
-}
+//   const createdQuestion  = await API.graphql({
+//     query: createMedicalQuestion,
+//     variables: {
+//         input: questionObj
+//     },
+//     authMode: "AMAZON_COGNITO_USER_POOLS"
+// })
+//   console.log("this is the created question", createdQuestion.data.createMedicalQuestion);
+//   return createdQuestion.data.createMedicalQuestion
+// }
 
-async function distributeAnnotationTasks(questionForm, documentFolder, medicalQuestion, curators) {
-  let annotationTasks = []
-  console.log("distributeAT inputs",questionForm, "folder", documentFolder,"curators", curators,"queaiton", medicalQuestion )
-  Storage.list(documentFolder)
-  .then(documents => {
-    let filterDocuments = documents.filter(document => document.key[document.key.length - 1] !== "/")
-    console.log("filtered documents",filterDocuments)
-    let shuffledDocuments = shuffleArray(filterDocuments);
-    let shuffledUsers = shuffleArray(curators.slice());
-    console.log(shuffledUsers, shuffledDocuments);
+// async function distributeAnnotationTasks(questionForm, documentFolder, medicalQuestion, curators) {
+//   let annotationTasks = []
+//   console.log("distributeAT inputs",questionForm, "folder", documentFolder,"curators", curators,"queaiton", medicalQuestion )
+//   Storage.list(documentFolder)
+//   .then(documents => {
+//     let filterDocuments = documents.filter(document => document.key[document.key.length - 1] !== "/")
+//     console.log("filtered documents",filterDocuments)
+//     let shuffledDocuments = shuffleArray(filterDocuments);
+//     let shuffledUsers = shuffleArray(curators.slice());
+//     console.log(shuffledUsers, shuffledDocuments);
 
-    let documentCounter = 0;
-    const minimumCuratorNumber = 1;
+//     let documentCounter = 0;
+//     //const minimumCuratorNumber = 1;
+//     const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
 
-      while (documentCounter < shuffledDocuments.length) {
-        for (let i = 0; i < minimumCuratorNumber; i++) {
-          if (shuffledUsers.length === 0) {
-            shuffledUsers = shuffleArray(curators.slice())
-            // newShuffledUsers.map(user => shuffledUsers.push(user))
-            console.log("This is shuffled us", shuffledUsers)
-          }
-          let curator = findCurator(shuffledUsers, annotationTasks, shuffledDocuments[documentCounter]);
-          annotationTasks.push({
-            document_title: shuffledDocuments[documentCounter].key,
-            questionID: medicalQuestion.id,
-            owner: curator,
-            questionFormID: questionForm.id,
-            completed: false
-          })
+//       while (documentCounter < shuffledDocuments.length) {
+//         for (let i = 0; i < minimumCuratorNumber; i++) {
+//           if (shuffledUsers.length === 0) {
+//             shuffledUsers = shuffleArray(curators.slice())
+//             // newShuffledUsers.map(user => shuffledUsers.push(user))
+//             console.log("This is shuffled us", shuffledUsers)
+//           }
+//           let curator = findCurator(shuffledUsers, annotationTasks, shuffledDocuments[documentCounter]);
+//           annotationTasks.push({
+//             document_title: shuffledDocuments[documentCounter].key,
+//             questionID: medicalQuestion.id,
+//             owner: curator,
+//             questionFormID: questionForm.id,
+//             completed: false
+//           })
           
-        }
-        documentCounter++;
-      }
-      console.log("These are the annotation tasks")
-      console.log(annotationTasks)
-      annotationTasks.map(task => submitTask(task));
+//         }
+//         documentCounter++;
+//       }
+//       console.log("These are the annotation tasks")
+//       console.log(annotationTasks)
+//       annotationTasks.map(task => submitTask(task));
 
-  })
-}
+//   })
+// }
 
-const findCurator = (curators, annotationTasks, document) => {
-  let chosenCurator;
-  let prevCurators = []
-  annotationTasks.map(task => {
-    if (task.document_title == document) {
-      prevCurators.push(task.owner)
-    }
-  }
-    )
+// const findCurator = (curators, annotationTasks, document) => {
+//   let chosenCurator;
+//   let prevCurators = []
+//   annotationTasks.map(task => {
+//     if (task.document_title == document) {
+//       prevCurators.push(task.owner)
+//     }
+//   }
+//     )
 
-  for (  let i = 0; i < curators.length; i++) {
-    if (!prevCurators.includes(curators[i])) {
-      chosenCurator = curators.splice(i, 1)
-      return chosenCurator[0]
-    }
-  }
-  console.log("No more available curators");
-}
+//   for (  let i = 0; i < curators.length; i++) {
+//     if (!prevCurators.includes(curators[i])) {
+//       chosenCurator = curators.splice(i, 1)
+//       return chosenCurator[0]
+//     }
+//   }
+//   console.log("No more available curators");
+// }
 
-let nextToken;
+//let nextToken;
 
-async function submitTask(task) {
-  let createdTasks = await API.graphql({
-    query: createAnnotationTask,
-    variables: {
-        input: task
-    },
-    authMode: "AMAZON_COGNITO_USER_POOLS"
-})
-  console.log("this is the final submitted task", createdTasks)
+// async function submitTask(task) {
+//   let createdTasks = await API.graphql({
+//     query: createAnnotationTask,
+//     variables: {
+//         input: task
+//     },
+//     authMode: "AMAZON_COGNITO_USER_POOLS"
+// })
+//   console.log("this is the final submitted task", createdTasks)
+//   return createdTasks
 
-}
+// }
 
-async function listCurators(limit){
-  let apiName = 'AdminQueries';
-  let path = '/listUsersInGroup';
-  let myInit = { 
-      queryStringParameters: {
-        "groupname": "Curators",
-        "token": nextToken
-      },
-      headers: {
-        'Content-Type' : 'application/json',
-        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`
-      }
-  }
-  const { NextToken, ...rest } =  await API.get(apiName, path, myInit);
-  nextToken = NextToken;
-  let users = [];
-  rest.Users.map(user => users.push(user.Username))
-  console.log("curators")
-  console.log(users)
-  return users;
-}
+// async function listCurators(limit){
+//   let apiName = 'AdminQueries';
+//   let path = '/listUsersInGroup';
+//   let myInit = { 
+//       queryStringParameters: {
+//         "groupname": "Curators",
+//         "token": nextToken
+//       },
+//       headers: {
+//         'Content-Type' : 'application/json',
+//         Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`
+//       }
+//   }
+//   const { NextToken, ...rest } =  await API.get(apiName, path, myInit);
+//   nextToken = NextToken;
+//   let users = [];
+//   rest.Users.map(user => users.push(user.Username))
+//   console.log("curators")
+//   console.log(users)
+//   return users;
+// }
 
-function shuffleArray(array) {
-  for (var i = array.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-  }
-  return array
-}
+// function shuffleArray(array) {
+//   for (var i = array.length - 1; i > 0; i--) {
+//       var j = Math.floor(Math.random() * (i + 1));
+//       var temp = array[i];
+//       array[i] = array[j];
+//       array[j] = temp;
+//   }
+//   return array
+// }
 
 
 

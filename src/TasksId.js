@@ -27,7 +27,7 @@ import {
   } from 'semantic-ui-react';
 import { Navigate } from "react-router-dom";
 import { updateTask } from "./mutationUtils";
-import { fetchTask } from "./queryUtils";
+import { fetchTask, fetchDocument } from "./queryUtils";
 
 //import { Prompt } from "react-router";
 
@@ -260,26 +260,26 @@ const TasksId = () => {
       
     // }
 
-    async function fetchDocument(documentTitle) {
-        Storage.list('', 
-        {
-            bucket: "pansurg-curation-workflo-kendraqueryresults50d0eb-open-data",
-            region: "eu-west-2"}) // for listing ALL files without prefix, pass '' instead
-        .then(result => console.log("this is the result with bucket", result))
-        .catch(err => console.log(err));
+    // async function fetchDocument(documentTitle) {
+    //     Storage.list('', 
+    //     {
+    //         bucket: "pansurg-curation-workflo-kendraqueryresults50d0eb-open-data",
+    //         region: "eu-west-2"}) // for listing ALL files without prefix, pass '' instead
+    //     .then(result => console.log("this is the result with bucket", result))
+    //     .catch(err => console.log(err));
    
 
-        //const documentFile = documentTitle + ".txt";
-        //console.log(documentFile);
-        const text = await Storage.get(documentTitle, {download: true});
+    //     //const documentFile = documentTitle + ".txt";
+    //     //console.log(documentFile);
+    //     const text = await Storage.get(documentTitle, {download: true});
         
-        const finalString = await text.Body.text();
+    //     const finalString = await text.Body.text();
 
-        return finalString
-        // text.Body.text().then(string => {
-        //     setDocumentText(string);
-        // })
-    }  
+    //     return finalString
+    //     // text.Body.text().then(string => {
+    //     //     setDocumentText(string);
+    //     // })
+    // }  
 
     const handleLabelChange = (labels) => {
         setParentLabels(labels);
