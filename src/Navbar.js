@@ -4,11 +4,13 @@ import { Auth, Hub } from "aws-amplify";
 import {  Authenticator } from "@aws-amplify/ui-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Menu, Icon, Dropdown } from "semantic-ui-react";
+import useWindowSize from "./useWindowSize";
 
 
 const Navbar = () => {
     const [signedUser, setSignedUser] = useState(false); 
     const [admin, setAdmin] = useState(false);
+    const size = useWindowSize();
     
     
     const [ currentItem, setCurrentItem ] = useState("Home")
@@ -124,16 +126,18 @@ const Navbar = () => {
 
      return (
         <Menu primary pointing color="blue" inverted size="large" >
+            {size.width > 500 ? 
         <Menu.Item
         style={{top:"0.2em", color: "white"}}>
             <h3>AnnotateIt</h3>
-        </Menu.Item>
+        </Menu.Item> : ""
+        }
         <Menu.Item
           as={Link} to="/"
           name='Home'
           active={currentItem === 'Home'}
           onClick={() => handleItemClick('Home')}
-          ><Icon name="home"></Icon>{"  Home"}</Menu.Item>
+          ><Icon name="home"></Icon>{size.width > 940 ? "  Home" : ""}</Menu.Item>
         {
             signedUser && !admin &&(
                 <Menu.Item
@@ -141,7 +145,7 @@ const Navbar = () => {
                 name='Tasks'
                 active={currentItem === 'Tasks'}
                 onClick={() => handleItemClick('Tasks')} 
-        ><Icon name="ellipsis horizontal"></Icon>{"  Tasks"}</Menu.Item>
+        ><Icon name="ellipsis horizontal"></Icon>{size.width > 940 ? "  Tasks" : ""}</Menu.Item>
             )
         }
 
@@ -152,7 +156,7 @@ const Navbar = () => {
                 name='CompletedTasks'
                 active={currentItem === 'CompletedTasks'}
                 onClick={() => handleItemClick('CompletedTasks')} 
-                ><Icon name="checkmark"></Icon>{"  Completed Tasks"}</Menu.Item>
+                ><Icon name="checkmark"></Icon>{size.width > 940 ? "  Completed Tasks" : ""}</Menu.Item>
             )
         }
 
@@ -165,7 +169,7 @@ const Navbar = () => {
                 onClick={() => {
                     handleItemClick('AssignTask');
                     }} 
-                    ><Icon name="add"></Icon>{"  Create Tasks"}</Menu.Item>
+                    ><Icon name="add"></Icon>{size.width > 940 ? "  Create Tasks" : ""}</Menu.Item>
                 
             )
         }
@@ -179,7 +183,7 @@ const Navbar = () => {
                 onClick={() => {
                     handleItemClick('ReassignTask');
                     }} 
-                    ><Icon name="undo"></Icon>{"  Reassign Tasks"}</Menu.Item>
+                    ><Icon name="undo"></Icon>{size.width > 940 ? "  Reassign Tasks" : ""}</Menu.Item>
                 
             )
         }
@@ -193,7 +197,7 @@ const Navbar = () => {
                 onClick={() => {
                     handleItemClick('ActiveTasks');
                     }} 
-                    ><Icon name="ellipsis horizontal"></Icon>{"  Active Tasks"}</Menu.Item>
+                    ><Icon name="ellipsis horizontal"></Icon>{size.width > 940 ? "  Active tasks" : ""}</Menu.Item>
                 
             )
         }
@@ -206,7 +210,7 @@ const Navbar = () => {
                 onClick={() => {
                     handleItemClick('CompletedTasks');
                     }} 
-                    ><Icon name="checkmark"></Icon>{"  Completed Tasks"}</Menu.Item>
+                    ><Icon name="checkmark"></Icon>{size.width > 940 ? "  Completed tasks" : ""}</Menu.Item>
                 
             )
         }

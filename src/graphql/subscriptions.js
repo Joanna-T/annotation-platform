@@ -18,6 +18,24 @@ export const onCreateAnnotationTask = /* GraphQL */ `
             question {
               id
               text
+              tasks {
+                items {
+                  id
+                  document_title
+                  questionID
+                  owner
+                  question_answers
+                  labels
+                  questionFormID
+                  completed
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+              interannotatorAgreement
+              semanticAgreement
+              aggregatedAnswers
               createdAt
               updatedAt
             }
@@ -38,6 +56,9 @@ export const onCreateAnnotationTask = /* GraphQL */ `
           }
           nextToken
         }
+        interannotatorAgreement
+        semanticAgreement
+        aggregatedAnswers
         createdAt
         updatedAt
       }
@@ -75,6 +96,24 @@ export const onUpdateAnnotationTask = /* GraphQL */ `
             question {
               id
               text
+              tasks {
+                items {
+                  id
+                  document_title
+                  questionID
+                  owner
+                  question_answers
+                  labels
+                  questionFormID
+                  completed
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+              interannotatorAgreement
+              semanticAgreement
+              aggregatedAnswers
               createdAt
               updatedAt
             }
@@ -95,6 +134,9 @@ export const onUpdateAnnotationTask = /* GraphQL */ `
           }
           nextToken
         }
+        interannotatorAgreement
+        semanticAgreement
+        aggregatedAnswers
         createdAt
         updatedAt
       }
@@ -132,6 +174,24 @@ export const onDeleteAnnotationTask = /* GraphQL */ `
             question {
               id
               text
+              tasks {
+                items {
+                  id
+                  document_title
+                  questionID
+                  owner
+                  question_answers
+                  labels
+                  questionFormID
+                  completed
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+              interannotatorAgreement
+              semanticAgreement
+              aggregatedAnswers
               createdAt
               updatedAt
             }
@@ -152,6 +212,9 @@ export const onDeleteAnnotationTask = /* GraphQL */ `
           }
           nextToken
         }
+        interannotatorAgreement
+        semanticAgreement
+        aggregatedAnswers
         createdAt
         updatedAt
       }
@@ -190,6 +253,24 @@ export const onCreateAnnotationResult = /* GraphQL */ `
             question {
               id
               text
+              tasks {
+                items {
+                  id
+                  document_title
+                  questionID
+                  owner
+                  question_answers
+                  labels
+                  questionFormID
+                  completed
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+              interannotatorAgreement
+              semanticAgreement
+              aggregatedAnswers
               createdAt
               updatedAt
             }
@@ -210,6 +291,9 @@ export const onCreateAnnotationResult = /* GraphQL */ `
           }
           nextToken
         }
+        interannotatorAgreement
+        semanticAgreement
+        aggregatedAnswers
         createdAt
         updatedAt
       }
@@ -246,6 +330,24 @@ export const onUpdateAnnotationResult = /* GraphQL */ `
             question {
               id
               text
+              tasks {
+                items {
+                  id
+                  document_title
+                  questionID
+                  owner
+                  question_answers
+                  labels
+                  questionFormID
+                  completed
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+              interannotatorAgreement
+              semanticAgreement
+              aggregatedAnswers
               createdAt
               updatedAt
             }
@@ -266,6 +368,9 @@ export const onUpdateAnnotationResult = /* GraphQL */ `
           }
           nextToken
         }
+        interannotatorAgreement
+        semanticAgreement
+        aggregatedAnswers
         createdAt
         updatedAt
       }
@@ -302,6 +407,24 @@ export const onDeleteAnnotationResult = /* GraphQL */ `
             question {
               id
               text
+              tasks {
+                items {
+                  id
+                  document_title
+                  questionID
+                  owner
+                  question_answers
+                  labels
+                  questionFormID
+                  completed
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+              interannotatorAgreement
+              semanticAgreement
+              aggregatedAnswers
               createdAt
               updatedAt
             }
@@ -322,6 +445,9 @@ export const onDeleteAnnotationResult = /* GraphQL */ `
           }
           nextToken
         }
+        interannotatorAgreement
+        semanticAgreement
+        aggregatedAnswers
         createdAt
         updatedAt
       }
@@ -387,8 +513,39 @@ export const onCreateMedicalQuestion = /* GraphQL */ `
             id
             text
             tasks {
+              items {
+                id
+                document_title
+                questionID
+                question {
+                  id
+                  text
+                  interannotatorAgreement
+                  semanticAgreement
+                  aggregatedAnswers
+                  createdAt
+                  updatedAt
+                }
+                owner
+                question_answers
+                labels
+                questionFormID
+                questionForm {
+                  id
+                  form_description
+                  questions
+                  createdAt
+                  updatedAt
+                }
+                completed
+                createdAt
+                updatedAt
+              }
               nextToken
             }
+            interannotatorAgreement
+            semanticAgreement
+            aggregatedAnswers
             createdAt
             updatedAt
           }
@@ -409,6 +566,9 @@ export const onCreateMedicalQuestion = /* GraphQL */ `
         }
         nextToken
       }
+      interannotatorAgreement
+      semanticAgreement
+      aggregatedAnswers
       createdAt
       updatedAt
     }
@@ -428,8 +588,39 @@ export const onUpdateMedicalQuestion = /* GraphQL */ `
             id
             text
             tasks {
+              items {
+                id
+                document_title
+                questionID
+                question {
+                  id
+                  text
+                  interannotatorAgreement
+                  semanticAgreement
+                  aggregatedAnswers
+                  createdAt
+                  updatedAt
+                }
+                owner
+                question_answers
+                labels
+                questionFormID
+                questionForm {
+                  id
+                  form_description
+                  questions
+                  createdAt
+                  updatedAt
+                }
+                completed
+                createdAt
+                updatedAt
+              }
               nextToken
             }
+            interannotatorAgreement
+            semanticAgreement
+            aggregatedAnswers
             createdAt
             updatedAt
           }
@@ -450,6 +641,9 @@ export const onUpdateMedicalQuestion = /* GraphQL */ `
         }
         nextToken
       }
+      interannotatorAgreement
+      semanticAgreement
+      aggregatedAnswers
       createdAt
       updatedAt
     }
@@ -469,8 +663,39 @@ export const onDeleteMedicalQuestion = /* GraphQL */ `
             id
             text
             tasks {
+              items {
+                id
+                document_title
+                questionID
+                question {
+                  id
+                  text
+                  interannotatorAgreement
+                  semanticAgreement
+                  aggregatedAnswers
+                  createdAt
+                  updatedAt
+                }
+                owner
+                question_answers
+                labels
+                questionFormID
+                questionForm {
+                  id
+                  form_description
+                  questions
+                  createdAt
+                  updatedAt
+                }
+                completed
+                createdAt
+                updatedAt
+              }
               nextToken
             }
+            interannotatorAgreement
+            semanticAgreement
+            aggregatedAnswers
             createdAt
             updatedAt
           }
@@ -491,6 +716,9 @@ export const onDeleteMedicalQuestion = /* GraphQL */ `
         }
         nextToken
       }
+      interannotatorAgreement
+      semanticAgreement
+      aggregatedAnswers
       createdAt
       updatedAt
     }

@@ -16,6 +16,7 @@ const ActiveTasks = () => {
         .then(result => {
             let questionsArray = []
             result.forEach(item => {
+                console.log("activetasks", item.tasks)
                 let groupedTasks = groupTasksByDocument(item.tasks.items);
                 let completedTasks = findCompletedTasks(groupedTasks)
                 if (completedTasks <= process.env.REACT_APP_NUMBER_CURATORS) { 
@@ -29,18 +30,6 @@ const ActiveTasks = () => {
         });
         //fetchQuestions();
     },[])
-
-    // async function fetchQuestions() {
-    //     const questionData = await API.graphql({
-    //         query: listMedicalQuestions,
-    //         authMode: "AMAZON_COGNITO_USER_POOLS"
-
-    //     })
-    //     console.log("question",questionData.data.listMedicalQuestions.items);
-    //     return questionData.data.listMedicalQuestions.items
-    //     //setQuestions(questionData.data.listMedicalQuestions.items);
-
-    // }
 
     if (questions.length === 0) {
         return (
@@ -76,10 +65,6 @@ const ActiveTasks = () => {
                            
                     )})
                 }
-    {/* <Card href="#" style={{ "margin-bottom": 5, "text-align": "left", "padding": "2%"}}fluid color='blue' header='Option 1' />
-    <Card href="#" style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid color='blue' header='Option 2' />
-    <Card href="#" style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid color='blue' header='Option 3' /> */}
-
     
                 
 

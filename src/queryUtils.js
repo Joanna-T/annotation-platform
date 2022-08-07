@@ -5,6 +5,7 @@ import { listMedicalQuestions,
          getAnnotationTask,
          listQuestionForms,
          getQuestionForm } from "./graphql/queries";
+import {parseDocumentContents} from "./documentUtils"
 
 let nextToken;
 
@@ -67,13 +68,13 @@ export async function fetchTask(taskId) {
 
 
 export async function fetchDocument(documentTitle) {
-  // Storage.list('', 
-  // {
-  //     //bucket: "pansurg-curation-workflo-kendraqueryresults50d0eb-open-data",
-  //     bucket: process.env.REACT_APP_S3_BUCKET,
-  //     region: "eu-west-2"}) // for listing ALL files without prefix, pass '' instead
-  // .then(result => console.log("this is the result with bucket", result))
-  // .catch(err => console.log(err));
+  Storage.list('', 
+  {
+      bucket: "pansurg-curation-workflo-kendraqueryresults50d0eb-open-data",
+      //bucket: process.env.REACT_APP_S3_BUCKET,
+      region: "eu-west-2"}) // for listing ALL files without prefix, pass '' instead
+  .then(result => console.log("this is the result with bucket", result))
+  .catch(err => console.log(err));
 
 
   //const documentFile = documentTitle + ".txt";
@@ -82,10 +83,10 @@ export async function fetchDocument(documentTitle) {
   
   const finalString = await text.Body.text();
 
-  return finalString
-  // text.Body.text().then(string => {
-  //     setDocumentText(string);
-  // })
+  const formattedText = parseDocumentContents(finalString)
+
+  return formattedText
+
 }  
 
 export async function fetchQuestionForms() {
@@ -119,4 +120,13 @@ export async function fetchQuestionForm(questionFormId) {
   console.log("setQuestionForm", form.data.getQuestionForm);
   return form.data.getQuestionForm
   //setQuestionForms(form.data.getQuestionForm);
+}
+
+export async function getTaskDocumentTitles(tasks) {
+  let taskDocumentTitles = {}
+  await Promise.all(tasks.map(async task => {
+      let formattedString  = await fetchDocument(task.document_title)
+      taskDocumentTitles[task.id] = formattedString["title"]
+  }))
+  return taskDocumentTitles
 }

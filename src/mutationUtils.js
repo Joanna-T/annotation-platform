@@ -1,7 +1,8 @@
 import { API, Storage, Amplify, Auth } from "aws-amplify";
 import { createAnnotationTask,
          updateAnnotationTask,
-         createMedicalQuestion } from "./graphql/mutations";
+         createMedicalQuestion,
+         updateMedicalQuestion } from "./graphql/mutations";
 
 export async function submitTask(task) {
     let createdTasks = await API.graphql({
@@ -40,3 +41,27 @@ export async function submitQuestion(question) {
     console.log("this is the created question", createdQuestion.data.createMedicalQuestion);
     return createdQuestion.data.createMedicalQuestion
   }
+
+// export async function submitTask(task) {
+//   let createdTasks = await API.graphql({
+//     query: createAnnotationTask,
+//     variables: {
+//         input: task
+//     },
+//     authMode: "AMAZON_COGNITO_USER_POOLS"
+// })
+//   console.log("this is the final submitted task", createdTasks)
+//   return createdTasks
+
+// }
+
+export async function updateQuestion(inputQuestion) {
+    await API.graphql({
+        query: updateMedicalQuestion,
+        variables: {
+            input: inputQuestion
+        },
+        authMode: "AMAZON_COGNITO_USER_POOLS"
+    })
+}
+

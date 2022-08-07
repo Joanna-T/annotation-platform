@@ -7,10 +7,13 @@
 -add in completed tasks viewing page (admin)
     -refactor to make list question options a component and pass it into completed documents 
 -change completed tasks to list completed: true (curator)
--add title/main text extraction to display
+-add title/main text extraction for document to display
 -make barchart a component
 -add in route passing in information to completed tasks (admin)
--refactor all fetch requests into util file
+-when creating new medical question create default values for interannotatorAgreement aggregatedAnswers etc..
+- submit task - change completed to true 
+- change document titles to match that in document for listing in display results and other displaying options 
+-add date added to listed tasks
 
 Done 
 -match colour to bar chart in view results [x]
@@ -22,13 +25,17 @@ Done
 -add completed tasks number in active tasks list (aDmin)
 -set initial value on drop down for results (admin)
 -make base component for styling (grid components)
+-refactor all fetch requests into util file
+-reassign tasks minimum curators change to environment variabel
 
 
-
-left off from:
-refactoring fetchdocument in tasksid
 
 
 
 NOTE:
 -when adding new task, need inital labels value to not be null ie. "[]"
+
+
+To check:
+- in admin active and completed tasks: 
+does no tasks to show currently work properly?

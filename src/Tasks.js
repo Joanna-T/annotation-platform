@@ -6,15 +6,28 @@ import { List, Segment, Grid, Image, Card } from "semantic-ui-react";
 import { tasksByUsername } from "./graphql/queries";
 import Layout from "./Layout";
 import {fetchTasks} from "./queryUtils"
+import { fetchDocument, getTaskDocumentTitles } from "./queryUtils";
 
 const Tasks = () => {
     const [tasks, setTasks] = useState([]);
+    const [documentTitles, setDocumentTitles] = useState({})
 
     useEffect(() => {
         fetchTasks()
         .then(results => {
-            setTasks(results.filter(result => result.completed === false));
+            const incompleteTasks = results.filter(result => result.completed === false)
+            setTasks(incompleteTasks);
+            return incompleteTasks
         })
+        .then(tasks => {
+            //return fetchDocument(tasks[2].document_title)
+            return getTaskDocumentTitles(tasks)
+        })
+        .then(result => {
+            console.log("getDocumentTitle",result)
+            setDocumentTitles(result)
+        })
+
         //fetchQuestions();
     },[])
 
@@ -73,8 +86,8 @@ const Tasks = () => {
                         fluid color="blue"
                         style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}}
     href={`/annotation_tasks/${task.id}`}
-    header={ `Document title: ${task.document_title}`   }
-    meta={`Task ${index + 1}`}
+    header={ `Document title: ${documentTitles[task.id]}`   }
+    meta={`Created ${task.createdAt.substring(0,10)}`}
     description={`Question: ${task.question.text}`}
   />
                         
@@ -107,3 +120,4 @@ export default Tasks;
     
 
 // }
+

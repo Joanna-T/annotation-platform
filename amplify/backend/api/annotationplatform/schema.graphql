@@ -63,5 +63,8 @@ type MedicalQuestion @model
   id: ID!
   text: String!
   tasks: [AnnotationTask] @hasMany (indexName: "byQuestion", fields: ["id"])
+  interannotatorAgreement:AWSJSON
+  semanticAgreement:AWSJSON
+  aggregatedAnswers:AWSJSON
 }
 

@@ -23,40 +23,46 @@ import {
     Form,
     Transition,
     Modal,
-    Popup
+    Popup,
+    Tab
   } from 'semantic-ui-react';
 import { Navigate } from "react-router-dom";
-import { updateTask } from "./mutationUtils";
-import { fetchTask, fetchDocument } from "./queryUtils";
-
+import { updateTask, updateQuestion } from "./mutationUtils";
+import { fetchTask, fetchDocument, fetchQuestion, fetchQuestionForm } from "./queryUtils";
+import { calculateAllFleissKappa, groupAnswers  } from "./curationScoreUtils";
+import { groupTasksByDocument } from "./documentUtils";
+import { stackOffsetFromProp } from "nivo/lib/props/stack";
+import useWindowSize from "./useWindowSize";
+import { parseDocumentContents } from "./documentUtils";
 //import { Prompt } from "react-router";
 
 //to create an annotation task 
 
-const Header1 = props => {
-    return (
-      <header>
-        <button onClick={props.onClick}>Click Me!</button>
-      </header>
-    );
-  };
+// const Header1 = props => {
+//     return (
+//       <header>
+//         <button onClick={props.onClick}>Click Me!</button>
+//       </header>
+//     );
+//   };
 
 
-const SideBar = props => {
-    const sidebarClass = props.isOpen ? "sidebar open" : "sidebar";
-    return (
-      <div className={sidebarClass}>
-        <div> I slide into view </div>
-        <div> Me Too! </div>
-        <div> Me Three! </div>
-        <button onClick={props.toggleSidebar} className="sidebar-toggle">
-          Toggle Sidebar
-        </button>
-      </div>
-    );
-  };
+// const SideBar = props => {
+//     const sidebarClass = props.isOpen ? "sidebar open" : "sidebar";
+//     return (
+//       <div className={sidebarClass}>
+//         <div> I slide into view </div>
+//         <div> Me Too! </div>
+//         <div> Me Three! </div>
+//         <button onClick={props.toggleSidebar} className="sidebar-toggle">
+//           Toggle Sidebar
+//         </button>
+//       </div>
+//     );
+//   };
 
 const TasksId = () => {
+    const size = useWindowSize();
     const navigate = useNavigate();
     const { id } = useParams();
     const [task, setTask] = useState(null);
@@ -64,6 +70,9 @@ const TasksId = () => {
     const [documentText, setDocumentText] = useState("");
     const [questions, setQuestions] = useState(null);
     const [answers, setAnswers] = useState(null);
+
+    const [question, setQuestion] = useState(null);
+    const [questionForm, setQuestionForm] = useState(null)
 
 
     //const [visible, setVisible] = useState(false);
@@ -73,6 +82,7 @@ const TasksId = () => {
     const [mainWidth, setMainWidth] = useState(12);
     const [questionsWidth, setQuestionWidth] = useState(2);
     const [parentLabels, setParentLabels] = useState([{ start: 15, end: 20, tag: "SUMMARY" }]);
+    const [documentTitle, setDocumentTitle] = useState("Loading document...")
     
     const [open, setOpen] = useState(false);
 
@@ -125,7 +135,7 @@ const TasksId = () => {
 
     useEffect(() => {
         fetchTask(id)
-        .then(result => {
+        .then(async (result) => {
             //console.log("fetch", taskData);
             setTask(result);
 
@@ -138,12 +148,34 @@ const TasksId = () => {
             const savedLabels = JSON.parse(result.labels);
             setParentLabels(savedLabels);
             
-            return fetchDocument(result.document_title);
+            await Promise.all([fetchDocument(result.document_title),
+                fetchQuestion(result.questionID),
+                fetchQuestionForm(result.questionFormID)])
+                .then(result => {
+                    console.log("taskid results",result)
+                    setDocumentText(result[0]["abstract"] + "\n\n" + result[0]["mainText"])
+                    setDocumentTitle(result[0]["title"])
+                    setQuestion(result[1])
+                    setQuestionForm(result[2])
+                } )
+
+
+            //return fetchDocument(result.document_title);
+            
         })
-        .then(documentString => {
-            setDocumentText(documentString)
-        })
-        console.log("useEffect", task);
+        // .then(documentString => {
+        //     setDocumentText(formattedDocument["abstract"] + "\n\n" + formattedDocument["mainText"])
+        //     setDocumentTitle(formattedDocument["title"])
+        //     return fetchQuestion(task.questionID)
+        // })
+        // .then(question => {
+        //     setQuestion(question)
+        //     return fetchQuestionForm(task.questionFormID)
+        // })
+        // .then(form => {
+        //     setQuestionForm(form)
+        // })
+        //console.log("useEffect", task);
     },[])
 
     useEffect(() => {
@@ -204,6 +236,9 @@ const TasksId = () => {
         }
         
         updateTask(finalStoredAnswer)
+        .then(() => {
+            updateQuestionCurationResults()
+        })
         // await API.graphql({
         //     query: updateAnnotationTask,
         //     variables: {
@@ -221,12 +256,13 @@ const TasksId = () => {
         console.log("The labels being stored are:")
         console.log(parentLabels);
 
-        const finalStoredAnswer = {
+        const finalStoreLabels = {
             id: task.id,
             labels:submittedLabels
         }
 
-        updateTask(finalStoredAnswer)
+        updateTask(finalStoreLabels)
+   
 
         // await API.graphql({
         //     query: updateAnnotationTask,
@@ -237,6 +273,22 @@ const TasksId = () => {
         // })
         console.log("answer submitted")
         
+    }
+
+    const updateQuestionCurationResults = () => {
+        let groupedTasks = groupTasksByDocument(question.tasks.items)
+        let result = calculateAllFleissKappa(
+            groupAnswers(JSON.parse(questionForm.questions), groupedTasks)
+        )
+
+        let questionUpdate = {
+            id: task.questionID,
+            interannotatorAgreement: result["kappaValues"],
+            aggregatedAnswers: result["aggregatedBarData"]
+
+        }
+
+        updateQuestion(questionUpdate)
     }
 
     // async function updateTask(inputTask) {
@@ -289,6 +341,91 @@ const TasksId = () => {
 
     }
 
+    const instructionSection = (
+        <div>
+        {
+            instructionsVisible && (
+                <Segment color='blue' secondary>
+                    
+                    <Header size="small" icon='info' dividing textAlign="center">
+                    <Icon circular name='info' size='small' />
+<Header.Content>Instructions</Header.Content>
+</Header>
+                <p>Toggle the Instructions and Questions tickboxes above
+                    to see or hide the instructions and questions tabs.
+                </p>
+                <p>Please the read over the following document and highlight the 
+                    relevant sections with the appropriate labels available for selection.
+                </p>
+                <p>Answer the questions pertaining to the document in the "Questions" tab.
+                </p>
+                <p>Click the Submit button when you are finished with annotation.</p>
+                <p>All changes are saved automatically.</p>
+                </Segment>
+                
+            )
+        }
+        </div>
+    )
+
+    const annotationPage = (
+        <AnnotationPage 
+        annotationText={documentText} 
+        handleLabelChange={handleLabelChange}
+        parentLabels={parentLabels}>
+        </AnnotationPage>
+    )
+
+    const questionSection = (
+        <div>
+        {
+            questionsVisible && (
+                <Segment inverted color='blue' secondary style={{ maxHeight: '100vh'}}>
+               <Header size="small" icon='info' dividing textAlign="center">
+                    <Icon name='pencil' circular size='small' />
+<Header.Content>Please answer the following questions</Header.Content>
+</Header>
+<Segment basic textAlign="left" style={{"padding-left": "10%", "padding-right": "10%", "color": "white" }}>
+<AnnotationQuestions questions={questions} handleAnswerChange={handleAnswerChange} answers={answers} ></AnnotationQuestions>
+</Segment>
+
+                
+              </Segment>
+            )
+        }
+        </div>
+    )
+
+    const smallScreenPanes = [
+        {
+          menuItem: 'Instructions',
+          pane: (
+            <Tab.Pane key='instructions' style={{maxheight:"100%", overflow:"auto" }}>
+              {instructionSection}
+            </Tab.Pane>
+          ),
+          
+        },
+        {
+          menuItem: 'Text labels',
+          pane: (
+            <Tab.Pane key='text-labels' style={{maxheight:"100%", overflow:"auto" }}>
+              {annotationPage}
+            </Tab.Pane>
+          ),
+          
+        },
+        {
+            menuItem: 'Questions',
+            pane: (
+              <Tab.Pane key='questions' style={{maxheight:"100%", overflow:"auto" }}>
+                {questionSection}
+              </Tab.Pane>
+            ),
+            
+          },
+      ]
+
     const questionsStyle = {
         "padding-left": "10%",
         "padding-right": "10%",
@@ -296,6 +433,7 @@ const TasksId = () => {
 
 
     }
+
 
     if (task && task.completed === true) {
         return (
@@ -307,8 +445,10 @@ const TasksId = () => {
         
         <div class="task-details">
             <Grid padded style={{height: '100vh'}}>
-            <Grid.Row style={{height: '5%'}}>
+            <Grid.Row >
             <Grid.Column width={3}>
+            {size.width > 850 &&
+            <div>
             <Checkbox
           checked={instructionsVisible}
           label={{ children: <code>Instructions</code> }}
@@ -329,10 +469,13 @@ const TasksId = () => {
             //   handleView();
             }}
         />
+        </div>
+}
 
       </Grid.Column>
       <Grid.Column width={10}>
-        <h2>Document title</h2>
+        <p><b>Question:</b> {question && question.text}</p>
+        <p><b>Document title:</b> {documentTitle}</p>
         
       </Grid.Column>
       <Grid.Column width={3}>
@@ -379,82 +522,47 @@ const TasksId = () => {
       </Grid.Column>
             </Grid.Row>
             <Grid.Row style={{height: '90%'}}>
+
+            {size.width > 850 &&
+            
             <Grid.Column width={instructionWidth}>
                 <Transition.Group
           duration={400}
-          divided
-          size='huge'
-          verticalAlign='middle'
           animation="fade up"
         >
-                {
-                    instructionsVisible && (
-                        <Segment color='blue' secondary>
-                            
-                            <Header size="small" icon='info' dividing textAlign="center">
-                            <Icon circular name='info' size='small' />
-    <Header.Content>Instructions</Header.Content>
-  </Header>
-                        <p>Toggle the Instructions and Questions tickboxes above
-                            to see or hide the instructions and questions tabs.
-                        </p>
-                        <p>Please the read over the following document and highlight the 
-                            relevant sections with the appropriate labels available for selection.
-                        </p>
-                        <p>Answer the questions pertaining to the document in the "Questions" tab.
-                        </p>
-                        <p>Click the Submit button when you are finished with annotation.</p>
-                        <p>All changes are saved automatically.</p>
-                        </Segment>
-                        
-                    )
-                }
+             {instructionSection}   
                 </Transition.Group>
         
       </Grid.Column>
+}
+        {size.width > 850 &&
       <Grid.Column width={mainWidth}>
       
       <Transition.Group
           duration={400}
-          divided
-          size='huge'
-          verticalAlign='middle'
           animation="fade up"
         >
-      
-      <AnnotationPage 
-        annotationText={documentText} 
-        handleLabelChange={handleLabelChange}
-        parentLabels={parentLabels}>
-        </AnnotationPage>
+            {annotationPage}
         </Transition.Group>
         
       </Grid.Column>
+    }
+         {size.width > 850 &&
       <Grid.Column width={questionsWidth}>
       <Transition.Group
           duration={400}
-          divided
-          size='huge'
-          verticalAlign='middle'
           animation="fade up"
         >
-                {
-                    questionsVisible && (
-                        <Segment inverted color='blue' secondary style={{ maxHeight: '100vh'}}>
-                       <Header size="small" icon='info' dividing textAlign="center">
-                            <Icon name='pencil' circular size='small' />
-    <Header.Content>Please answer the following questions</Header.Content>
-  </Header>
-  <Segment basic textAlign="left" style={{"padding-left": "10%", "padding-right": "10%", "color": "white" }}>
-  <AnnotationQuestions questions={questions} handleAnswerChange={handleAnswerChange} answers={answers} ></AnnotationQuestions>
-  </Segment>
-  
-                        
-                      </Segment>
-                    )
-                }
+               {questionSection}
                 </Transition.Group>
       </Grid.Column>
+}
+    
+    {size.width < 850 &&
+    <Tab  menu={{color:"blue",attached:true, tabular:true}} panes={smallScreenPanes} renderActiveOnly={false}/>
+    }
+
+
             </Grid.Row>
             </Grid>
         </div>

@@ -9,7 +9,7 @@ import {
 import { fetchQuestion } from "./queryUtils";
 import Layout from "./Layout";
 import { groupTasksByDocument } from "./documentUtils";
-
+import { getTaskDocumentTitles } from "./queryUtils";
 
 
 const QuestionDocuments = () => {
@@ -18,15 +18,20 @@ const QuestionDocuments = () => {
 
     const [groupedTasks, setGroupedTasks]  = useState([]);
     const [question, setQuestion ] = useState(null);
+    const [documentTitles, setDocumentTitles] = useState({})
 
     useEffect(() => {
         fetchQuestion(id)
         .then(question => {
             setQuestion(question)
-            setGroupedTasks(
-                groupTasksByDocument(question.tasks.items)
+            let tasks = groupTasksByDocument(question.tasks.items)
+            setGroupedTasks(tasks)
+            return getTaskDocumentTitles(
+                tasks.map(taskGroup => taskGroup[0])
             )
-
+        })
+        .then(result => {
+            setDocumentTitles(result)
         })
         //fetchTasks();
     }, [])
@@ -118,8 +123,8 @@ const QuestionDocuments = () => {
                           style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}}
     //   href={`/active_tasks/questions/${task.document_title}`}
       onClick={() => handleNavigate(tasks)}
-      header={ `Document title: ${tasks[0].document_title}`   }
-      meta={`Question ${index + 1}`}
+      header={ `Document title: ${documentTitles[tasks[0].id]}`   }
+      meta={`Question created: ${question.createdAt.substring(0,10)}`}
       description={`Question title: ${question.text}`}
     />
                           
