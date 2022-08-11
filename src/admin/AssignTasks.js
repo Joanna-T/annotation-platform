@@ -221,7 +221,9 @@ const AssignTasks = () => {
                     </Card>
                   )
                 }))
-                : "Loading forms..."
+                : <Segment>
+                "Loading forms..."
+                </Segment>
                 
               }
             
@@ -253,7 +255,10 @@ const AssignTasks = () => {
                   </Card>
                 )
               }))
-              : "Loading folders..."
+              : 
+              <Segment>
+                "Loading folders..."
+                </Segment>
               
               
             }

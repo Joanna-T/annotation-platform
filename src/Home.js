@@ -17,7 +17,6 @@ const Home = () => {
         setVisibleQuestions(newQuestions)
     }, [searchInput])
 
-    const [questions, setQuestions] = useState([]);
     //const [questionNumber, setQuestionNumber] = useState(false);
     useEffect(() => {
         fetchQuestions()
@@ -86,7 +85,7 @@ const Home = () => {
             <Segment basic>
             <Header as='h2' icon textAlign='center'>
             <Icon color="blue" name='edit outline' circular />
-            <Header.Content>Welcome to AnnotateIt</Header.Content>
+            <Header.Content>Welcome to the AnnotateIt test environment</Header.Content>
             </Header>
                 <p>Please enter a search query below to find relevant annotation question results</p>
             </Segment>

@@ -18,15 +18,17 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
       console.log(shuffledUsers, shuffledDocuments);
   
       let documentCounter = 0;
-      const minimumCuratorNumber = 1;
-      //const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
+      //const minimumCuratorNumber = 1;
+      const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
 
   
         while (documentCounter < shuffledDocuments.length) {
           for (let i = 0; i < minimumCuratorNumber; i++) {
+            console.log("minimumnumber curators", minimumCuratorNumber);
             if (shuffledUsers.length === 0) {
               shuffledUsers = shuffleArray(curators.slice())
               // newShuffledUsers.map(user => shuffledUsers.push(user))
+              
               console.log("This is shuffled us", shuffledUsers)
             }
             let curator = findCurator(shuffledUsers, annotationTasks, shuffledDocuments[documentCounter]);
@@ -38,7 +40,7 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
               completed: false,
               labels: "[]"
             }
-            //await submitTask(newTask)
+            await submitTask(newTask)
             annotationTasks.push(newTask)
             
           }
@@ -47,7 +49,7 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
         console.log("These are the annotation tasks", annotationTasks)
         //console.log(annotationTasks)
         //return Promise.resolve(annotationTasks)
-        annotationTasks.forEach(async task => await submitTask(task));
+        //annotationTasks.forEach(async task => await submitTask(task));
       } catch (err) {
         console.log(err)
       }
