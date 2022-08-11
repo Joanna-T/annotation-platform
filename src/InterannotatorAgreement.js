@@ -3,29 +3,31 @@ import { API, Storage } from "aws-amplify";
 import { getQuestionForm } from "./graphql/queries";
 import { Segment, Icon } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
-import { fetchQuestionForm } from "./queryUtils";
+import { fetchQuestion, fetchQuestionForm } from "./queryUtils";
 import { groupAnswers, calculateAllFleissKappa } from "./curationScoreUtils";
 
 const InterannotatorAgreement = ({grouped_tasks}) => {
     const [groupedAnswers, setGroupedAnswers] = useState([]);
     const [questionForm, setQuestionForm] = useState(null);
     const [fleissKappa, setFleissKappa] = useState()
-    const [aggregatedBarData, setAggregatedBarData] = useState([]);
+    const [aggregatedBarData, setAggregatedBarData] = useState(null);
+    const [semanticAgreement, setSemanticAgreement] = useState(null);
 
     const numAnnotators = process.env.REACT_APP_NUMBER_CURATORS;
 
     useEffect(() => {
-        console.log("grouped_tasks", grouped_tasks)
-        fetchQuestionForm(grouped_tasks[0][0].questionFormID)
-        .then(result => {
-            setQuestionForm(result)
-            let answers =  groupAnswers(JSON.parse(result.questions),grouped_tasks)
-            calculateAllFleissKappa(answers, grouped_tasks)
-            .then(result => {
-                setAggregatedBarData(result["aggregatedBarData"])
-                setFleissKappa(result["kappaValues"])
-            })
-        })
+
+      fetchQuestion(grouped_tasks[0][0].questionID)
+      .then( result => {
+        let parsedFleissKappa = JSON.parse(JSON.parse(result.interannotatorAgreement))
+        let parsedAggregatedData = JSON.parse(JSON.parse(result.aggregatedAnswers))
+        let parsedSemanticAgreement = JSON.parse(JSON.parse(result.semanticAgreement))
+        setFleissKappa(parsedFleissKappa)
+        setAggregatedBarData(parsedAggregatedData)
+        setSemanticAgreement(parsedSemanticAgreement["semanticAgreement"])
+
+      })
+
     }, [grouped_tasks])
 
     // const groupAnswers = (questions, grouped_tasks) => {
@@ -204,6 +206,8 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
     //     // if (kappa < 0) {
     //     //     return "-"
     //     // }
+    //     console.log("this is kappa", kappa)
+    //     console.log("aggregatedCategoryData", aggregatedCategoryData)
     //     return {
     //         "kappaValue": kappa.toFixed(3),
     //         "aggregatedCategoryData": aggregatedCategoryData 
@@ -247,10 +251,12 @@ const InterannotatorAgreement = ({grouped_tasks}) => {
 
 
     return ( <div style={{"max-height": "65vh", "overflow": "auto"}}>
+        {semanticAgreement && 
+        <p> The overall semantic agreement between annotator labels is: <b>{semanticAgreement.toFixed(3)}</b></p>}
         <p>The following are aggregated results for all documents across this question.
             IA denotes the Fleiss Kappa inter-annotator agreement for a given category. 
         </p>
-      {aggregatedBarData.map( (item, index) => {
+      {aggregatedBarData && aggregatedBarData.map( (item, index) => {
         return(
             
           <div style={{"height": "100px"}}>

@@ -1,10 +1,16 @@
 import { API, Storage, Amplify, Auth } from "aws-amplify";
+import { submitTask } from "../mutationUtils";
 
 export async function distributeAnnotationTasks(questionForm, documentFolder, medicalQuestion, curators) {
     let annotationTasks = []
     console.log("distributeAT inputs",questionForm, "folder", documentFolder,"curators", curators,"queaiton", medicalQuestion )
-    Storage.list(documentFolder)
-    .then(documents => {
+    // Storage.list(documentFolder)
+    // .then(documents => {
+      let documents
+      try {
+        documents = await Storage.list(documentFolder)
+      
+    
       let filterDocuments = documents.filter(document => document.key[document.key.length - 1] !== "/")
       console.log("filtered documents",filterDocuments)
       let shuffledDocuments = shuffleArray(filterDocuments);
@@ -12,8 +18,9 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
       console.log(shuffledUsers, shuffledDocuments);
   
       let documentCounter = 0;
-      //const minimumCuratorNumber = 1;
-      const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
+      const minimumCuratorNumber = 1;
+      //const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
+
   
         while (documentCounter < shuffledDocuments.length) {
           for (let i = 0; i < minimumCuratorNumber; i++) {
@@ -23,23 +30,28 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
               console.log("This is shuffled us", shuffledUsers)
             }
             let curator = findCurator(shuffledUsers, annotationTasks, shuffledDocuments[documentCounter]);
-            annotationTasks.push({
+            let newTask = {
               document_title: shuffledDocuments[documentCounter].key,
               questionID: medicalQuestion.id,
               owner: curator,
               questionFormID: questionForm.id,
-              completed: false
-            })
+              completed: false,
+              labels: "[]"
+            }
+            //await submitTask(newTask)
+            annotationTasks.push(newTask)
             
           }
           documentCounter++;
         }
-        console.log("These are the annotation tasks")
-        console.log(annotationTasks)
-        return annotationTasks
-        //annotationTasks.map(task => submitTask(task));
-  
-    })
+        console.log("These are the annotation tasks", annotationTasks)
+        //console.log(annotationTasks)
+        //return Promise.resolve(annotationTasks)
+        annotationTasks.forEach(async task => await submitTask(task));
+      } catch (err) {
+        console.log(err)
+      }
+    //})
 }
 
 const findCurator = (curators, annotationTasks, document) => {

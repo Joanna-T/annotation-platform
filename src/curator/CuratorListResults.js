@@ -38,6 +38,12 @@ const CuratorListResults = () => {
         <Segment inverted color="blue" tertiary>
             The following are previously completed tasks.
         </Segment>
+        {
+            tasks.length == 0 &&
+            <Segment> 
+                <p>No tasks yet completed</p>
+            </Segment>
+        }
     <Card.Group>
             {
                 tasks.map((task,index) =>(

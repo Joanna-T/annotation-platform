@@ -137,16 +137,29 @@ const AssignTasks = () => {
       //   return
       // }
       Promise.all([submitQuestion(medicalQuestion),listCurators()])
-      .then(results => {
+      .then( results => {
+        if (results[1].length < process.env.REACT_APP_NUMBER_CURATORS) {
+          console.log("Insufficient number of curators")
+          return
+        }
         distributeAnnotationTasks(chosenQuestionForm, chosenFolder, results[0], results[1])
-        .then(newTasks => {
-          newTasks.forEach(task => {
-            submitTask(task)
-          })
-        })
-        navigate("/");
+        console.log("distribution finished")
+        
       })
+      // .then(async result => {
+      //   console.log("assign tasks new tasks", result)
+      //     await Promise.all(result.map(async task => {
+      //       let submittedTask = await submitTask(task)
+      //       console.log("submitted task", submittedTask)
+      //     }))
+      //     // newTasks.forEach(task => {
+      //     //   submitTask(task)
+      //     // })
+     
+      //   navigate("/");
+      // })
       .catch(err => console.log(err))
+      navigate("/")
     }
     return (  
       <Layout>

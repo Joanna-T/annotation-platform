@@ -21,7 +21,8 @@ const ReassignTasks = () => {
     const [warningMessage, setWarningMessage] = useState(false)
     const [open, setOpen] = useState(false)
 
-    const minimumRequiredCurators = 2;
+    const minimumRequiredCurators = process.env.REACT_APP_NUMBER_CURATORS
+    //const minimumRequiredCurators = 1;
 
     useEffect(() => {
         //queryUtils.fetchQuestions().then(result => {

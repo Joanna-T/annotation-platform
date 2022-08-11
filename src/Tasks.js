@@ -76,8 +76,13 @@ const Tasks = () => {
             
         </p>
             </Segment>
+            {
+                    tasks.length == 0 &&
+                    <Segment style={{width: "100%"}}>
+                        <p>No tasks currently available</p>
+                    </Segment>
+            }
         <Card.Group>
- 
     
                 {
                     tasks.map((task,index) =>(

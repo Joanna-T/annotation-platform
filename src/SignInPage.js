@@ -75,6 +75,7 @@ const SignInPage = () => {
 
 //export default SignInPage;
 //export default withAuthenticator(Signin);
-export default withAuthenticator(SignInPage, {
-  hideSignUp:true,
-});
+// export default withAuthenticator(SignInPage, {
+//   hideSignUp:true,
+// });
+export default withAuthenticator(SignInPage);

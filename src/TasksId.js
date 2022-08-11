@@ -188,7 +188,6 @@ const TasksId = () => {
         if (parentLabels) {
             storeLabels();
         }
-        
     }, [parentLabels])
 
     
@@ -344,7 +343,7 @@ const TasksId = () => {
     const instructionSection = (
         <div>
         {
-            instructionsVisible && (
+            (instructionsVisible || size.width < 850) && (
                 <Segment color='blue' secondary>
                     
                     <Header size="small" icon='info' dividing textAlign="center">
@@ -379,8 +378,8 @@ const TasksId = () => {
     const questionSection = (
         <div>
         {
-            questionsVisible && (
-                <Segment inverted color='blue' secondary style={{ maxHeight: '100vh'}}>
+            (questionsVisible || size.width < 850) && (
+                <Segment fluid color='blue' inverted secondary style={{ maxHeight: '100vh', width: "100%"}}>
                <Header size="small" icon='info' dividing textAlign="center">
                     <Icon name='pencil' circular size='small' />
 <Header.Content>Please answer the following questions</Header.Content>
