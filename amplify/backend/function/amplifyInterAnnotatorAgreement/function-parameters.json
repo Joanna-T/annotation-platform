@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "api": {
+      "annotationplatform": [
+        "Query",
+        "Mutation",
+        "Subscription"
+      ],
+      "AdminQueries": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

@@ -1,4 +1,4 @@
-import { Authenticator, withAuthenticator, AmplifySignOut,defaultTheme } from "@aws-amplify/ui-react";
+import { Authenticator, withAuthenticator, AmplifySignOut,defaultTheme} from "@aws-amplify/ui-react";
 import { Auth } from "aws-amplify";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Amplify from "aws-amplify"
 //import awsmobile from "./aws-exports";
 //import '@aws-amplify/ui-react/styles.css';
+import "./styles.css"
 //Amplify.configure(awsmobile);
 
 // const authTheme = {
@@ -53,16 +54,16 @@ const SignInPage = () => {
         //window.location.reload();
         navigate("/");
     }
-    return(
-      <Authenticator loginMechanisms={['username']}>
-      {({ signOut, user }) => (
-        <main>
-          <h1>Hello {user.username}</h1>
-          <button onClick={signOut}>Sign out</button>
-        </main>
-      )}
-    </Authenticator>
-    )
+    // return(
+    //   <Authenticator loginMechanisms={['username']}>
+    //   {({ signOut, user }) => (
+    //     <main>
+    //       <h1>Hello {user.username}</h1>
+    //       <button onClick={signOut}>Sign out</button>
+    //     </main>
+    //   )}
+    // </Authenticator>
+    // )
 
     return (
         <div className="signin">
@@ -79,3 +80,6 @@ const SignInPage = () => {
 //   hideSignUp:true,
 // });
 export default withAuthenticator(SignInPage);
+//export default withAuthenticator(SignInPage, {theme: authTheme});
+
+//export default SignInPage
