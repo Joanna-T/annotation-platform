@@ -1,10 +1,88 @@
 [
   {
     "groupName": "Admin",
-    "precedence": 1
+    "precedence": 1,
+    "customPolicies": [
+      {
+        "PolicyName": "admin-group-policy-appsync",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "appsync:GraphQL"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ]
+        }
+      },
+      {
+        "PolicyName": "admin-group-policy-dynamodb",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:UpdateItem"
+              ],
+              "Resource": [
+                "*"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "groupName": "Curators",
-    "precedence": 2
+    "precedence": 2,
+    "customPolicies": [
+      {
+        "PolicyName": "curator-group-policy-appsync",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "appsync:GraphQL"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ]
+        }
+      },
+      {
+        "PolicyName": "curator-group-policy-dynamodb",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:UpdateItem"
+              ],
+              "Resource": [
+                "*"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 ]

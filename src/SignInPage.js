@@ -1,4 +1,4 @@
-import { Authenticator, withAuthenticator, AmplifySignOut,defaultTheme} from "@aws-amplify/ui-react";
+import { Authenticator, withAuthenticator, AmplifySignOut, defaultTheme } from "@aws-amplify/ui-react";
 import { Auth } from "aws-amplify";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +44,7 @@ const SignInPage = () => {
         const user = await Auth.currentAuthenticatedUser();
         setUser(user);
         window.location.reload();
-        
+
     }
 
     if (!user) return null;
@@ -70,9 +70,9 @@ const SignInPage = () => {
             <h1>Successfully logged in</h1>
             <h2>{user.attributes.email}</h2>
         </div>
-      );
+    );
 }
- 
+
 
 //export default SignInPage;
 //export default withAuthenticator(Signin);

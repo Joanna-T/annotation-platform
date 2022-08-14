@@ -18,21 +18,6 @@ export const onCreateAnnotationTask = /* GraphQL */ `
             question {
               id
               text
-              tasks {
-                items {
-                  id
-                  document_title
-                  questionID
-                  owner
-                  question_answers
-                  labels
-                  questionFormID
-                  completed
-                  createdAt
-                  updatedAt
-                }
-                nextToken
-              }
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
@@ -96,21 +81,6 @@ export const onUpdateAnnotationTask = /* GraphQL */ `
             question {
               id
               text
-              tasks {
-                items {
-                  id
-                  document_title
-                  questionID
-                  owner
-                  question_answers
-                  labels
-                  questionFormID
-                  completed
-                  createdAt
-                  updatedAt
-                }
-                nextToken
-              }
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
@@ -174,21 +144,6 @@ export const onDeleteAnnotationTask = /* GraphQL */ `
             question {
               id
               text
-              tasks {
-                items {
-                  id
-                  document_title
-                  questionID
-                  owner
-                  question_answers
-                  labels
-                  questionFormID
-                  completed
-                  createdAt
-                  updatedAt
-                }
-                nextToken
-              }
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
@@ -253,21 +208,6 @@ export const onCreateAnnotationResult = /* GraphQL */ `
             question {
               id
               text
-              tasks {
-                items {
-                  id
-                  document_title
-                  questionID
-                  owner
-                  question_answers
-                  labels
-                  questionFormID
-                  completed
-                  createdAt
-                  updatedAt
-                }
-                nextToken
-              }
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
@@ -330,21 +270,6 @@ export const onUpdateAnnotationResult = /* GraphQL */ `
             question {
               id
               text
-              tasks {
-                items {
-                  id
-                  document_title
-                  questionID
-                  owner
-                  question_answers
-                  labels
-                  questionFormID
-                  completed
-                  createdAt
-                  updatedAt
-                }
-                nextToken
-              }
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
@@ -407,21 +332,6 @@ export const onDeleteAnnotationResult = /* GraphQL */ `
             question {
               id
               text
-              tasks {
-                items {
-                  id
-                  document_title
-                  questionID
-                  owner
-                  question_answers
-                  labels
-                  questionFormID
-                  completed
-                  createdAt
-                  updatedAt
-                }
-                nextToken
-              }
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
@@ -513,34 +423,6 @@ export const onCreateMedicalQuestion = /* GraphQL */ `
             id
             text
             tasks {
-              items {
-                id
-                document_title
-                questionID
-                question {
-                  id
-                  text
-                  interannotatorAgreement
-                  semanticAgreement
-                  aggregatedAnswers
-                  createdAt
-                  updatedAt
-                }
-                owner
-                question_answers
-                labels
-                questionFormID
-                questionForm {
-                  id
-                  form_description
-                  questions
-                  createdAt
-                  updatedAt
-                }
-                completed
-                createdAt
-                updatedAt
-              }
               nextToken
             }
             interannotatorAgreement
@@ -588,34 +470,6 @@ export const onUpdateMedicalQuestion = /* GraphQL */ `
             id
             text
             tasks {
-              items {
-                id
-                document_title
-                questionID
-                question {
-                  id
-                  text
-                  interannotatorAgreement
-                  semanticAgreement
-                  aggregatedAnswers
-                  createdAt
-                  updatedAt
-                }
-                owner
-                question_answers
-                labels
-                questionFormID
-                questionForm {
-                  id
-                  form_description
-                  questions
-                  createdAt
-                  updatedAt
-                }
-                completed
-                createdAt
-                updatedAt
-              }
               nextToken
             }
             interannotatorAgreement
@@ -663,34 +517,6 @@ export const onDeleteMedicalQuestion = /* GraphQL */ `
             id
             text
             tasks {
-              items {
-                id
-                document_title
-                questionID
-                question {
-                  id
-                  text
-                  interannotatorAgreement
-                  semanticAgreement
-                  aggregatedAnswers
-                  createdAt
-                  updatedAt
-                }
-                owner
-                question_answers
-                labels
-                questionFormID
-                questionForm {
-                  id
-                  form_description
-                  questions
-                  createdAt
-                  updatedAt
-                }
-                completed
-                createdAt
-                updatedAt
-              }
               nextToken
             }
             interannotatorAgreement

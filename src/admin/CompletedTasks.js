@@ -67,8 +67,8 @@ const CompletedTasks = () => {
                         style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}}
     href={`/completed_tasks/${question.id}`}
     header={ `Question title: ${question.text}`   }
-    meta={`Question ${index + 1}`}
-    //description={`Progress: ${question.complete_tasks}/${question.total_tasks} documents annotated completely`}
+    meta={`Created: ${question.createdAt.slice(0, 10)}`}
+    description={`No. documents: ${question["total_tasks"]}`}
   />
                            
                     )})

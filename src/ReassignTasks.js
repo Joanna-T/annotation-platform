@@ -26,7 +26,7 @@ const ReassignTasks = () => {
 
     useEffect(() => {
         //queryUtils.fetchQuestions().then(result => {
-        fetchQuestions().then(result => {
+        fetchQuestions("API_KEY").then(result => {
             findIncompleteQuestions(result);
         })
     },[])

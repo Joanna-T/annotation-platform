@@ -1,19 +1,20 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { Auth, Hub } from "aws-amplify";
-import {  Authenticator } from "@aws-amplify/ui-react";
+import { Authenticator } from "@aws-amplify/ui-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Menu, Icon, Dropdown } from "semantic-ui-react";
 import useWindowSize from "./useWindowSize";
 
 
 const Navbar = () => {
-    const [signedUser, setSignedUser] = useState(false); 
+    const [signedUser, setSignedUser] = useState(false);
     const [admin, setAdmin] = useState(false);
+    const [userEmail, setUserEmail] = useState("")
     const size = useWindowSize();
-    
-    
-    const [ currentItem, setCurrentItem ] = useState("Home")
+
+
+    const [currentItem, setCurrentItem] = useState("Home")
 
     const handleItemClick = (name) => setCurrentItem(name);
 
@@ -31,7 +32,7 @@ const Navbar = () => {
     useEffect(() => {
         authListener();
     }, [])
-    
+
     async function authListener() {
         Hub.listen("auth", (data) => {
             switch (data.payload.event) {
@@ -48,18 +49,19 @@ const Navbar = () => {
         try {
             const user = await Auth.currentAuthenticatedUser();
             console.log("user signed in");
-            console.log(user);
+            console.log("signed in user", user);
             const groups = user.signInUserSession.accessToken.payload["cognito:groups"];
             console.log("groups", groups);
+            setUserEmail(user.attributes.email)
             if (groups) {
                 if (groups.includes("Admin")) {
                     setAdmin(true);
                 }
             }
-            
+
             setSignedUser(true);
             console.log("signeduser", signedUser);
-        } catch(err) {}
+        } catch (err) { }
     }
 
     //authListener();
@@ -74,177 +76,187 @@ const Navbar = () => {
     // })
 
 
-//     return ( 
-//  <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-//   <a className="navbar-brand" href="#">AnnotateIt</a>
-//   <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-//     <span className="navbar-toggler-icon"></span>
-//   </button>
-//   <div className="collapse navbar-collapse" id="navbarNav">
-//     <ul className="navbar-nav">
-//       <li className="nav-item active">
-//         <a className="nav-link" href="/">Home </a>
-//       </li>
-//      {
-//           signedUser && (
-//          <li className="nav-item">
-//             <a className="nav-link" href="/annotation_tasks">Tasks</a>
-//         </li>
-//           )
-//       }
-//       {
-//           !signedUser && (
-//          <li className="nav-item">
-//             <a className="nav-link" href="/sign_in">Sign in</a>
-//         </li>
-//           )
-//       }
+    //     return ( 
+    //  <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+    //   <a className="navbar-brand" href="#">AnnotateIt</a>
+    //   <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    //     <span className="navbar-toggler-icon"></span>
+    //   </button>
+    //   <div className="collapse navbar-collapse" id="navbarNav">
+    //     <ul className="navbar-nav">
+    //       <li className="nav-item active">
+    //         <a className="nav-link" href="/">Home </a>
+    //       </li>
+    //      {
+    //           signedUser && (
+    //          <li className="nav-item">
+    //             <a className="nav-link" href="/annotation_tasks">Tasks</a>
+    //         </li>
+    //           )
+    //       }
+    //       {
+    //           !signedUser && (
+    //          <li className="nav-item">
+    //             <a className="nav-link" href="/sign_in">Sign in</a>
+    //         </li>
+    //           )
+    //       }
 
-//     {
-//           signedUser && admin && (
-//          <li className="nav-item">
-//             <a className="nav-link" href="#">Assign tasks</a>
-//         </li>
-//           )
-//       }
+    //     {
+    //           signedUser && admin && (
+    //          <li className="nav-item">
+    //             <a className="nav-link" href="#">Assign tasks</a>
+    //         </li>
+    //           )
+    //       }
 
-//     </ul>
+    //     </ul>
 
-//       {
-//           signedUser && (
-//             <button onClick={signOut} className="signOutButton">SignOut</button>
-    
-//           )
-//       }
-    
-    
-      
-//   </div>
-// </nav>
+    //       {
+    //           signedUser && (
+    //             <button onClick={signOut} className="signOutButton">SignOut</button>
 
-//      );
+    //           )
+    //       }
 
-     return (
+
+
+    //   </div>
+    // </nav>
+
+    //      );
+
+    return (
         <Menu primary pointing color="blue" inverted size="large" >
-            {size.width > 500 ? 
-        <Menu.Item
-        style={{top:"0.2em", color: "white"}}>
-            <h3>AnnotateIt</h3>
-        </Menu.Item> : ""
-        }
-        <Menu.Item
-          as={Link} to="/"
-          name='Home'
-          active={currentItem === 'Home'}
-          onClick={() => handleItemClick('Home')}
-          ><Icon name="home"></Icon>{size.width > 940 ? "  Home" : ""}</Menu.Item>
-        {
-            signedUser && !admin &&(
+            {size.width > 500 ?
                 <Menu.Item
-                as={Link} to="/annotation_tasks"
-                name='Tasks'
-                active={currentItem === 'Tasks'}
-                onClick={() => handleItemClick('Tasks')} 
-        ><Icon name="ellipsis horizontal"></Icon>{size.width > 940 ? "  Tasks" : ""}</Menu.Item>
-            )
-        }
-
-        {
-            signedUser && !admin &&(
-                <Menu.Item
-                as={Link} to="/completed_curator_tasks"
-                name='CompletedTasks'
-                active={currentItem === 'CompletedTasks'}
-                onClick={() => handleItemClick('CompletedTasks')} 
-                ><Icon name="checkmark"></Icon>{size.width > 940 ? "  Completed Tasks" : ""}</Menu.Item>
-            )
-        }
-
-        {
-            signedUser && admin && (
+                    style={{ top: "0.2em", color: "white" }}>
+                    <h3>AnnotateIt</h3>
+                </Menu.Item> : ""
+            }
+            <Menu.Item
+                as={Link} to="/"
+                name='Home'
+                active={currentItem === 'Home'}
+                onClick={() => handleItemClick('Home')}
+            ><Icon name="home"></Icon>{size.width > 940 ? "  Home" : ""}</Menu.Item>
+            {
+                signedUser && !admin && (
                     <Menu.Item
-                as={Link} to="/assign_tasks"
-                name='CreateTasks'
-                active={currentItem === 'AssignTask'}
-                onClick={() => {
-                    handleItemClick('AssignTask');
-                    }} 
+                        as={Link} to="/annotation_tasks"
+                        name='Tasks'
+                        active={currentItem === 'Tasks'}
+                        onClick={() => handleItemClick('Tasks')}
+                    ><Icon name="ellipsis horizontal"></Icon>{size.width > 940 ? "  Tasks" : ""}</Menu.Item>
+                )
+            }
+
+            {
+                signedUser && !admin && (
+                    <Menu.Item
+                        as={Link} to="/completed_curator_tasks"
+                        name='CompletedTasks'
+                        active={currentItem === 'CompletedTasks'}
+                        onClick={() => handleItemClick('CompletedTasks')}
+                    ><Icon name="checkmark"></Icon>{size.width > 940 ? "  Completed Tasks" : ""}</Menu.Item>
+                )
+            }
+
+            {
+                signedUser && admin && (
+                    <Menu.Item
+                        as={Link} to="/assign_tasks"
+                        name='CreateTasks'
+                        active={currentItem === 'AssignTask'}
+                        onClick={() => {
+                            handleItemClick('AssignTask');
+                        }}
                     ><Icon name="add"></Icon>{size.width > 940 ? "  Create Tasks" : ""}</Menu.Item>
-                
-            )
-        }
 
-{
-            signedUser && admin && (
+                )
+            }
+
+            {
+                signedUser && admin && (
                     <Menu.Item
-                as={Link} to="/reassign_tasks"
-                name='ReassignTasks'
-                active={currentItem === 'ReassignTask'}
-                onClick={() => {
-                    handleItemClick('ReassignTask');
-                    }} 
+                        as={Link} to="/reassign_tasks"
+                        name='ReassignTasks'
+                        active={currentItem === 'ReassignTask'}
+                        onClick={() => {
+                            handleItemClick('ReassignTask');
+                        }}
                     ><Icon name="undo"></Icon>{size.width > 940 ? "  Reassign Tasks" : ""}</Menu.Item>
-                
-            )
-        }
 
-        {
-            signedUser && admin && (
+                )
+            }
+
+            {
+                signedUser && admin && (
                     <Menu.Item
-                as={Link} to="/active_tasks"
-                name='ActiveTasks'
-                active={currentItem === 'ActiveTasks'}
-                onClick={() => {
-                    handleItemClick('ActiveTasks');
-                    }} 
+                        as={Link} to="/active_tasks"
+                        name='ActiveTasks'
+                        active={currentItem === 'ActiveTasks'}
+                        onClick={() => {
+                            handleItemClick('ActiveTasks');
+                        }}
                     ><Icon name="ellipsis horizontal"></Icon>{size.width > 940 ? "  Active tasks" : ""}</Menu.Item>
-                
-            )
-        }
-        {
-            signedUser && admin && (
+
+                )
+            }
+            {
+                signedUser && admin && (
                     <Menu.Item
-                as={Link} to="/completed_tasks"
-                name='CompletedTasks'
-                active={currentItem === 'CompletedTasks'}
-                onClick={() => {
-                    handleItemClick('CompletedTasks');
-                    }} 
+                        as={Link} to="/completed_tasks"
+                        name='CompletedTasks'
+                        active={currentItem === 'CompletedTasks'}
+                        onClick={() => {
+                            handleItemClick('CompletedTasks');
+                        }}
                     ><Icon name="checkmark"></Icon>{size.width > 940 ? "  Completed tasks" : ""}</Menu.Item>
-                
-            )
-        }
-        
-        
-        {
-            !signedUser && (
-                <Menu.Item
-                position="right"
-                as={Link} to="/sign_in"
-                name='SignIn'
-                active={currentItem === 'SignIn'}
-                onClick={() => handleItemClick('SignIn')} 
-        />
-            )
-        }
-        
 
-        {
-            signedUser && (
-                <Menu.Item
-                position="right"
-                name='SignOut'
-                active={currentItem === 'SignOut'}
-                onClick={() => {
-                    handleItemClick('SignOut');
-                    signOut();}} 
+                )
+            }
+
+
+            {
+                !signedUser && (
+                    <Menu.Item
+                        position="right"
+                        as={Link} to="/sign_in"
+                        name='SignIn'
+                        active={currentItem === 'SignIn'}
+                        onClick={() => handleItemClick('SignIn')}
                     />
-            )
-        }
+                )
+            }
 
-      </Menu>
+            {
+                size.width > 1150 && signedUser &&
+                <Menu.Item
+                    position="right"
+                    style={{ top: "0.2em", color: "white", "padding-right": 0 }}>
+                    <h5>{userEmail}</h5>
+                </Menu.Item>
+            }
 
-     )
+
+            {
+                signedUser && (
+                    <Menu.Item
+                        position={size.width < 1150 ? "right" : ""}
+                        name='SignOut'
+                        active={currentItem === 'SignOut'}
+                        onClick={() => {
+                            handleItemClick('SignOut');
+                            signOut();
+                        }}
+                    />
+                )
+            }
+
+        </Menu>
+
+    )
 }
- 
+
 export default Navbar;

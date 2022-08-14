@@ -20,6 +20,10 @@
         "AdminQueries4b39eb17": {
           "deploymentBucketName": "amplify-annotationplatform-dev-212708-deployment",
           "s3Key": "amplify-builds/AdminQueries4b39eb17-437568717a4a725a5a71-build.zip"
+        },
+        "amplifyInterAnnotatorAgreement": {
+          "deploymentBucketName": "amplify-annotationplatform-dev-212708-deployment",
+          "s3Key": "amplify-builds/amplifyInterAnnotatorAgreement-466e5463447464765957-build.zip"
         }
       }
     }

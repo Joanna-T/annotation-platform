@@ -64,6 +64,7 @@ const AnnotationPage = ({annotationText, handleLabelChange, parentLabels}) => {
       onClick={() => setTag("Relevancy")}>
         Relevancy
       </Button>
+      <Button content='Restart' icon='eraser' labelPosition='left' onClick={() => handleLabelChange([])}/>
 
           <Segment style={{overflow: 'auto', maxHeight: '100vh' }}>
             {

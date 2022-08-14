@@ -1,5 +1,7 @@
 const numAnnotators = process.env.REACT_APP_NUMBER_CURATORS;
 
+//questions is questionForm data item
+//grouped_tasks is list of task data items grouped by document title
 export const groupAnswers = (questions, grouped_tasks) => {
     //groups answers into form 
     // {
@@ -18,7 +20,7 @@ export const groupAnswers = (questions, grouped_tasks) => {
     // }
     let answerObj = {}
     for (let i = 0; i < questions.length; i++) {
-        
+
         answerObj[questions[i].question_description] = []
         for (let j = 0; j < grouped_tasks.length; j++) {
             let tempOptions = {}
@@ -34,8 +36,8 @@ export const groupAnswers = (questions, grouped_tasks) => {
                 if (taskAnswers == null) {
                     continue;
                 }
-                for (const [key,value] of Object.entries(taskAnswers)) {
-                    console.log("pairs",key,value)
+                for (const [key, value] of Object.entries(taskAnswers)) {
+                    console.log("pairs", key, value)
                     if (value in tempOptions) {
                         tempOptions[value]++;
                     }
@@ -52,28 +54,28 @@ export const groupAnswers = (questions, grouped_tasks) => {
 }
 
 
-export const calculateAllFleissKappa  = (results, tasks) => {
+export const calculateAllFleissKappa = (results, tasks) => {
     let kappaValues = {}
     let aggregatedBarData = []
 
-    for (const [key,value] of Object.entries(results)) {
+    for (const [key, value] of Object.entries(results)) {
         let result = calculateFleissKappa(key, value, tasks)
         kappaValues[key] = result["kappaValue"]
         aggregatedBarData.push(result["aggregatedCategoryData"])
         //kappaValues[key] = calculateFleissKappa(key, value, tasks)
     }
 
-    console.log("calculateallFleissKappa",kappaValues,aggregatedBarData)
+    console.log("calculateallFleissKappa", kappaValues, aggregatedBarData)
 
     return {
         "aggregatedBarData": aggregatedBarData,
-        "kappaValues":kappaValues
+        "kappaValues": kappaValues
     }
     // setAggregatedBarData(aggregatedBarData)
     // setFleissKappa(kappaValues)
 }
 
-const calculateFleissKappa = (category,values, tasks) => {
+const calculateFleissKappa = (category, values, tasks) => {
     //values is list of objects of form:
     // {
     //     "option1": 1,
@@ -95,7 +97,7 @@ const calculateFleissKappa = (category,values, tasks) => {
 
     // ]
     //console.log("fliss",tasks)
-    console.log("values________",values)
+    console.log("values________", values)
     let tempBarData = [];
 
     let numInstances = values.length;
@@ -111,7 +113,7 @@ const calculateFleissKappa = (category,values, tasks) => {
     })
     console.log("resulttsl", resultTotals)
 
-    for (let i = 0; i < values.length; i++ ) {
+    for (let i = 0; i < values.length; i++) {
         let temp = 0
         let singleCategory = false;
 
@@ -141,13 +143,13 @@ const calculateFleissKappa = (category,values, tasks) => {
         if (singleCategory) {
             continue;
         }
-        let multiplier = 1/(numAnnotators * (numAnnotators - 1))
+        let multiplier = 1 / (numAnnotators * (numAnnotators - 1))
         temp = multiplier * (temp - numAnnotators)
         I.push(temp)
     }
 
-    console.log("I",I)
-    console.log("results",resultTotals)
+    console.log("I", I)
+    console.log("results", resultTotals)
 
     //setAggregatedBarData(state => [...state, {...resultTotals, "category": category}]);
     let aggregatedCategoryData = {
@@ -156,7 +158,7 @@ const calculateFleissKappa = (category,values, tasks) => {
     }
 
     let P_e_mean = 0
-    for ( const [key, value] of Object.entries(resultTotals)) {
+    for (const [key, value] of Object.entries(resultTotals)) {
         let temp = value / numAnnotations;
         P_e_mean += temp * temp;
 
@@ -169,7 +171,7 @@ const calculateFleissKappa = (category,values, tasks) => {
 
     console.log("pmean", Pmean)
 
-    let kappa = (Pmean - P_e_mean)/(1 - P_e_mean);
+    let kappa = (Pmean - P_e_mean) / (1 - P_e_mean);
 
     if (!kappa) {
         return 0;
@@ -179,8 +181,9 @@ const calculateFleissKappa = (category,values, tasks) => {
     // }
     return {
         "kappaValue": kappa.toFixed(3),
-        "aggregatedCategoryData": aggregatedCategoryData 
+        "aggregatedCategoryData": aggregatedCategoryData
     }
 
 
 }
+
