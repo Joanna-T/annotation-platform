@@ -12,7 +12,7 @@ const ActiveTasks = () => {
     const [questions, setQuestions] = useState([]);
     //const [questionNumber, setQuestionNumber] = useState(false);
     useEffect(() => {
-        fetchQuestions("AWS_IAM")
+        fetchQuestions("API_KEY")
             .then(result => {
                 let questionsArray = []
                 result.forEach(item => {
