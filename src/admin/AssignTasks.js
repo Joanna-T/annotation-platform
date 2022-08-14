@@ -2,17 +2,19 @@ import { useState, useEffect } from "react";
 import { listQuestionForms } from "../graphql/queries";
 import { createAnnotationTask, createMedicalQuestion } from "../graphql/mutations";
 import { API, Storage, Amplify, Auth } from "aws-amplify";
-import { Segment,
-         Grid,
-         Button,
-        Input,
-        Label,
-        Card,
-        Accordion,
-        Icon,
-        Checkbox,
-        Message,
-        Modal} from "semantic-ui-react";
+import {
+  Segment,
+  Grid,
+  Button,
+  Input,
+  Label,
+  Card,
+  Accordion,
+  Icon,
+  Checkbox,
+  Message,
+  Modal
+} from "semantic-ui-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Layout from "../Layout";
 import { fetchQuestionForms, listCurators } from "../queryUtils";
@@ -20,16 +22,16 @@ import { submitQuestion, submitTask } from "../mutationUtils";
 import { distributeAnnotationTasks } from "./assignTaskUtils";
 
 const object = {
-    "hello": "there",
-    "this" : "is an object",
-    "hello1": "there",
-    "this1" : "is an object",
-    "hello2": "there",
-    "this2" : "is an object",
-    "hello3": "there",
-    "this3" : "is an object",
-    "hello4": "there",
-    "this4" : "is an object"
+  "hello": "there",
+  "this": "is an object",
+  "hello1": "there",
+  "this1": "is an object",
+  "hello2": "there",
+  "this2": "is an object",
+  "hello3": "there",
+  "this3": "is an object",
+  "hello4": "there",
+  "this4": "is an object"
 }
 
 const testUsers = ["Steve", "Jo", "Phyllis", "Steph"];
@@ -43,36 +45,36 @@ const testQuestionForm = {
 }
 
 const AssignTasks = () => {
-    const [ questionForms, setQuestionForms ] = useState(null);
-    const [ chosenQuestionForm, setChosenQuestionForm ] = useState(null);
+  const [questionForms, setQuestionForms] = useState(null);
+  const [chosenQuestionForm, setChosenQuestionForm] = useState(null);
 
-    const [ medicalQuestion, setMedicalQuestion] = useState("");
-    const [ folders, setFolders ] = useState(null)
-    const [ chosenFolder, setChosenFolder ] = useState(null)
-    
+  const [medicalQuestion, setMedicalQuestion] = useState("");
+  const [folders, setFolders] = useState(null)
+  const [chosenFolder, setChosenFolder] = useState(null)
 
-    const [ activeIndex, setActiveIndex] = useState(null);
-    const [ open, setOpen ] = useState(false)
-    const [ warningMessage, setWarningMessage ] = useState(false);
 
-    const navigate = useNavigate();
-    useEffect(() => {
-      //distributeAnnotationTasks(testQuestionForm, testDocuments, testQuestion, testUsers);
-      fetchDocumentFolders()
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [open, setOpen] = useState(false)
+  const [warningMessage, setWarningMessage] = useState(false);
 
-      fetchQuestionForms()
+  const navigate = useNavigate();
+  useEffect(() => {
+    //distributeAnnotationTasks(testQuestionForm, testDocuments, testQuestion, testUsers);
+    fetchDocumentFolders()
+
+    fetchQuestionForms()
       .then(questions => {
         setQuestionForms(questions)
       })
-      //listCurators();
-    }, [])
+    //listCurators();
+  }, [])
 
-    useEffect(() => {
-      console.log(medicalQuestion);
-    }, [medicalQuestion])
+  useEffect(() => {
+    console.log(medicalQuestion);
+  }, [medicalQuestion])
 
-    async function fetchDocumentFolders() {
-      Storage.list('') // add bucket name after this has been configured
+  async function fetchDocumentFolders() {
+    Storage.list('') // add bucket name after this has been configured
       .then(result => {
         let files = []
         let folders = []
@@ -80,71 +82,71 @@ const AssignTasks = () => {
           if (res.size) {
             files.push(res)
             // sometimes files declare a folder with a / within then
-            let possibleFolder = res.key.split('/').slice(0,-1).join('/')
+            let possibleFolder = res.key.split('/').slice(0, -1).join('/')
             if (possibleFolder) folders.push(possibleFolder)
           } else {
             folders.push(res.key)
           }
         })
         const filteredFolders = folders.filter(folder => folder.includes("/"))
-        console.log("filteredFolders",filteredFolders)
+        console.log("filteredFolders", filteredFolders)
         //return filteredFolders
         setFolders(filteredFolders)
         //console.log("folder1", folders)
         //return {files, folders}
       })
       .catch(err => console.log(err));
-    }
-
-    // async function fetchQuestionForms() {
-    //   const formData = await API.graphql({
-    //     query: listQuestionForms,
-    //     authMode: "AMAZON_COGNITO_USER_POOLS"
-
-    // })
-    // console.log("question forms",formData.data.listQuestionForms.items);
-    // return formData.data.listQuestionForms.items
-    // //setQuestionForms(formData.data.listQuestionForms.items);
-    // }
-
-    const handleAccordionClick = (index) => {
-        console.log(index);
-        if (index === activeIndex) {
-          setActiveIndex(-1);
-          return
-        }
-        setActiveIndex(index);
-    }
-
-    const handleQuestionCheckbox = (form, data) => {
-      if (data.checked) {
-        setChosenQuestionForm(form)
-      } else {
-        setChosenQuestionForm(null)
-      }
   }
-    const handleFolderCheckbox = (folder, data) => {
-      if (data.checked) {
-        setChosenFolder(folder);
-      } else {
-        setChosenFolder(null);
-      }
-    }
 
-    async function handleSubmit() {
-      // if (!chosenFolder || !chosenQuestionForm || !medicalQuestion) {
-      //   setWarningMessage(true);
-      //   return
-      // }
-      Promise.all([submitQuestion(medicalQuestion),listCurators()])
-      .then( results => {
+  // async function fetchQuestionForms() {
+  //   const formData = await API.graphql({
+  //     query: listQuestionForms,
+  //     authMode: "AMAZON_COGNITO_USER_POOLS"
+
+  // })
+  // console.log("question forms",formData.data.listQuestionForms.items);
+  // return formData.data.listQuestionForms.items
+  // //setQuestionForms(formData.data.listQuestionForms.items);
+  // }
+
+  const handleAccordionClick = (index) => {
+    console.log(index);
+    if (index === activeIndex) {
+      setActiveIndex(-1);
+      return
+    }
+    setActiveIndex(index);
+  }
+
+  const handleQuestionCheckbox = (form, data) => {
+    if (data.checked) {
+      setChosenQuestionForm(form)
+    } else {
+      setChosenQuestionForm(null)
+    }
+  }
+  const handleFolderCheckbox = (folder, data) => {
+    if (data.checked) {
+      setChosenFolder(folder);
+    } else {
+      setChosenFolder(null);
+    }
+  }
+
+  async function handleSubmit() {
+    // if (!chosenFolder || !chosenQuestionForm || !medicalQuestion) {
+    //   setWarningMessage(true);
+    //   return
+    // }
+    Promise.all([submitQuestion(medicalQuestion, "API_KEY"), listCurators()])
+      .then(results => {
         if (results[1].length < process.env.REACT_APP_NUMBER_CURATORS) {
           console.log("Insufficient number of curators")
           return
         }
         distributeAnnotationTasks(chosenQuestionForm, chosenFolder, results[0], results[1])
         console.log("distribution finished")
-        
+
       })
       // .then(async result => {
       //   console.log("assign tasks new tasks", result)
@@ -155,152 +157,152 @@ const AssignTasks = () => {
       //     // newTasks.forEach(task => {
       //     //   submitTask(task)
       //     // })
-     
+
       //   navigate("/");
       // })
       .catch(err => console.log(err))
-      navigate("/")
-    }
-    return (  
-      <Layout>
-          {
-            warningMessage && (
-              <Message
-                color="red"
-                onDismiss={() => setWarningMessage(false)}
-                content='Please fill in all fields.'
-              />
-            )
-          }
-          <Segment basic>
-          <h4>Please fill in the details below to create a new annotation task.
-              Click "Create tasks" to submit details.
-          </h4>
-          </Segment>
-          <Segment style={{overflow: 'auto', "text-align": "left" }}>
-              <p>
-              <Icon name='hand point right' />
-                  Please enter the new medical question below
-                  </p>
-          <Input fluid icon='pencil' placeholder='Question here...' onChange={event => setMedicalQuestion(event.target.value)}/>
-          <br></br>
-          <p>
-          <Icon name='hand point right' />
-              Please select the questions form to be asked to the annotators.
-              </p>
-            <p> Chosen form:  <Label color='grey' horizontal>
-        {chosenQuestionForm ? chosenQuestionForm.form_description : "Please pick a question form from below"}
-      </Label></p>
-            <Segment style={{overflow: "auto",maxHeight: '30vh'}}>
-              {questionForms ? (questionForms.map((form, index) =>{
-                  return(
-                <Card style={{ "margin-bottom": 5, "text-align": "left", "padding": "2%"}}fluid >
-                <Accordion>
-            <Accordion.Title
-              active={activeIndex === index}
-              index={index}
-            >
-              <Icon 
-              onClick={() => handleAccordionClick(index)}
-              name='dropdown' />
-              {form.form_description}
-              <Checkbox
-              checked={chosenQuestionForm === form}
-              style={{"float": "right"}}
-              onChange={(event,data) => handleQuestionCheckbox(form, data)} />
-            </Accordion.Title>
-            <Accordion.Content active={activeIndex === index}>
-                <p style ={{"white-space": "pre-wrap"}}>
-                {JSON.stringify(JSON.parse(form.questions), null, 4)}
-                </p>
-                
-              
-            </Accordion.Content>
-    
-            </Accordion>
-                    </Card>
-                  )
-                }))
-                : "Loading forms..."
-                
-              }
-            
-    {/* <Card style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid header='Option 2' />
-    <Card style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid header='Option 3' /> */}
-            </Segment>
-
-            <br></br>
-            <p>
-            <Icon name='hand point right' />
-                Please choose the S3 folder containing the relevant documents to be annotated.
-                </p>
-            <p>Chosen folder: 
-            <Label color='grey' horizontal>
-        {chosenFolder ? chosenFolder : "Please pick a document folder from below"}
-      </Label>
-            </p>
-            <Segment style={{overflow: "auto",maxHeight: '30vh'}}>
-            {
-              folders ? (folders.map((folder, index) => {
-                return (
-                  <Card style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "3%"}}fluid>
-                  <p>{folder}
-                  <Checkbox 
-                  checked={chosenFolder === folder}
-                  style={{"float": "right"}}
-                  onChange={(event,data) => handleFolderCheckbox(folder, data)} />
-                  </p>
-                  </Card>
-                )
-              }))
-              : "Loading folders..."
-              
-              
-            }
-            
-            </Segment>
-
-            { !chosenFolder || !chosenQuestionForm || !medicalQuestion ?
-      <Button 
-        color='grey'
-        onClick={() => {
-            setWarningMessage(true);
-        }}
-        >
-            Submit
-            </Button>
-      : 
-      <Modal
-      open={open}
-      onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      trigger={<Button 
-       color='blue' > 
-           Submit
-           </Button>}
-      //content='You will not be able to make any more changes to this annotation task.'
-      //actions={['Submit', { key: 'done', content: 'Back to annotating', positive: true }]}
-    >
-    <Modal.Header> Are you sure you want to create new tasks?</Modal.Header>
-    <Modal.Actions>
-        <Button color="green" onClick={handleSubmit}>
-        Submit
-        </Button>
-        <Button
-        color="red"
-        labelPosition='right'
-        icon='checkmark'
-        onClick={() => setOpen(false)}>
-          Back to form
-        </Button>
-    </Modal.Actions>
-
-    </Modal>
+    navigate("/")
+  }
+  return (
+    <Layout>
+      {
+        warningMessage && (
+          <Message
+            color="red"
+            onDismiss={() => setWarningMessage(false)}
+            content='Please fill in all fields.'
+          />
+        )
       }
-          </Segment>
-          </Layout>
-       
-     );
+      <Segment basic>
+        <h4>Please fill in the details below to create a new annotation task.
+          Click "Create tasks" to submit details.
+        </h4>
+      </Segment>
+      <Segment style={{ overflow: 'auto', "text-align": "left" }}>
+        <p>
+          <Icon name='hand point right' />
+          Please enter the new medical question below
+        </p>
+        <Input fluid icon='pencil' placeholder='Question here...' onChange={event => setMedicalQuestion(event.target.value)} />
+        <br></br>
+        <p>
+          <Icon name='hand point right' />
+          Please select the questions form to be asked to the annotators.
+        </p>
+        <p> Chosen form:  <Label color='grey' horizontal>
+          {chosenQuestionForm ? chosenQuestionForm.form_description : "Please pick a question form from below"}
+        </Label></p>
+        <Segment style={{ overflow: "auto", maxHeight: '30vh' }}>
+          {questionForms ? (questionForms.map((form, index) => {
+            return (
+              <Card style={{ "margin-bottom": 5, "text-align": "left", "padding": "2%" }} fluid >
+                <Accordion>
+                  <Accordion.Title
+                    active={activeIndex === index}
+                    index={index}
+                  >
+                    <Icon
+                      onClick={() => handleAccordionClick(index)}
+                      name='dropdown' />
+                    {form.form_description}
+                    <Checkbox
+                      checked={chosenQuestionForm === form}
+                      style={{ "float": "right" }}
+                      onChange={(event, data) => handleQuestionCheckbox(form, data)} />
+                  </Accordion.Title>
+                  <Accordion.Content active={activeIndex === index}>
+                    <p style={{ "white-space": "pre-wrap" }}>
+                      {JSON.stringify(JSON.parse(form.questions), null, 4)}
+                    </p>
+
+
+                  </Accordion.Content>
+
+                </Accordion>
+              </Card>
+            )
+          }))
+            : "Loading forms..."
+
+          }
+
+          {/* <Card style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid header='Option 2' />
+    <Card style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid header='Option 3' /> */}
+        </Segment>
+
+        <br></br>
+        <p>
+          <Icon name='hand point right' />
+          Please choose the S3 folder containing the relevant documents to be annotated.
+        </p>
+        <p>Chosen folder:
+          <Label color='grey' horizontal>
+            {chosenFolder ? chosenFolder : "Please pick a document folder from below"}
+          </Label>
+        </p>
+        <Segment style={{ overflow: "auto", maxHeight: '30vh' }}>
+          {
+            folders ? (folders.map((folder, index) => {
+              return (
+                <Card style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "3%" }} fluid>
+                  <p>{folder}
+                    <Checkbox
+                      checked={chosenFolder === folder}
+                      style={{ "float": "right" }}
+                      onChange={(event, data) => handleFolderCheckbox(folder, data)} />
+                  </p>
+                </Card>
+              )
+            }))
+              : "Loading folders..."
+
+
+          }
+
+        </Segment>
+
+        {!chosenFolder || !chosenQuestionForm || !medicalQuestion ?
+          <Button
+            color='grey'
+            onClick={() => {
+              setWarningMessage(true);
+            }}
+          >
+            Submit
+          </Button>
+          :
+          <Modal
+            open={open}
+            onClose={() => setOpen(false)}
+            onOpen={() => setOpen(true)}
+            trigger={<Button
+              color='blue' >
+              Submit
+            </Button>}
+          //content='You will not be able to make any more changes to this annotation task.'
+          //actions={['Submit', { key: 'done', content: 'Back to annotating', positive: true }]}
+          >
+            <Modal.Header> Are you sure you want to create new tasks?</Modal.Header>
+            <Modal.Actions>
+              <Button color="green" onClick={handleSubmit}>
+                Submit
+              </Button>
+              <Button
+                color="red"
+                labelPosition='right'
+                icon='checkmark'
+                onClick={() => setOpen(false)}>
+                Back to form
+              </Button>
+            </Modal.Actions>
+
+          </Modal>
+        }
+      </Segment>
+    </Layout>
+
+  );
 }
 
 // async function submitQuestion(question) {
@@ -349,7 +351,7 @@ const AssignTasks = () => {
 //             questionFormID: questionForm.id,
 //             completed: false
 //           })
-          
+
 //         }
 //         documentCounter++;
 //       }
@@ -428,5 +430,5 @@ const AssignTasks = () => {
 
 
 
- 
+
 export default AssignTasks;

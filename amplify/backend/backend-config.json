@@ -107,7 +107,29 @@
     "annotationdocuments": {
       "service": "S3",
       "providerPlugin": "awscloudformation",
-      "dependsOn": []
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "annotationplatformac3c8d5b",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "auth",
+          "resourceName": "userPoolGroups",
+          "attributes": [
+            "AdminGroupRole"
+          ]
+        },
+        {
+          "category": "auth",
+          "resourceName": "userPoolGroups",
+          "attributes": [
+            "CuratorsGroupRole"
+          ]
+        }
+      ]
     }
   },
   "function": {

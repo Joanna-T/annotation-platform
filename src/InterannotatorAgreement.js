@@ -9,7 +9,7 @@ import { groupAnswers, calculateAllFleissKappa } from "./curationScoreUtils";
 const InterannotatorAgreement = ({ grouped_tasks }) => {
   const [groupedAnswers, setGroupedAnswers] = useState([]);
   const [questionForm, setQuestionForm] = useState(null);
-  const [fleissKappa, setFleissKappa] = useState()
+  const [fleissKappa, setFleissKappa] = useState(null)
   const [aggregatedBarData, setAggregatedBarData] = useState(null);
   const [semanticAgreement, setSemanticAgreement] = useState(null);
 
@@ -19,12 +19,26 @@ const InterannotatorAgreement = ({ grouped_tasks }) => {
 
     fetchQuestion(grouped_tasks[0][0].questionID, "API_KEY")
       .then(result => {
+        console.log("interannotator result", result)
+        //if (!result.includes(undefined) && !result.includes(null)) {
+        let semanticAgreement;
         let parsedFleissKappa = JSON.parse(JSON.parse(result.interannotatorAgreement))
         let parsedAggregatedData = JSON.parse(JSON.parse(result.aggregatedAnswers))
-        let parsedSemanticAgreement = JSON.parse(JSON.parse(result.semanticAgreement))
+        if (!result.semanticAgreement) {
+          semanticAgreement = 0
+        }
+        else {
+          semanticAgreement = JSON.parse(JSON.parse(result.semanticAgreement))
+          semanticAgreement = semanticAgreement["semanticAgreement"]
+        }
+
+        console.log("parsedfleiss", parsedFleissKappa)
+        console.log("parsedaggreg", parsedAggregatedData)
         setFleissKappa(parsedFleissKappa)
         setAggregatedBarData(parsedAggregatedData)
-        setSemanticAgreement(parsedSemanticAgreement["semanticAgreement"])
+        setSemanticAgreement(semanticAgreement)
+        //}
+
 
       })
 
@@ -251,8 +265,9 @@ const InterannotatorAgreement = ({ grouped_tasks }) => {
 
 
   return (<div style={{ "max-height": "65vh", "overflow": "auto" }}>
-    {semanticAgreement &&
-      <p style={{ display: "inline" }}> The overall semantic agreement between annotator labels is: <b>{semanticAgreement.toFixed(3)}</b></p>}
+    {
+      <p style={{ display: "inline" }}> The overall semantic agreement between annotator labels is: <b>{semanticAgreement && semanticAgreement.toFixed(3)}</b></p>
+    }
     {"  "}
     <Modal
       trigger={<Button size="mini" circular icon='question' />}

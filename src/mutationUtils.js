@@ -6,13 +6,16 @@ import {
     updateMedicalQuestion
 } from "./graphql/mutations";
 
-export async function submitTask(task) {
+export async function submitTask(task, authMethod) {
+    if (!authMethod) {
+        authMethod = "AMAZON_COGNITO_USER_POOLS"
+    }
     let createdTasks = await API.graphql({
         query: createAnnotationTask,
         variables: {
             input: task
         },
-        authMode: "AMAZON_COGNITO_USER_POOLS"
+        authMode: authMethod
     })
     console.log("this is the final submitted task", createdTasks)
 
@@ -28,7 +31,10 @@ export async function updateTask(inputTask) {
     })
 }
 
-export async function submitQuestion(question) {
+export async function submitQuestion(question, authMethod) {
+    if (!authMethod) {
+        authMethod = "AMAZON_COGNITO_USER_POOLS"
+    }
     const questionObj = {
         text: question
     }
@@ -38,7 +44,7 @@ export async function submitQuestion(question) {
         variables: {
             input: questionObj
         },
-        authMode: "AMAZON_COGNITO_USER_POOLS"
+        authMode: authMethod
     })
     console.log("this is the created question", createdQuestion.data.createMedicalQuestion);
     return createdQuestion.data.createMedicalQuestion

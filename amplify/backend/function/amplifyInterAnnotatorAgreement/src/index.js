@@ -215,8 +215,8 @@ async function updateQuestionCurationResults(question, questionForm, tasks) {
 
     return {
       id: question.id,
-      interannotatorAgreement: result["kappaValues"],
-      aggregatedAnswers: result["aggregatedBarData"]
+      interannotatorAgreement: JSON.stringify(result["kappaValues"]),
+      aggregatedAnswers: JSON.stringify(result["aggregatedBarData"])
 
     }
   } catch (err) {
@@ -448,14 +448,17 @@ const calculateFleissKappa = (category, values, tasks) => {
   let kappa = (Pmean - P_e_mean) / (1 - P_e_mean);
 
   if (!kappa) {
-    return 0;
+    return {
+      "kappaValue": 0 + " (Poor agreement)",
+      "aggregatedCategoryData": aggregatedCategoryData
+    }
   }
   // if (kappa < 0) {
   //     return "-"
   // }
   if (numInstances < (values.length)) {
     return {
-      "kappaValue": kappa.toFixed(3) + "(Incomplete Data)",
+      "kappaValue": kappa.toFixed(3) + " (Incomplete Data)",
       "aggregatedCategoryData": aggregatedCategoryData
     }
   }

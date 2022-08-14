@@ -1,5 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
+import React, { useLayoutEffect } from "react";
 import Navbar from './Navbar.js';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from './Home';
@@ -27,6 +28,15 @@ Amplify.configure(awsmobile);
 
 
 function App() {
+  useLayoutEffect(() => {
+    //check local token or something
+    // console.log = () => { };
+    // console.warn = () => { };
+    // console.error = () => { };
+
+    // Look ma, no error!
+    console.error('Something bad happened.');
+  }, []);
   return (
     <Router>
       <div className="App">

@@ -27,5 +27,34 @@
         }
       }
     }
+  },
+  "local": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-annotationplatform-local-191413-authRole",
+      "UnauthRoleArn": "arn:aws:iam::474076373312:role/amplify-annotationplatform-local-191413-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::474076373312:role/amplify-annotationplatform-local-191413-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-annotationplatform-local-191413-deployment",
+      "UnauthRoleName": "amplify-annotationplatform-local-191413-unauthRole",
+      "StackName": "amplify-annotationplatform-local-191413",
+      "StackId": "arn:aws:cloudformation:eu-west-2:474076373312:stack/amplify-annotationplatform-local-191413/e6e06e90-1bfc-11ed-93ec-0a0a3112e8da",
+      "AmplifyAppId": "dga9il4i162cv"
+    },
+    "categories": {
+      "auth": {
+        "annotationplatformac3c8d5b": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "AdminQueries4b39eb17": {
+          "deploymentBucketName": "amplify-annotationplatform-local-191413-deployment",
+          "s3Key": "amplify-builds/AdminQueries4b39eb17-437568717a4a725a5a71-build.zip"
+        },
+        "amplifyInterAnnotatorAgreement": {
+          "deploymentBucketName": "amplify-annotationplatform-local-191413-deployment",
+          "s3Key": "amplify-builds/amplifyInterAnnotatorAgreement-6a5336784f4e6a73754e-build.zip"
+        }
+      }
+    }
   }
 }

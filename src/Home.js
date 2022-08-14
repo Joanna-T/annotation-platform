@@ -22,13 +22,13 @@ const Home = () => {
     //const [questionNumber, setQuestionNumber] = useState(false);
     useEffect(() => {
         //API.graphql(graphqlOperation(listMedicalQuestions))
-        fetchQuestions("AWS_IAM")
+        fetchQuestions("API_KEY")
             .then(result => {
                 let questionsArray = []
                 result.forEach(item => {
                     let groupedTasks = groupTasksByDocument(item.tasks.items);
                     let completedTasks = findCompletedTasks(groupedTasks)
-                    if (completedTasks >= process.env.REACT_APP_NUMBER_CURATORS) {
+                    if (completedTasks === groupedTasks.length) { //length is total number of documents
                         item["total_tasks"] = groupedTasks.length;
                         item["complete_tasks"] = completedTasks
                         questionsArray.push(item)
@@ -48,7 +48,8 @@ const Home = () => {
     }
     async function fetchQuestions() {
         const questionsData = await API.graphql({
-            query: listMedicalQuestions
+            query: listMedicalQuestions,
+            authMode: "API_KEY"
 
         })
         console.log("questions", questionsData.data.listMedicalQuestions.items);

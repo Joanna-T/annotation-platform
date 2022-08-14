@@ -127,7 +127,7 @@ const Navbar = () => {
     //      );
 
     return (
-        <Menu primary pointing color="blue" inverted size="large" >
+        <Menu pointing color="blue" inverted size="large" >
             {size.width > 500 ?
                 <Menu.Item
                     style={{ top: "0.2em", color: "white" }}>

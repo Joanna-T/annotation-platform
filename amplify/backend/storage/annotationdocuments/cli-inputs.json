@@ -11,6 +11,16 @@
     "READ",
     "DELETE"
   ],
-  "triggerFunction": "NONE",
-  "groupAccess": {}
+  "groupAccess": {
+    "Admin": [
+      "CREATE_AND_UPDATE",
+      "READ",
+      "DELETE"
+    ],
+    "Curators": [
+      "CREATE_AND_UPDATE",
+      "READ",
+      "DELETE"
+    ]
+  }
 }

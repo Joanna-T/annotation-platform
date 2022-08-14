@@ -19,7 +19,7 @@ const ActiveTasks = () => {
                     console.log("activetasks for question", item, item.tasks)
                     let groupedTasks = groupTasksByDocument(item.tasks.items);
                     let completedTasks = findCompletedTasks(groupedTasks)
-                    if (completedTasks <= process.env.REACT_APP_NUMBER_CURATORS) {
+                    if (completedTasks < groupedTasks.length) { //length of grouped tasks is number of documents
                         item["total_tasks"] = groupedTasks.length;
                         item["complete_tasks"] = completedTasks
                         questionsArray.push(item)

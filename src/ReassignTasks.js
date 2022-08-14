@@ -26,7 +26,7 @@ const ReassignTasks = () => {
 
     useEffect(() => {
         //queryUtils.fetchQuestions().then(result => {
-        fetchQuestions().then(result => {
+        fetchQuestions("API_KEY").then(result => {
             findIncompleteQuestions(result);
         })
     },[])
@@ -277,7 +277,7 @@ const ReassignTasks = () => {
     <Modal.Header> Are you sure you want to reassign these tasks?</Modal.Header>
     <Modal.Actions>
         <Button color="green" onClick={() => {
-            createReassignedTasks(allQuestionTasks[chosenQuestion.id]).forEach(result => submitTask(result))
+            createReassignedTasks(allQuestionTasks[chosenQuestion.id]).forEach(result => submitTask(result, "API_KEY"))
         }}>
         Submit
         </Button>
