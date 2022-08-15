@@ -10,7 +10,6 @@ import { fetchQuestions } from "../queryUtils";
 
 const ActiveTasks = () => {
     const [questions, setQuestions] = useState([]);
-    //const [questionNumber, setQuestionNumber] = useState(false);
     useEffect(() => {
         fetchQuestions("API_KEY")
             .then(result => {
@@ -28,7 +27,6 @@ const ActiveTasks = () => {
                 setQuestions(questionsArray)
 
             });
-        //fetchQuestions();
     }, [])
 
     if (questions.length === 0) {

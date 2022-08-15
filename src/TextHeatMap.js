@@ -4,46 +4,17 @@ const TextHeatMap = ({ documentLabels, documentText, tag }) => {
   const [highlightedText, setHighlightedText] = useState("Loading text...");
 
   const [labelsText, setLabelsText] = useState({})
-  const label = [{
-    start: 10,
-    end: 20
-
-  },
-  {
-    start: 25,
-    end: 30
-  },
-
-  {
-    start: 0,
-    end: 35
-  },
-  {
-    start: 5,
-    end: 15
-  }
-
-  ]
-  const [text1, setText] = useState("Loading text...")
   const [labels, setLabels] = useState(documentLabels)
-  let text_1 = "There is a very very very very long sentence........................................."
+  let text_1 = ""
 
-
-  // useEffect(() => {
-  //   Promise.all(setText(documentText), setLabels(documentLabels)).then(() => {
-  //     insertSpan();
-  //   })
-
-
-  // }, [documentText, documentLabels])
 
   useEffect(() => {
     setLabels(documentLabels)
-    //insertSpan();
+
   }, [documentLabels])
 
   useEffect(() => {
-    console.log("this is heatmap???????????????????", documentText)
+    console.log("this is heatmap?", documentText)
     insertSpan(documentText, "Summary");
     setLabelsText({})
   }, [documentText])
@@ -57,7 +28,6 @@ const TextHeatMap = ({ documentLabels, documentText, tag }) => {
 
     console.log("InsertSpan called")
     if (labelType in labelsText && labelsText[labelType] !== "Loading text...") {
-      console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##")
       setHighlightedText(labelsText[labelType])
       return
     }
@@ -65,7 +35,7 @@ const TextHeatMap = ({ documentLabels, documentText, tag }) => {
 
     let text = documentText
     let tempLabels = [...documentLabels];
-    //let text = text1;
+
     for (let i = 0; i < tempLabels.length; i++) {
       if (tempLabels[i].tag === labelType) {
         console.log()
@@ -73,7 +43,7 @@ const TextHeatMap = ({ documentLabels, documentText, tag }) => {
         let spanElementEnd = `</span>`;
         text = text.slice(0, tempLabels[i].start) + spanElementStart + text.slice(tempLabels[i].start)
         text = text.slice(0, tempLabels[i].end + spanElementStart.length) + spanElementEnd + text.slice(tempLabels[i].end + spanElementStart.length)
-        //console.log("this the html ", text)
+
         for (let j = i + 1; j < tempLabels.length; j++) {
           console.log("object before alteration", tempLabels[j])
           if (tempLabels[j].tag !== labelType) {
@@ -129,7 +99,7 @@ const TextHeatMap = ({ documentLabels, documentText, tag }) => {
 
     setHighlightedText(text)
     console.log("highlighted text", text)
-    //setLabels(labels)
+
   }
 
 

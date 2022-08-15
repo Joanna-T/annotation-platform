@@ -1,9 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { Auth, Hub } from "aws-amplify";
-import { Authenticator } from "@aws-amplify/ui-react";
-import { useNavigate, Link } from "react-router-dom";
-import { Menu, Icon, Dropdown } from "semantic-ui-react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { Menu, Icon } from "semantic-ui-react";
 import useWindowSize from "./useWindowSize";
 
 
@@ -12,6 +11,11 @@ const Navbar = () => {
     const [admin, setAdmin] = useState(false);
     const [userEmail, setUserEmail] = useState("")
     const size = useWindowSize();
+    const location = useLocation()
+
+    useEffect(() => {
+        console.log('handle route change here', location)
+    }, [location])
 
 
     const [currentItem, setCurrentItem] = useState("Home")
@@ -23,10 +27,6 @@ const Navbar = () => {
         Auth.signOut();
         setSignedUser(false);
         navigate("/");
-
-
-        // .then(data => console.log(data))
-        // .catch(err => console.log(err));
     }
 
     useEffect(() => {
@@ -64,67 +64,6 @@ const Navbar = () => {
         } catch (err) { }
     }
 
-    //authListener();
-
-    // Hub.listen("auth", (data) => {
-    //     switch (data.payload.event) {
-    //         case "signin":
-    //             return setSignedUser(true);
-    //         case "signout":
-    //             return setSignedUser(false);
-    //     }
-    // })
-
-
-    //     return ( 
-    //  <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-    //   <a className="navbar-brand" href="#">AnnotateIt</a>
-    //   <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    //     <span className="navbar-toggler-icon"></span>
-    //   </button>
-    //   <div className="collapse navbar-collapse" id="navbarNav">
-    //     <ul className="navbar-nav">
-    //       <li className="nav-item active">
-    //         <a className="nav-link" href="/">Home </a>
-    //       </li>
-    //      {
-    //           signedUser && (
-    //          <li className="nav-item">
-    //             <a className="nav-link" href="/annotation_tasks">Tasks</a>
-    //         </li>
-    //           )
-    //       }
-    //       {
-    //           !signedUser && (
-    //          <li className="nav-item">
-    //             <a className="nav-link" href="/sign_in">Sign in</a>
-    //         </li>
-    //           )
-    //       }
-
-    //     {
-    //           signedUser && admin && (
-    //          <li className="nav-item">
-    //             <a className="nav-link" href="#">Assign tasks</a>
-    //         </li>
-    //           )
-    //       }
-
-    //     </ul>
-
-    //       {
-    //           signedUser && (
-    //             <button onClick={signOut} className="signOutButton">SignOut</button>
-
-    //           )
-    //       }
-
-
-
-    //   </div>
-    // </nav>
-
-    //      );
 
     return (
         <Menu pointing color="blue" inverted size="large" >

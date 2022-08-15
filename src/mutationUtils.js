@@ -1,4 +1,4 @@
-import { API, Storage, Amplify, Auth } from "aws-amplify";
+import { API } from "aws-amplify";
 import {
     createAnnotationTask,
     updateAnnotationTask,
@@ -18,6 +18,7 @@ export async function submitTask(task, authMethod) {
         authMode: authMethod
     })
     console.log("this is the final submitted task", createdTasks)
+    //return createdTasks
 
 }
 
@@ -50,26 +51,18 @@ export async function submitQuestion(question, authMethod) {
     return createdQuestion.data.createMedicalQuestion
 }
 
-// export async function submitTask(task) {
-//   let createdTasks = await API.graphql({
-//     query: createAnnotationTask,
-//     variables: {
-//         input: task
-//     },
-//     authMode: "AMAZON_COGNITO_USER_POOLS"
-// })
-//   console.log("this is the final submitted task", createdTasks)
-//   return createdTasks
-
-// }
-
 export async function updateQuestion(inputQuestion) {
-    await API.graphql({
-        query: updateMedicalQuestion,
-        variables: {
-            input: inputQuestion
-        },
-        authMode: "AMAZON_COGNITO_USER_POOLS"
-    })
+    try {
+        await API.graphql({
+            query: updateMedicalQuestion,
+            variables: {
+                input: inputQuestion
+            },
+            authMode: "AMAZON_COGNITO_USER_POOLS"
+        })
+    } catch (err) {
+        console.log(err)
+    }
+
 }
 

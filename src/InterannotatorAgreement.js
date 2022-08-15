@@ -264,18 +264,8 @@ const InterannotatorAgreement = ({ grouped_tasks }) => {
   ]
 
 
-  return (<div style={{ "max-height": "65vh", "overflow": "auto" }}>
-    {
-      <p style={{ display: "inline" }}> The overall semantic agreement between annotator labels is: <b>{semanticAgreement && semanticAgreement.toFixed(3)}</b></p>
-    }
-    {"  "}
-    <Modal
-      trigger={<Button size="mini" circular icon='question' />}
-      header='Semantic agreement'
-      content='The semantic agreement has been calculated by aggregating the text of the labels 
-      and comparing the different word vectors (multi-dimensional meaning representations of the words) of the annotator answers '
-      actions={[{ key: 'done', content: 'Done', positive: true }]}
-    />
+  return (<div style={{ "max-height": "50vh", "overflow": "auto" }}>
+
 
     <br />
     <p style={{ display: "inline" }}>The following are aggregated results for all documents across this question.

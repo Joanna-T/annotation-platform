@@ -5,7 +5,6 @@ import Navbar from './Navbar.js';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from './Home';
 import Tasks from './Tasks';
-//import Signin from './Signin';
 import SignInPage from './SignInPage';
 import TasksId from './TasksId';
 import AssignTasks from './admin/AssignTasks';
@@ -19,8 +18,8 @@ import ReassignTasks from './ReassignTasks';
 import CuratorViewResults from './curator/CuratorViewResults';
 import CuratorListResults from './curator/CuratorListResults';
 import { Auth } from "@aws-amplify/auth"
-// import { Authenticator } from '@aws-amplify/ui-react';
-// import '@aws-amplify/ui-react/styles.css';
+import PageNotFound from './PageNotFound'
+
 
 API.configure(awsmobile)
 Auth.configure(awsmobile)
@@ -29,12 +28,10 @@ Amplify.configure(awsmobile);
 
 function App() {
   useLayoutEffect(() => {
-    //check local token or something
-    // console.log = () => { };
-    // console.warn = () => { };
-    // console.error = () => { };
+    console.log = () => { };
+    console.warn = () => { };
+    console.error = () => { };
 
-    // Look ma, no error!
     console.error('Something bad happened.');
   }, []);
   return (
@@ -57,6 +54,8 @@ function App() {
             <Route exact path="/completed_tasks" element={<CompletedTasks />} />
             <Route exact path="/completed_curator_tasks" element={<CuratorListResults />} />
             <Route exact path="/completed_curator_tasks/:id" element={<CuratorViewResults />} />
+            <Route path="*" element={<PageNotFound />} />
+
           </Routes>
         </div>
       </div>

@@ -35,7 +35,7 @@ export async function listCurators() {
 
 export async function fetchQuestions(authMethod) {
   if (!authMethod) {
-    authMethod = "AMAZON_COGNITO_USER_POOL"
+    authMethod = "AMAZON_COGNITO_USER_POOLS"
   }
   const questionsData = await API.graphql({
     query: listMedicalQuestions,
@@ -43,7 +43,6 @@ export async function fetchQuestions(authMethod) {
 
   })
   console.log("questions", questionsData.data.listMedicalQuestions.items);
-  //setQuestions(questionsData.data.listMedicalQuestions.items);
   return questionsData.data.listMedicalQuestions.items
 
 }
@@ -73,18 +72,7 @@ export async function fetchTask(taskId) {
 
 
 export async function fetchDocument(documentTitle) {
-  // Storage.list('',
-  //   {
-  //     bucket: "pansurg-curation-workflo-kendraqueryresults50d0eb-open-data",
-  //     //bucket: process.env.REACT_APP_S3_BUCKET,
-  //     region: "eu-west-2"
-  //   }) // for listing ALL files without prefix, pass '' instead
-  //   .then(result => console.log("this is the result with bucket", result))
-  //   .catch(err => console.log(err));
 
-
-  //const documentFile = documentTitle + ".txt";
-  //console.log(documentFile);
   const text = await Storage.get(documentTitle, { download: true });
   console.log("document text", text)
   const finalString = await text.Body.text();
@@ -103,7 +91,6 @@ export async function fetchQuestionForms() {
   })
   console.log("question forms", formData.data.listQuestionForms.items);
   return formData.data.listQuestionForms.items
-  //setQuestionForms(formData.data.listQuestionForms.items);
 }
 
 
@@ -115,7 +102,6 @@ export async function fetchQuestion(questionId, authMethod) {
     query: getMedicalQuestion,
     variables: { id: questionId },
     authMode: authMethod
-    //authMode: "AMAZON_COGNITO_USER_POOLS"
   })
   console.log("fetch", questionData);
   return questionData.data.getMedicalQuestion
@@ -132,7 +118,6 @@ export async function fetchQuestionForm(questionFormId, authMethod) {
   })
   console.log("setQuestionForm", form.data.getQuestionForm);
   return form.data.getQuestionForm
-  //setQuestionForms(form.data.getQuestionForm);
 }
 
 export async function getTaskDocumentTitles(tasks) {

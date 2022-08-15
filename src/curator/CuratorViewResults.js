@@ -39,47 +39,15 @@ const CuratorViewResults = () => {
             setQuestions(JSON.parse(result[1].questions))
             setMedicalQuestion(result[2])
           })
-        // return fetchDocument(result.document_title)
-        // fetchQuestionForm(result.questionFormID)
       })
-    // .then((result) => {
-    //   setDocumentText(result)
-    //   //return fetchQuestionForm(result[1].questionFormID)
-    // })
-    // // .then((questionForm) => {
-    // //   console.log("1234124", questionForm)
-    // //   setQuestions(JSON.parse(questionForm.questions))
-    // // })
 
   }, [])
 
-
-
-  // useEffect(() => {
-  //   if (task) {
-  //     fetchDocument(task.document_title)
-  //   .then(result =>{
-  //     setDocumentText(result)
-  //   }
-  //     )
-  //   }
-
-  // }, [task])
-
-  // useEffect(() => {
-  //   if (task) {
-  //     fetchQuestionForm(task.questionFormID)
-  //   .then(result =>{
-  //     setQuestions(result)
-  //   }
-  //     )
-  //   }
-
-  // }, [task])
-
   const heatMapSection = (
     <div>
-      <Segment style={{ height: "10vh", "margin-bottom": "0%", "text-align": "left" }}>
+      <Segment style={{ "marginBottom": "0%", "textAlign": "left" }}>
+        <b>Toggle document labels:</b>
+        {" "}
         <Button inverted color='orange'
           active={(tag == "Summary")}
           onClick={() => setTag("Summary")}>
@@ -90,47 +58,19 @@ const CuratorViewResults = () => {
           onClick={() => setTag("Quality")}>
           Quality
         </Button>
-        <Button inverted color='olive'
+        <Button inverted color='purple'
           active={(tag == "Relevancy")}
           onClick={() => setTag("Relevancy")}>
           Relevancy
         </Button>
 
       </Segment>
-      <Segment style={{ "overflow": "auto", "text-align": "left", "white-space": "pre-wrap", height: "90vh", "margin-top": "0%" }}>
+      <Segment style={{ "overflow": "auto", "textAlign": "left", "whiteSpace": "pre-wrap", height: "90vh", "marginTop": "0%" }}>
         {documentText && documentLabels && <TextHeatMap tag={tag} documentLabels={documentLabels} documentText={documentText} />}
 
       </Segment>
     </div>
   )
-
-  //   const resultSection = (
-  //     <Segment>
-  //     <h3>Results</h3>
-  //     <p>Question 1</p>
-
-  // {
-  //     questionAnswers && 
-  //     Object.keys(questionAnswers).map((item,index) => {
-  //       return (
-  //         <div>
-  //         <p>{item} {": "}{questionAnswers[item]}</p>
-  //         </div>
-  //       )
-
-  //     })
-  // }
-  // {
-  //   questionAnswers && questions && 
-  //   questions.map((item,index) => {
-  //     return (
-  //       <h4>{item["question_text"]}</h4>
-
-  //     )
-  //   })
-  // }
-  // </Segment>
-  //   )
 
   const resultSection = (
     <Segment color="blue" tertiary inverted>
@@ -140,7 +80,7 @@ const CuratorViewResults = () => {
       <br></br>
       <h4><b>Question: </b>{medicalQuestion && medicalQuestion.text}</h4>
       <h4><b>Document Title: </b>{documentTitle}</h4>
-      <Form textAlign="left" inverted style={{ overflow: "auto", maxHeight: "90vh" }} >
+      <Form text-align="left" inverted style={{ overflow: "auto", maxHeight: "90vh" }} >
         {questions && questions.map(function (question, index) {
           return (
             <Form.Group grouped >
@@ -194,7 +134,7 @@ const CuratorViewResults = () => {
     },
   ]
 
-  if (size.width > 700) {
+  if (size.width > 800) {
     return (
       <Grid columns={2} >
         <Grid.Row stretched >

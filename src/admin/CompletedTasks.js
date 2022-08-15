@@ -6,9 +6,9 @@ import { fetchQuestions } from "../queryUtils";
 
 const CompletedTasks = () => {
     const [questions, setQuestions] = useState([]);
-    //const [questionNumber, setQuestionNumber] = useState(false);
+
     useEffect(() => {
-        fetchQuestions("API_KEY")
+        fetchQuestions("AMAZON_COGNITO_USER_POOLS")
             .then(result => {
                 let questionsArray = []
                 result.forEach(item => {
@@ -23,20 +23,7 @@ const CompletedTasks = () => {
                 setQuestions(questionsArray)
 
             });
-        //fetchQuestions();
     }, [])
-
-    // async function fetchQuestions() {
-    //     const questionData = await API.graphql({
-    //         query: listMedicalQuestions,
-    //         authMode: "AMAZON_COGNITO_USER_POOLS"
-
-    //     })
-    //     console.log("question",questionData.data.listMedicalQuestions.items);
-    //     return questionData.data.listMedicalQuestions.items
-    //     //setQuestions(questionData.data.listMedicalQuestions.items);
-
-    // }
 
     if (questions.length === 0) {
         return (
@@ -74,12 +61,6 @@ const CompletedTasks = () => {
                             )
                         })
                     }
-                    {/* <Card href="#" style={{ "margin-bottom": 5, "text-align": "left", "padding": "2%"}}fluid color='blue' header='Option 1' />
-    <Card href="#" style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid color='blue' header='Option 2' />
-    <Card href="#" style={{"margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%"}} fluid color='blue' header='Option 3' /> */}
-
-
-
 
                 </Card.Group>
 

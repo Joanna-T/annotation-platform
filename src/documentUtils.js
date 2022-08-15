@@ -1,6 +1,4 @@
 import { listCurators } from "./queryUtils";
-//import * as queryUtils from "./queryUtils"
-
 
 //returns arrays tasks grouped by document
 export const groupTasksByDocument = (tasks) => {
@@ -25,27 +23,13 @@ export const groupTasksByDocument = (tasks) => {
 
     return finalGroupedTasks;
 
-    // let tempGroupedTasks = tasks.group(({document_title}) => document_title)
-    // for (var item in tempGroupedTasks) {
-    //     finalGroupedTasks.push(tempGroupedTasks[item])
-    // }
-    //console.log("final grouped tasks", finalGroupedTasks)
-    //setGroupedTasks(finalGroupedTasks);
-
 }
 
 
 export const findCompletedTasks = (groupedInputTasks) => {
     var completedTasks = 0
     const curatorNum = process.env.REACT_APP_NUMBER_CURATORS
-    // tasks.forEach((item, index) => {
-    //     let numCompletedTasks = item.filter(task => task.completed === true).length;
-    //     if (numCompletedTasks >= minimumRequiredCurators) {
-    //         completedTasks++;
-    //     }
-    // })
 
-    //let groupedInputTasks = allQuestionTasks[questionID];
     console.log("findCompletedtasks", groupedInputTasks)
 
     for (let i = 0; i < groupedInputTasks.length; i++) {
@@ -62,9 +46,9 @@ export async function createReassignedTasks(groupedTasks) {
     console.log("createReassignedTasks", groupedTasks)
     const minimumRequiredCurators = process.env.REACT_APP_NUMBER_CURATORS
     let newTasks = []
-    //queryUtils.listCurators().then(curatorList => {
+
     listCurators().then(curatorList => {
-        //queryUtils.listCurators().then(curatorList => {
+
         console.log("curatorList", curatorList)
         for (let i = 0; i < groupedTasks.length; i++) {
             console.log(i, groupedTasks[i])
@@ -98,23 +82,10 @@ export async function createReassignedTasks(groupedTasks) {
 
                 })
 
-                // submitTask({
-                //     owner: possibleCurators[j],
-                //     document_title: groupedTasks[i][0].document_title,
-                //     questionID: groupedTasks[i][0].questionID,
-                //     questionFormID: groupedTasks[i][0].questionFormID
-
-                // })
-
             }
-
-
         }
         return newTasks
     })
-    //console.log("newTasks", newTasks)
-
-
 
 }
 
@@ -185,5 +156,3 @@ export const parseDocumentContents = (string) => {
     }
 
 }
-
-//console.log(parseDocumentContents("hello"))

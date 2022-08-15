@@ -58,14 +58,6 @@ const Home = () => {
 
     }
 
-
-    // if (searchInput.length > 0) {
-    //     let newQuestions = questions.filter((question) => {
-    //         return question.text.includes(searchInput)
-    //     })
-    //     setQuestions(newQuestions)
-    // }
-
     // const questions = [
     //     { text: "Belgium", continent: "Europe" },
     //     { text: "India", continent: "Asia" },
@@ -93,8 +85,6 @@ const Home = () => {
     //     { text: "Pakistan", continent:"Asia" },
     //   ];
 
-
-
     return (
         <Layout>
             <Segment basic>
@@ -104,20 +94,7 @@ const Home = () => {
                 </Header>
                 <p>Please enter a search query below to find relevant annotation question results</p>
             </Segment>
-            <Segment basic style={{ "padding-left": "10%", "padding-right": "10%" }}>
-                {/* <Search input={{fluid: true}}
-            size="large"
-            placeholder="Search questions..."
-            onSearchChange={handleChange}
-            value={searchInput}>
-
-            </Search> */}
-                {/* <input
-            type="text"
-            placeholder="Search questions"
-            onChange={handleChange}
-            value={searchInput} 
-            style={{"border-color": "grey",width:"100%", "border-radius": "30px", height:"40px", "padding-left":"10px"}}/> */}
+            <Segment basic style={{ "paddingLeft": "10%", "paddingRight": "10%" }}>
 
                 <Input
                     icon="search"
@@ -125,7 +102,7 @@ const Home = () => {
                     placeholder="Search questions"
                     onChange={handleChange}
                     value={searchInput}
-                    style={{ "border-color": "blue", width: "100%", "border-radius": "30px", }} />
+                    style={{ "borderColor": "blue", width: "100%", "borderRadius": "30px", }} />
 
             </Segment>
 

@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
-import { listQuestionForms } from "../graphql/queries";
-import { createAnnotationTask, createMedicalQuestion } from "../graphql/mutations";
-import { API, Storage, Amplify, Auth } from "aws-amplify";
+import { Storage } from "aws-amplify";
 import {
   Segment,
-  Grid,
   Button,
   Input,
   Label,
@@ -21,28 +18,28 @@ import { fetchQuestionForms, listCurators } from "../queryUtils";
 import { submitQuestion, submitTask } from "../mutationUtils";
 import { distributeAnnotationTasks } from "./assignTaskUtils";
 
-const object = {
-  "hello": "there",
-  "this": "is an object",
-  "hello1": "there",
-  "this1": "is an object",
-  "hello2": "there",
-  "this2": "is an object",
-  "hello3": "there",
-  "this3": "is an object",
-  "hello4": "there",
-  "this4": "is an object"
-}
+// const object = {
+//   "hello": "there",
+//   "this": "is an object",
+//   "hello1": "there",
+//   "this1": "is an object",
+//   "hello2": "there",
+//   "this2": "is an object",
+//   "hello3": "there",
+//   "this3": "is an object",
+//   "hello4": "there",
+//   "this4": "is an object"
+// }
 
-const testUsers = ["Steve", "Jo", "Phyllis", "Steph"];
-const testDocuments = ["doc1", "doc2", "doc3", "doc4"];
-const testQuestion = {
-  text: "This is question",
-  id: "12345question"
-}
-const testQuestionForm = {
-  id: "1234questionForm"
-}
+// const testUsers = ["Steve", "Jo", "Phyllis", "Steph"];
+// const testDocuments = ["doc1", "doc2", "doc3", "doc4"];
+// const testQuestion = {
+//   text: "This is question",
+//   id: "12345question"
+// }
+// const testQuestionForm = {
+//   id: "1234questionForm"
+// }
 
 const AssignTasks = () => {
   const [questionForms, setQuestionForms] = useState(null);

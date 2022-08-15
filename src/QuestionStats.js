@@ -4,18 +4,8 @@ import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 
 const QuestionStats = ({ questionAnswers, questionForm }) => {
   const [formQuestions, setFormQuestions] = useState([]);
-  //const [answers, setAnswers] = useState([])
   const [barData, setBarData] = useState([])
   const [cohenKappaValues, setCohenKappaValues] = useState([])
-
-
-  // useEffect(() => {
-  //   if (questions.length && answers.length) {
-  //     console.log("create bar data")
-  //     createBarData();
-  //   }
-
-  // },[])
 
   useEffect(() => {
     console.log("BAR DATA", barData)
@@ -26,34 +16,6 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
     console.log("form", questionForm)
     createBarData(questionAnswers, questionForm)
   }, [questionAnswers, questionForm])
-
-  // useEffect(() => {
-  //   console.log("ANSWERS")
-  //   console.log(questionAnswers)
-  //   if (questionAnswers) {
-  //     setAnswers(questionAnswers)
-  //     createBarData();
-  //   }
-
-  // },[questionAnswers])
-
-  // useEffect(() => {
-  //   console.log("question form data", questionForm.questions)
-  //   let parsedQuestions = []
-  //   if (questionForm.questions) {
-  //     console.log("question form", questionForm)
-  //     parsedQuestions = JSON.parse(questionForm.questions)
-  //     if (answers.length) {
-  //       createBarData(parsedQuestions)
-  //     }
-  //     setQuestions(parsedQuestions)
-
-  //     return
-
-  //   }
-  //   setQuestions(parsedQuestions)
-
-  // }, [questionForm])
 
   async function createBarData(answers, inputQuestionsForm) {
     let questions = JSON.parse(inputQuestionsForm.questions);
@@ -81,23 +43,14 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
 
         newQuestion[questions[i].options[j]] = relevantAnswers.length;
         newQuestion[questions[i].options[j] + "colour"] = colours[j]
-        // for (let k = 0; k < answers.length; k++) {
-        //   if (answers[k])
-        // }
+
       }
       allDataItems.push(newQuestion)
-
-      // setBarData(prevState => ([
-      //   ...prevState, newQuestion
-      // ]))
     }
     console.log("ENDcreatebardata", allDataItems)
     setBarData([...allDataItems])
   }
 
-  const calculateCohenKappa = () => {
-
-  }
 
   const colours = [
     "hsl(142, 0%, 50%)",
@@ -114,10 +67,6 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
     "option5": "hsl(331, 70%, 50%)",
     "option6": "hsl(62, 70%, 50%)"
   }
-
-
-
-  const getColor = bar => colours1[bar.id];
 
   const orderColours = (item, option) => {
     let index = 0
@@ -144,14 +93,6 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
     return indexZeroItem + index
   }
 
-  // let barDataQuestion = [
-  //   {
-  //     "question": "Category",
-  //     "category": questionAnswers.category,
-  //     "categorycolour": ""
-
-  //   }
-  // ]
   return (<div style={{ height: "45vh", overflow: "auto" }}>
     {/* {barData.length && formQuestions.length &&
       <ResponsiveBar
@@ -206,7 +147,7 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
             keys={formQuestions[index].options}
             layout="horizontal"
             indexBy="category"
-            margin={{ top: 50, right: 50, bottom: 50, left: 70 }}
+            margin={{ top: 50, right: 50, bottom: 50, left: 100 }}
             padding={0.3}
             height={20}
             colors={colours}

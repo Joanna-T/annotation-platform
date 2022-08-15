@@ -1,37 +1,16 @@
-import { Button, Grid, GridRow, Segment, Icon, Dropdown, Tab, Label } from "semantic-ui-react";
+import { Button, Grid, Icon, Segment, Modal, Dropdown, Tab, Label } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 import BarChart from "../BarChart";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { API, Storage } from "aws-amplify";
 import { getQuestionForm } from "../graphql/queries";
-// import { HeatMap } from "./HeatMap";
 import TextHeatMap from "../TextHeatMap"
 import QuestionStats from "../QuestionStats";
 import InterannotatorAgreement from "../InterannotatorAgreement";
 import { fetchQuestion, fetchQuestionForm } from "../queryUtils";
 import { fetchDocument, getTaskDocumentTitles } from "../queryUtils";
 import useWindowSize from "../useWindowSize";
-
-
-// const keys = ['hot dogs', 'burgers', 'sandwich', 'kebab', 'fries', 'donut'];
-// const commonProps = {
-//     width: 900,
-//     height: 500,
-//     margin: { top: 60, right: 110, bottom: 60, left: 80 },
-//     data: generateCountriesData(keys, { size: 7 }) as BarDatum[],
-//     indexBy: 'country',
-//     keys,
-//     padding: 0.2,
-//     labelTextColor: 'inherit:darker(1.4)',
-//     labelSkipWidth: 16,
-//     labelSkipHeight: 16,
-// }
-
-
-
-
-//export default QuestionStats;
 
 
 
@@ -51,27 +30,7 @@ const DisplayResults = () => {
   const [questionAnswers, setQuestionAnswers] = useState([])
   const [questionForms, setQuestionForms] = useState([])
   const [medicalQuestion, setmedicalQuestion] = useState(null)
-  //   const [documentNames, setDocumentNames] = useState([
-  //     {key: "Loading",
-  //      text: "Loading",
-  //      value: "Loading"}
-  //   ])
-
-  //   const label = [{
-  //     start: 10,
-  //     end: 20
-
-  //   },
-  //   {
-  //     start: 25,
-  //     end: 30
-  //   }, 
-
-  //   {
-  //     start: 0,
-  //     end: 35
-  //   },
-  // ]
+  const [semanticAgreement, setSemanticAgreement] = useState(null)
 
   useEffect(() => {
     console.log("display results")
@@ -85,16 +44,6 @@ const DisplayResults = () => {
         setDocumentTitles(result)
       })
   }, [])
-
-  // useEffect(() => {
-  //   console.log("grouped tasks,", grouped_tasks)
-  //   setAllTasks(findGroupedDocuments(grouped_tasks))
-  // }, [grouped_tasks])
-
-  // useEffect(() => {
-  //   console.log("this is annotation tasks", annotation_tasks);
-  //   setCurrentTasks(annotation_tasks)
-  // },[annotation_tasks])
 
 
   useEffect(() => {
@@ -111,11 +60,10 @@ const DisplayResults = () => {
         setDocumentTitle(formattedString["title"])
       })
 
-
-
       fetchQuestion(currentTasks[0].questionID, "API_KEY")
         .then(question => {
           setmedicalQuestion(question)
+          setSemanticAgreement(JSON.parse(JSON.parse(question.semanticAgreement)))
         })
     }
 
@@ -167,7 +115,9 @@ const DisplayResults = () => {
 
   const handleDocumentChange = (e, { name, value }) => {
     console.log("handleDocumentChange", allTasks)
-    setCurrentTasks(allTasks[value])
+    const tempTask = [...allTasks[value]]
+    setCurrentTasks(tempTask)
+    setTag("Summary")
 
   }
 
@@ -176,6 +126,21 @@ const DisplayResults = () => {
       menuItem: 'Document results',
       pane: (
         <Tab.Pane key='document-results' style={{ maxheight: "45vh", overflow: "auto" }}>
+          <p style={{ display: "inline" }}>The semantic similarity for the document labels is:  {" "}
+            {semanticAgreement && semanticAgreement.hasOwnProperty(currentTasks[0].document_title) ?
+              <b>{semanticAgreement[currentTasks[0].document_title].toFixed(3)}</b> : 0}
+          </p>
+          {"  "}
+          <Modal
+            trigger={<Button size="mini" circular icon='question' />}
+            header='Semantic agreement'
+            content='
+            Phrases may be repeated throughout the document, and so the semantic similarity between the  
+            different labels may be approximated.
+            The semantic agreement has been calculated by aggregating the text of the labels 
+      and comparing the different word vectors (multi-dimensional meaning representations of the words) of the annotator answers '
+            actions={[{ key: 'done', content: 'Done', positive: true }]}
+          />
 
           {questionAnswers.length && questionForms.questions &&
             <QuestionStats questionAnswers={questionAnswers} questionForm={questionForms}></QuestionStats>
@@ -188,11 +153,11 @@ const DisplayResults = () => {
       menuItem: 'Question results',
       pane: (
         <Tab.Pane key='question-results' style={{ maxheight: "45vh", overflow: "auto" }}>
-
           {grouped_tasks &&
             <InterannotatorAgreement grouped_tasks={grouped_tasks}></InterannotatorAgreement>
 
           }
+
         </Tab.Pane>
       ),
 
@@ -202,7 +167,7 @@ const DisplayResults = () => {
   const heatMapSection = (
     <div>
       <Segment style={{ "margin-bottom": "0%", "text-align": "left" }}>
-        <p style={{ display: "inline" }}><b>Document labels:{"  "}</b></p>
+        <p style={{ display: "inline" }}><b>Toggle document labels:{"  "}</b></p>
         <Button inverted color='orange'
           active={(tag == "Summary")}
           onClick={() => setTag("Summary")}>
@@ -213,15 +178,11 @@ const DisplayResults = () => {
           onClick={() => setTag("Quality")}>
           Quality
         </Button>
-        <Button inverted color='olive'
+        <Button inverted color='purple'
           active={(tag == "Relevancy")}
           onClick={() => setTag("Relevancy")}>
           Relevancy
         </Button>
-        {/* <span id="1" style={{"border-radius": "4px","background-color": "pink", opacity: "100%", "mix-blend-mode": "multiply"}}>This is <span id="2" style={{"border-radius": "2px","background-color": "lightblue", opacity: "60%", "mix-blend-mode": "multiply"}}> some 
-        <span id="2" style={{"border-radius": "2px","background-color": "lightblue", opacity: "60%", "mix-blend-mode": "multiply"}}>text </span></span> 
-        some other text some other text some other text some other text </span>
-    */}
 
       </Segment>
       <Segment style={{ "overflow": "auto", "text-align": "left", "white-space": "pre-wrap", height: size.height * 0.9, "margin-top": "0%" }}>
@@ -274,7 +235,7 @@ const DisplayResults = () => {
     },
   ]
 
-  if (size.width > 700) {
+  if (size.width > 800) {
     return (
       <Grid columns={2} >
         <Grid.Row stretched >
@@ -299,92 +260,6 @@ const DisplayResults = () => {
 
 export default DisplayResults;
 
-//   const data = [
-//     {
-//       "country": "Responses",
-//       "hot dog": 62,
-//       "hot dogColor": "hsl(142, 70%, 50%)",
-//       "burger": 32,
-//       "burgerColor": "hsl(127, 70%, 50%)",
-//       "sandwich": 116,
-//       "sandwichColor": "hsl(247, 70%, 50%)",
-//       "kebab": 103,
-//       "kebabColor": "hsl(274, 70%, 50%)",
-//       "fries": 81,
-//       "friesColor": "hsl(331, 70%, 50%)",
-//       "donut": 48,
-//       "donutColor": "hsl(62, 70%, 50%)"
-//     },
-
-//   ]
-
-//   const customLabel = (d) => {
-//     console.log("customLabel", d);
-//     console.log(d.id.substr(0, 1));
-//     return d.id.substr(0, 1);
-//   };
-
-// const keys = ['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut'];
-// const commonProps = {
-//     width: 900,
-//     height: 500,
-//     margin: { top: 60, right: 110, bottom: 60, left: 80 },
-//     data: barData,
-//     indexBy: 'country',
-//     keys,
-//     padding: 0.2,
-//     labelTextColor: 'inherit:darker(1.4)',
-//     labelSkipWidth: 16,
-//     labelSkipHeight: 16,
-// };
-
-
-{/* <ResponsiveBar {...commonProps} 
-    layout="horizontal" 
-    enableGridY={false} 
-    enableGridX={true}
-    valueScale={{type: "linear"}}
-    indexScale={{ type: 'band', round: true }}
-     /> */}
-
-
-{/* { questionAnswers.length && questionForms.questions &&
-       <QuestionStats questionAnswers={questionAnswers} questionForm={questionForms}></QuestionStats>
-       } */}
 
 
 
-{/* <ResponsiveBar
-        data={data}
-        keys={keys}
-        layout="horizontal"
-        indexBy="country"
-        margin={{ top: 50, right: 50, bottom: 50, left: 60 }}
-        padding={0.3}
-        height={20}
-        legends={[
-            {
-                dataFrom: 'keys',
-                anchor: 'bottom-right',
-                direction: 'column',
-                justify: false,
-                translateX: 120,
-                translateY: 0,
-                itemsSpacing: 2,
-                itemWidth: 100,
-                itemHeight: 20,
-                itemDirection: 'left-to-right',
-                itemOpacity: 0.85,
-                symbolSize: 20,
-                effects: [
-                    {
-                        on: 'hover',
-                        style: {
-                            itemOpacity: 1
-                        }
-                    }
-                ]
-            }
-        ]}
-
-    /> */}

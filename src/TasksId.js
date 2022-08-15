@@ -34,39 +34,14 @@ import { groupTasksByDocument } from "./documentUtils";
 import { stackOffsetFromProp } from "nivo/lib/props/stack";
 import useWindowSize from "./useWindowSize";
 import { parseDocumentContents } from "./documentUtils";
-//import { Prompt } from "react-router";
 
-//to create an annotation task 
-
-// const Header1 = props => {
-//     return (
-//       <header>
-//         <button onClick={props.onClick}>Click Me!</button>
-//       </header>
-//     );
-//   };
-
-
-// const SideBar = props => {
-//     const sidebarClass = props.isOpen ? "sidebar open" : "sidebar";
-//     return (
-//       <div className={sidebarClass}>
-//         <div> I slide into view </div>
-//         <div> Me Too! </div>
-//         <div> Me Three! </div>
-//         <button onClick={props.toggleSidebar} className="sidebar-toggle">
-//           Toggle Sidebar
-//         </button>
-//       </div>
-//     );
-//   };
 
 const TasksId = () => {
     const size = useWindowSize();
     const navigate = useNavigate();
     const { id } = useParams();
     const [task, setTask] = useState(null);
-    // const [document, setDocument] = useState();
+
     const [documentText, setDocumentText] = useState("");
     const [questions, setQuestions] = useState(null);
     const [answers, setAnswers] = useState(null);
@@ -74,8 +49,6 @@ const TasksId = () => {
     const [question, setQuestion] = useState(null);
     const [questionForm, setQuestionForm] = useState(null)
 
-
-    //const [visible, setVisible] = useState(false);
     const [instructionsVisible, setInstructionsVisible] = useState(true);
     const [questionsVisible, setQuestionsVisible] = useState(true);
     const [instructionWidth, setInstructionWidth] = useState(2);
@@ -107,7 +80,7 @@ const TasksId = () => {
             questionFormID: task.questionFormID
         }
 
-        //remove?
+        //remove
         await API.graphql({
             query: createAnnotationResult,
             variables: {
@@ -124,13 +97,6 @@ const TasksId = () => {
 
         updateTask(taskToUpdate)
 
-        // await API.graphql({
-        //     query: updateAnnotationTask,
-        //     variables: {
-        //         input: taskToUpdate
-        //     },
-        //     authMode: "AMAZON_COGNITO_USER_POOLS"
-        // })
         navigate("/");
     }
 
@@ -138,21 +104,23 @@ const TasksId = () => {
     useEffect(() => {
         fetchTask(id)
             .then(async (result) => {
-                //console.log("fetch", taskData);
                 setTask(result);
 
                 const parsedQuestions = JSON.parse(result.questionForm.questions);
+
                 setQuestions(parsedQuestions)
 
                 const savedAnswers = JSON.parse(result.question_answers);
                 setAnswers(savedAnswers);
 
+                console.log("ansewrs, questions length", savedAnswers, parsedQuestions.length,)
+                console.log("ansewrs, questions length", savedAnswers !== null)
                 const savedLabels = JSON.parse(result.labels);
                 setParentLabels(savedLabels);
 
                 await Promise.all([fetchDocument(result.document_title),
-                fetchQuestion(result.questionID, "API_KEY"),
-                fetchQuestionForm(result.questionFormID, "API_KEY")
+                fetchQuestion(result.questionID, "AMAZON_COGNITO_USER_POOLS"),
+                fetchQuestionForm(result.questionFormID, "AMAZON_COGNITO_USER_POOLS")
                 ])
                     .then(result => {
                         console.log("taskid results", result)
@@ -163,23 +131,8 @@ const TasksId = () => {
                     })
                     .catch(err => console.log(err))
 
-
-                //return fetchDocument(result.document_title);
-
             })
-        // .then(documentString => {
-        //     setDocumentText(formattedDocument["abstract"] + "\n\n" + formattedDocument["mainText"])
-        //     setDocumentTitle(formattedDocument["title"])
-        //     return fetchQuestion(task.questionID)
-        // })
-        // .then(question => {
-        //     setQuestion(question)
-        //     return fetchQuestionForm(task.questionFormID)
-        // })
-        // .then(form => {
-        //     setQuestionForm(form)
-        // })
-        //console.log("useEffect", task);
+
     }, [])
 
     useEffect(() => {
@@ -233,22 +186,16 @@ const TasksId = () => {
     async function storeAnswers() {
         const submittedAnswers = JSON.stringify(answers);
 
-        const finalStoredAnswer = {
-            id: task.id,
-            question_answers: submittedAnswers
+        if (task) {
+            const finalStoredAnswer = {
+                id: task.id,
+                question_answers: submittedAnswers
+            }
+
+            updateTask(finalStoredAnswer)
         }
 
-        updateTask(finalStoredAnswer)
-            .then(() => {
-                updateQuestionCurationResults()
-            })
-        // await API.graphql({
-        //     query: updateAnnotationTask,
-        //     variables: {
-        //         input: finalStoredAnswer
-        //     },
-        //     authMode: "AMAZON_COGNITO_USER_POOLS"
-        // })
+
         console.log("answer submitted")
 
     }
@@ -259,111 +206,50 @@ const TasksId = () => {
         console.log("The labels being stored are:")
         console.log(parentLabels);
 
-        const finalStoreLabels = {
-            id: task.id,
-            labels: submittedLabels
+        if (task) {
+            const finalStoreLabels = {
+                id: task.id,
+                labels: submittedLabels
+            }
+
+            updateTask(finalStoreLabels)
         }
 
-        updateTask(finalStoreLabels)
 
-
-        // await API.graphql({
-        //     query: updateAnnotationTask,
-        //     variables: {
-        //         input: finalStoredAnswer
-        //     },
-        //     authMode: "AMAZON_COGNITO_USER_POOLS"
-        // })
         console.log("answer submitted")
 
     }
 
-    const updateQuestionCurationResults = () => {
-        let groupedTasks = groupTasksByDocument(question.tasks.items)
-        let result = calculateAllFleissKappa(
-            groupAnswers(JSON.parse(questionForm.questions), groupedTasks)
-        )
-
-        let questionUpdate = {
-            id: task.questionID,
-            interannotatorAgreement: result["kappaValues"],
-            aggregatedAnswers: result["aggregatedBarData"]
-
-        }
-
-        updateQuestion(questionUpdate)
-    }
-
-    // async function updateTask(inputTask) {
-    //     await API.graphql({
-    //         query: updateAnnotationTask,
-    //         variables: {
-    //             input: inputTask
-    //         },
-    //         authMode: "AMAZON_COGNITO_USER_POOLS"
-    //     })
-    // }
-
-    // async function fetchTask(taskId) {
-    //     const taskData = await API.graphql({
-    //         query: getAnnotationTask,
-    //         variables: { id: taskId },
-    //         authMode: "AMAZON_COGNITO_USER_POOLS"
-    //     })
-
-    //     return taskData.data.getAnnotationTask;
-
-    // }
-
-    // async function fetchDocument(documentTitle) {
-    //     Storage.list('', 
-    //     {
-    //         bucket: "pansurg-curation-workflo-kendraqueryresults50d0eb-open-data",
-    //         region: "eu-west-2"}) // for listing ALL files without prefix, pass '' instead
-    //     .then(result => console.log("this is the result with bucket", result))
-    //     .catch(err => console.log(err));
-
-
-    //     //const documentFile = documentTitle + ".txt";
-    //     //console.log(documentFile);
-    //     const text = await Storage.get(documentTitle, {download: true});
-
-    //     const finalString = await text.Body.text();
-
-    //     return finalString
-    //     // text.Body.text().then(string => {
-    //     //     setDocumentText(string);
-    //     // })
-    // }  
-
     const handleLabelChange = (labels) => {
         setParentLabels(labels);
-    }
-
-    async function storeAnnotation() {
-
     }
 
     const instructionSection = (
         <div>
             {
                 (instructionsVisible || size.width < 850) && (
-                    <Segment color='blue' secondary>
+                    <Segment color='blue' secondary >
 
-                        <Header size="small" icon='info' dividing textAlign="center">
+                        <Header size="small" dividing textAlign="center">
                             <Icon circular name='info' size='small' />
                             <Header.Content>Instructions</Header.Content>
                         </Header>
-                        <p>Toggle the Instructions and Questions tickboxes above
-                            to see or hide the instructions and questions tabs.
-                        </p>
-                        <p>Please the read over the following document and highlight the
-                            relevant sections with the appropriate labels available for selection.
-                        </p>
-                        <p>Answer the questions pertaining to the document in the "Questions" tab.
-                        </p>
-                        <p>Click the Submit button when you are finished with annotation.</p>
-                        <p>All changes are saved automatically.</p>
+                        <Segment basic style={{ maxHeight: "60vh", overflow: "auto" }}>
+                            <p>Toggle the Instructions and Questions tickboxes or tabs above
+                                to see or hide the instructions and questions sections.
+                            </p>
+                            <p>Please the read over the following document and highlight the
+                                relevant sections with the appropriate labels available for selection.
+                                For example if you think a section of the text is relevant to the
+                                question displayed above, click the "Relevancy" button and highlight
+                                the respective text.
+                            </p>
+                            <p>Answer the questions pertaining to the document with respect to the
+                                question in the "Questions" tab.
+                            </p>
+                            <p>Click the Submit button when you are finished with annotation.</p>
+                            <p>All changes are saved automatically.</p>
+                        </Segment>
                     </Segment>
 
                 )
@@ -384,7 +270,7 @@ const TasksId = () => {
             {
                 (questionsVisible || size.width < 850) && (
                     <Segment fluid color='blue' inverted secondary style={{ maxHeight: '100vh', width: "100%" }}>
-                        <Header size="small" icon='info' dividing textAlign="center">
+                        <Header size="small" dividing textAlign="center">
                             <Icon name='pencil' circular size='small' />
                             <Header.Content>Please answer the following questions</Header.Content>
                         </Header>
@@ -446,7 +332,7 @@ const TasksId = () => {
 
     return (
 
-        <div class="task-details">
+        <div className="task-details">
             <Grid padded style={{ height: '100vh' }}>
                 <Grid.Row >
                     <Grid.Column width={3}>
@@ -457,9 +343,7 @@ const TasksId = () => {
                                     label={{ children: <code>Instructions</code> }}
                                     onChange={(e, data) => {
                                         console.log("data checked", data.checked)
-                                        //   handleInstructionsView(data.checked)
                                         setInstructionsVisible(data.checked);
-                                        //   handleView()
                                     }}
                                 />
                                 <Checkbox
@@ -467,9 +351,8 @@ const TasksId = () => {
                                     label={{ children: <code>Questions</code> }}
                                     onChange={(e, data) => {
                                         console.log("data checked", data.checked)
-                                        // handleQuestionsView(data.checked)
                                         setQuestionsVisible(data.checked)
-                                        //   handleView();
+
                                     }}
                                 />
                             </div>
@@ -482,7 +365,7 @@ const TasksId = () => {
 
                     </Grid.Column>
                     <Grid.Column width={3}>
-                        {answers && questions && Object.keys(answers).length !== questions.length ? //change thus 
+                        {answers === null || !questions || (Object.keys(answers).length !== questions.length) ? //change this
                             <Popup content='Please answer all questions to submit this task' trigger={
                                 <Button
                                     color='grey'
@@ -498,8 +381,6 @@ const TasksId = () => {
                                     color='blue' >
                                     Submit
                                 </Button>}
-                            //content='You will not be able to make any more changes to this annotation task.'
-                            //actions={['Submit', { key: 'done', content: 'Back to annotating', positive: true }]}
                             >
                                 <Modal.Header> Are you sure you want to submit?</Modal.Header>
                                 <Modal.Description>
@@ -512,8 +393,8 @@ const TasksId = () => {
                                     </Button>
                                     <Button
                                         color="red"
+                                        icon="checkmark"
                                         labelPosition='right'
-                                        icon='checkmark'
                                         onClick={() => setOpen(false)}>
                                         Back to annotation
                                     </Button>
@@ -571,142 +452,6 @@ const TasksId = () => {
         </div>
     )
 
-
-    // <Form>
-    //                     <Form.Group widths='equal'>
-    //                       <Form.Field label='An HTML <input>' control='input' />
-    //                       <Form.Field label='An HTML <select>' control='select'>
-    //                         <option value='male'>Male</option>
-    //                         <option value='female'>Female</option>
-    //                       </Form.Field>
-    //                     </Form.Group>
-    //                     <Form.Group grouped>
-    //                       <label>HTML radios</label>
-    //                       <Form.Field
-    //                         label='This one'
-    //                         control='input'
-    //                         type='radio'
-    //                         name='htmlRadios'
-    //                       />
-    //                       <Form.Field
-    //                         label='That one'
-    //                         control='input'
-    //                         type='radio'
-    //                         name='htmlRadios'
-    //                       />
-    //                     </Form.Group>
-    //                     <Form.Group grouped>
-    //                       <label>HTML checkboxes</label>
-    //                       <Form.Field label='This one' control='input' type='checkbox' />
-    //                       <Form.Field label='That one' control='input' type='checkbox' />
-    //                     </Form.Group>
-    //                     <Form.Field label='An HTML <textarea>' control='textarea' rows='3' />
-    //                     <Form.Field label='An HTML <button>' control='button'>
-    //                       HTML Button
-    //                     </Form.Field>
-    //                   </Form>
-
-
-    //   return (
-    //     <span>
-
-    //       <SideBar isOpen={sidebarOpen} toggleSidebar={handleViewSidebar} />
-    //       <div class="task-content">
-    //           <p>Tasks</p>
-    //       </div>
-    //     </span>
-    //   );
-    // return ( 
-    //     <div className="task-details">
-    //          <Grid padded celled style={{height: '100vh'}}>
-    //   <Grid.Row style={{height: '5%'}}>
-
-    //     <Checkbox
-    //       checked={instructionsVisible}
-    //       label={{ children: <code>Instructions</code> }}
-    //       onChange={(e, data) => setInstructionsVisible(data.checked)}
-    //     />
-    //     <Checkbox
-    //       checked={questionsVisible}
-    //       label={{ children: <code>Questions</code> }}
-    //       onChange={(e, data) => setQuestionsVisible(data.checked)}
-    //     />
-    //   </Grid.Row>
-
-    //   <Grid.Row style={{height: '90%'}}>
-    //   <Grid.Column width={16}>
-    //   <Sidebar.Pushable as={Segment}>
-    //       <Sidebar
-    //         as={Menu}
-    //         animation='push'
-    //         icon='labeled'
-    //         inverted
-    //         onHide={() => setVisible(false)}
-    //         vertical
-    //         visible={instructionsVisible}
-    //         direction="left"
-    //       >
-    //         <Menu.Item as='a'>
-    //           <Icon name='home' />
-    //           Home
-    //         </Menu.Item>
-    //         <Menu.Item as='a'>
-    //           <Icon name='gamepad' />
-    //           Games
-    //         </Menu.Item>
-    //         <Menu.Item as='a'>
-    //           <Icon name='camera' />
-    //           Channels
-    //         </Menu.Item>
-    //       </Sidebar>
-
-    //       <Sidebar
-    //         as={Menu}
-    //         animation='push'
-    //         icon='labeled'
-    //         inverted
-    //         onHide={() => setVisible(false)}
-    //         vertical
-    //         visible={questionsVisible}
-    //         direction="right"
-    //         style={{width: '50%'}}
-    //       >
-    //         <Menu.Item as='a'>
-    //           <Icon name='home' />
-    //           Home
-    //         </Menu.Item>
-    //         <Menu.Item as='a'>
-    //           <Icon name='gamepad' />
-    //           Games
-    //         </Menu.Item>
-    //         <Menu.Item as='a'>
-    //           <Icon name='camera' />
-    //           Channels
-    //         </Menu.Item>
-    //       </Sidebar>
-
-    //       <Sidebar.Pusher style={{overflow: 'scroll', height: '100%'}}>
-    //       <Grid.Column width={10}>
-    //       <h1>{task.document_title}</h1>
-    //         <AnnotationPage annotationText={documentText}>
-    //         </AnnotationPage>
-    //         </Grid.Column>
-    //         <Grid.Column width={6}>
-    //         <p>hellooo</p>
-    //         </Grid.Column>
-
-
-    //       </Sidebar.Pusher>
-    //     </Sidebar.Pushable>
-    //     </Grid.Column>
-
-    //   </Grid.Row>
-    // </Grid>
-
-
-
-    //     </div>
-    //  );
 }
 
 export default TasksId;

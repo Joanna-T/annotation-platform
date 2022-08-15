@@ -1,11 +1,9 @@
-import { API, Storage, Amplify, Auth } from "aws-amplify";
+import { Storage } from "aws-amplify";
 import { submitTask } from "../mutationUtils";
 
 export async function distributeAnnotationTasks(questionForm, documentFolder, medicalQuestion, curators) {
   let annotationTasks = []
   console.log("distributeAT inputs", questionForm, "folder", documentFolder, "curators", curators, "queaiton", medicalQuestion)
-  // Storage.list(documentFolder)
-  // .then(documents => {
   let documents
   try {
     documents = await Storage.list(documentFolder)
@@ -37,21 +35,20 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
           questionFormID: questionForm.id,
           completed: false,
           labels: "[]"
+
         }
-        await submitTask(newTask, "API_KEY")
+        await submitTask(newTask, "AMAZON_COGNITO_USER_POOLS")
         annotationTasks.push(newTask)
 
       }
       documentCounter++;
     }
     console.log("These are the annotation tasks", annotationTasks)
-    //console.log(annotationTasks)
-    //return Promise.resolve(annotationTasks)
-    //annotationTasks.forEach(async task => await submitTask(task));
+
   } catch (err) {
     console.log(err)
   }
-  //})
+
 }
 
 const findCurator = (curators, annotationTasks, document) => {
