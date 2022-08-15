@@ -3,7 +3,7 @@ import TextHeatMap from "../TextHeatMap";
 import { API, Auth, Storage } from "aws-amplify";
 import { listQuestionForms, getAnnotationTask, getQuestionForm } from "../graphql/queries";
 import { Link } from "react-router-dom";
-import { List, Segment, Grid, Image, Card, Button, Tab, Form } from "semantic-ui-react";
+import { List, Segment, Grid, Image, Card, Button, Tab, Form, Label } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
 import { fetchTask, fetchDocument, fetchQuestionForm, fetchQuestion } from "../queryUtils";
 import useWindowSize from "../useWindowSize";
@@ -134,14 +134,18 @@ const CuratorViewResults = () => {
 
   const resultSection = (
     <Segment color="blue" tertiary inverted>
-      <h3>Results</h3>
-      <p><b>Question: </b>{medicalQuestion && medicalQuestion.text}</p>
-      <p><b>Document Title: </b>{documentTitle}</p>
+      <Label size="huge" color="blue">
+        Results
+      </Label>
+      <br></br>
+      <h4><b>Question: </b>{medicalQuestion && medicalQuestion.text}</h4>
+      <h4><b>Document Title: </b>{documentTitle}</h4>
       <Form textAlign="left" inverted style={{ overflow: "auto", maxHeight: "90vh" }} >
         {questions && questions.map(function (question, index) {
           return (
             <Form.Group grouped >
               <h5> {index + 1} {". "} {question.question_text}</h5>
+
               {
                 question.options.map((option) => {
                   return (
@@ -159,6 +163,7 @@ const CuratorViewResults = () => {
 
                 })
               }
+
 
             </Form.Group>
           )

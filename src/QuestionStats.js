@@ -152,7 +152,7 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
 
   //   }
   // ]
-  return (<div style={{ height: "100%" }}>
+  return (<div style={{ height: "45vh", overflow: "auto" }}>
     {/* {barData.length && formQuestions.length &&
       <ResponsiveBar
           data={[barData[0]]}
@@ -311,6 +311,7 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
 
     })}
   </div>);
+
 }
 
 

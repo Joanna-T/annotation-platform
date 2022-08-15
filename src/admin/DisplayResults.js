@@ -1,4 +1,4 @@
-import { Button, Grid, GridRow, Segment, Icon, Dropdown, Tab, Label, List } from "semantic-ui-react";
+import { Button, Grid, GridRow, Segment, Icon, Dropdown, Tab, Label } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 import BarChart from "../BarChart";
 import { useLocation } from "react-router-dom";
@@ -166,7 +166,7 @@ const DisplayResults = () => {
   }
 
   const handleDocumentChange = (e, { name, value }) => {
-    console.log("handleDocumentChange ", allTasks)
+    console.log("handleDocumentChange", allTasks)
     setCurrentTasks(allTasks[value])
 
   }
@@ -175,7 +175,7 @@ const DisplayResults = () => {
     {
       menuItem: 'Document results',
       pane: (
-        <Tab.Pane key='document-results' style={{ maxheight: "100%", overflow: "auto" }}>
+        <Tab.Pane key='document-results' style={{ maxheight: "45vh", overflow: "auto" }}>
 
           {questionAnswers.length && questionForms.questions &&
             <QuestionStats questionAnswers={questionAnswers} questionForm={questionForms}></QuestionStats>
@@ -187,7 +187,7 @@ const DisplayResults = () => {
     {
       menuItem: 'Question results',
       pane: (
-        <Tab.Pane key='question-results' style={{ maxheight: "100%", overflow: "auto" }}>
+        <Tab.Pane key='question-results' style={{ maxheight: "45vh", overflow: "auto" }}>
 
           {grouped_tasks &&
             <InterannotatorAgreement grouped_tasks={grouped_tasks}></InterannotatorAgreement>
@@ -234,7 +234,11 @@ const DisplayResults = () => {
 
   const resultSection = (
     <Segment color="blue" inverted tertiary style={{ height: size.height }}>
-      <h3>Results</h3>
+      <Label size="huge" color="blue">
+        Results
+      </Label>
+      <br></br>
+      <br></br>
       <p><b>Question: </b>{medicalQuestion && medicalQuestion.text}</p>
       <p><b>Document title: </b>{documentTitle && documentTitle}</p>
       <label>You are currently viewing document:</label>

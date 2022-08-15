@@ -311,7 +311,7 @@ const InterannotatorAgreement = ({ grouped_tasks }) => {
             keys={Object.keys(item).filter(element => element !== "category")}
             layout="horizontal"
             indexBy="category"
-            margin={{ top: 50, right: 50, bottom: 50, left: 70 }}
+            margin={{ top: 50, right: 50, bottom: 50, left: 100 }}
             padding={0.3}
             height={20}
             colors={colours}
