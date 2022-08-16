@@ -31,7 +31,7 @@ const AnnotationQuestions = ({ questions, handleAnswerChange, answers }) => {
     }
 
     return (
-        <Form textAlign="left" inverted style={{ overflow: "auto", maxHeight: "100vh" }} >
+        <Form fluid textAlign="left" inverted style={{ overflow: "auto", maxHeight: "80vh" }} >
             {questions.map(function (question, index) {
                 return (
                     <Form.Group grouped >

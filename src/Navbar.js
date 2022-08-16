@@ -12,13 +12,21 @@ const Navbar = () => {
     const [userEmail, setUserEmail] = useState("")
     const size = useWindowSize();
     const location = useLocation()
+    const [currentItem, setCurrentItem] = useState("Home")
 
     useEffect(() => {
         console.log('handle route change here', location)
-    }, [location])
+
+        if (!signedUser && !admin) {
+            console.log("user not signed in")
+        }
+        if (signedUser) {
+            setCurrentItem(findCorrectTab(location.pathname, signedUser, admin))
+        }
 
 
-    const [currentItem, setCurrentItem] = useState("Home")
+
+    }, [location, signedUser, admin])
 
     const handleItemClick = (name) => setCurrentItem(name);
 
@@ -170,7 +178,8 @@ const Navbar = () => {
             }
 
             {
-                size.width > 1150 && signedUser &&
+                ((size.width > 1150 && signedUser && admin) ||
+                    (size.width > 650 && signedUser && !admin)) &&
                 <Menu.Item
                     position="right"
                     style={{ top: "0.2em", color: "white", "padding-right": 0 }}>
@@ -182,7 +191,8 @@ const Navbar = () => {
             {
                 signedUser && (
                     <Menu.Item
-                        position={size.width < 1150 ? "right" : ""}
+                        position={((size.width < 1150 && signedUser && admin) ||
+                            (size.width < 650 && signedUser && !admin)) ? "right" : ""}
                         name='SignOut'
                         active={currentItem === 'SignOut'}
                         onClick={() => {
@@ -199,3 +209,32 @@ const Navbar = () => {
 }
 
 export default Navbar;
+
+const findCorrectTab = (pathname, signedUser, admin) => {
+    console.log("findCorrecttab", signedUser, admin, pathname.includes("completed_tasks"))
+    if (pathname.includes("annotation_tasks")) {
+        return "Tasks"
+    }
+    else if (pathname.includes("assign_tasks") &&
+        !pathname.includes("re")) {
+        return "AssignTask"
+    }
+    else if (pathname.includes("sign_in")) {
+        return "SignIn"
+    }
+    else if (pathname.includes("active_tasks")) {
+        return "ActiveTasks"
+    }
+    else if (pathname.includes("reassign_tasks")) {
+        return "ReassignTask"
+    }
+    else if (pathname.includes("completed_curator_tasks") && (admin === false) && signedUser) {
+        return "CompletedTasks"
+    }
+    else if (pathname.includes("completed_tasks" && admin)) {
+        return "CompletedTasks"
+    }
+    else {
+        return "Home"
+    }
+}

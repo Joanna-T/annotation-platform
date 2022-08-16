@@ -269,7 +269,7 @@ const TasksId = () => {
         <div>
             {
                 (questionsVisible || size.width < 850) && (
-                    <Segment fluid color='blue' inverted secondary style={{ maxHeight: '100vh', width: "100%" }}>
+                    <Segment fluid color='blue' inverted secondary style={{ maxHeight: '100vh', width: "95vh" }}>
                         <Header size="small" dividing textAlign="center">
                             <Icon name='pencil' circular size='small' />
                             <Header.Content>Please answer the following questions</Header.Content>
