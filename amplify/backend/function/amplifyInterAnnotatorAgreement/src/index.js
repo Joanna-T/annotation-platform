@@ -449,7 +449,7 @@ const calculateFleissKappa = (category, values, tasks) => {
 
   if (!kappa) {
     return {
-      "kappaValue": 0 + " (Poor agreement)",
+      "kappaValue": "-1 (Incomplete Data)",
       "aggregatedCategoryData": aggregatedCategoryData
     }
   }

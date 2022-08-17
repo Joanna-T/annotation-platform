@@ -17,6 +17,7 @@ import Layout from "../Layout";
 import { fetchQuestionForms, listCurators } from "../queryUtils";
 import { submitQuestion, submitTask } from "../mutationUtils";
 import { distributeAnnotationTasks } from "./assignTaskUtils";
+import { useAmplify } from "@aws-amplify/ui-react";
 
 // const object = {
 //   "hello": "there",
@@ -53,6 +54,7 @@ const AssignTasks = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [open, setOpen] = useState(false)
   const [warningMessage, setWarningMessage] = useState(false);
+  const [warningText, setWarningText] = useState("Please fill in all fields")
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -135,13 +137,46 @@ const AssignTasks = () => {
     //   setWarningMessage(true);
     //   return
     // }
+
+    //change this
+    // listCurators().then((results) => {
+    //   if (results.length < process.env.REACT_APP_NUMBER_CURATORS) {
+    //     console.log("Insufficient number of curators")
+    //     throw "Insufficient number of curators"
+    //     return
+    //   }
+    // })
+    //   .catch(err => {
+    //     setWarningMessage(true)
+    //     setWarningText(err)
+    //   })
+
+    let curators = await listCurators();
+    if (curators.length < process.env.REACT_APP_NUMBER_CURATORS) {
+      //if (curators.length < 20) {
+      setWarningText("Insufficient number of curators to assign tasks")
+      setWarningMessage(true)
+      setOpen(false)
+      return
+    }
     Promise.all([submitQuestion(medicalQuestion, "API_KEY"), listCurators()])
       .then(results => {
         if (results[1].length < process.env.REACT_APP_NUMBER_CURATORS) {
           console.log("Insufficient number of curators")
           return
         }
-        distributeAnnotationTasks(chosenQuestionForm, chosenFolder, results[0], results[1])
+        try {
+          distributeAnnotationTasks(chosenQuestionForm, chosenFolder, results[0], results[1])
+            .then(() => {
+              navigate("/")
+            })
+
+        } catch (err) {
+          console.log(err)
+          setWarningMessage(true)
+          setWarningText(err)
+        }
+
         console.log("distribution finished")
 
       })
@@ -158,7 +193,7 @@ const AssignTasks = () => {
       //   navigate("/");
       // })
       .catch(err => console.log(err))
-    navigate("/")
+
   }
   return (
     <Layout>
@@ -167,7 +202,7 @@ const AssignTasks = () => {
           <Message
             color="red"
             onDismiss={() => setWarningMessage(false)}
-            content='Please fill in all fields.'
+            content={warningText}
           />
         )
       }
@@ -177,10 +212,12 @@ const AssignTasks = () => {
         </h4>
       </Segment>
       <Segment style={{ overflow: 'auto', "text-align": "left" }}>
+        <p><b>NOTE:</b> current number of curators per document is set to {process.env.REACT_APP_NUMBER_CURATORS}</p>
         <p>
           <Icon name='hand point right' />
           Please enter the new medical question below
         </p>
+
         <Input fluid icon='pencil' placeholder='Question here...' onChange={event => setMedicalQuestion(event.target.value)} />
         <br></br>
         <p>
@@ -264,6 +301,7 @@ const AssignTasks = () => {
             color='grey'
             onClick={() => {
               setWarningMessage(true);
+              setWarningText("Please fill in all fields")
             }}
           >
             Submit

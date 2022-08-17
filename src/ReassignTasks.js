@@ -7,6 +7,7 @@ import { groupTasksByDocument, findCompletedTasks, createReassignedTasks } from 
 import { listCurators, fetchQuestions } from "./queryUtils";
 import { submitTask } from "./mutationUtils";
 import Layout from "./Layout";
+import { Navigate, useNavigate } from "react-router-dom";
 
 
 
@@ -17,6 +18,10 @@ const ReassignTasks = () => {
     const [allQuestionTasks, setAllQuestionTasks] = useState(null);
     const [warningMessage, setWarningMessage] = useState(false)
     const [open, setOpen] = useState(false)
+    const [warningText, setWarningText] = useState("Please choose a question to reassign")
+
+
+    const navigate = useNavigate();
 
     const minimumRequiredCurators = process.env.REACT_APP_NUMBER_CURATORS
 
@@ -54,22 +59,26 @@ const ReassignTasks = () => {
     return (
 
         <Layout>
-
-            <Segment basic>
-                <h4>Below are annotation question tasks which are yet to be completed</h4>
-            </Segment>
             {
                 warningMessage && (
                     <Message
                         color="red"
                         onDismiss={() => setWarningMessage(false)}
-                        content='Please choose a question to reassign.'
+                        content={warningText}
                     />
                 )
             }
+
+            <Segment basic>
+                <h4>Below are annotation question tasks which are yet to be completed</h4>
+            </Segment>
+
             <Segment style={{ textAlign: "left" }}>
 
                 <p><Icon name='hand point right' />Please choose a task to reassign</p>
+                <p><b>NOTE:</b> "Completed" denotes the number of document annotated by the required number of curators,
+                    which is currently set at {process.env.REACT_APP_NUMBER_CURATORS}
+                </p>
                 <Segment style={{ "overflow": "auto", "max-height": "30%" }}>
                     <Card.Group>
                         {incompleteQuestions && allQuestionTasks ?
@@ -112,7 +121,7 @@ const ReassignTasks = () => {
                                     style={{ "margin-top": 2, "margin-bottom": 2, "text-align": "left", "padding": "2%" }}
                                     header={`Document title: ${tasks[0].document_title}`}
                                     //   meta={`Item ${index + 1}`}
-                                    description={`Completed: ${tasks.filter(task => task.completed === true).length} / ${tasks.length}`}
+                                    description={`${tasks.filter(task => task.completed === true).length} documents annotated out of ${tasks.length}`}
                                 />
                             ))
                             :
@@ -132,6 +141,7 @@ const ReassignTasks = () => {
                         color='grey'
                         onClick={() => {
                             setWarningMessage(true);
+                            setWarningText("Please select a question to reassign")
                         }}
                     >
                         Reassign tasks
@@ -147,9 +157,29 @@ const ReassignTasks = () => {
                         </Button>}
                     >
                         <Modal.Header> Are you sure you want to reassign these tasks?</Modal.Header>
+                        <Modal.Content> Incompleted tasks for this question will be redistributed to new curators.</Modal.Content>
                         <Modal.Actions>
-                            <Button color="green" onClick={() => {
-                                createReassignedTasks(allQuestionTasks[chosenQuestion.id]).forEach(result => submitTask(result, "API_KEY"))
+                            <Button color="green" onClick={async () => {
+                                // try {
+                                //     await createReassignedTasks(allQuestionTasks[chosenQuestion.id])
+                                //     navigate("/")
+                                // } catch (err) {
+                                //     setWarningMessage(true)
+                                //     setWarningText("Insufficient curators to assign tasks")
+                                // }
+
+                                let result = await createReassignedTasks(allQuestionTasks[chosenQuestion.id])
+                                if (result != "") {
+                                    setWarningMessage(true)
+                                    setWarningText(result)
+                                    setOpen(false)
+                                }
+                                else {
+                                    navigate("/")
+                                }
+
+                                //.forEach(result => submitTask(result, "API_KEY"))
+
                             }}>
                                 Submit
                             </Button>

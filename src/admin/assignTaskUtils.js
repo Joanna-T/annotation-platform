@@ -16,8 +16,12 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
     console.log(shuffledUsers, shuffledDocuments);
 
     let documentCounter = 0;
-    //const minimumCuratorNumber = 1;
-    const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
+    const minimumCuratorNumber = 20;
+    //const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
+
+    if (curators.length < minimumCuratorNumber) {
+      throw "Insufficient curators to distribute tasks"
+    }
 
 
     while (documentCounter < shuffledDocuments.length) {
@@ -35,9 +39,8 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
           questionFormID: questionForm.id,
           completed: false,
           labels: "[]"
-
         }
-        await submitTask(newTask, "AMAZON_COGNITO_USER_POOLS")
+        //await submitTask(newTask, "AMAZON_COGNITO_USER_POOLS")
         annotationTasks.push(newTask)
 
       }
