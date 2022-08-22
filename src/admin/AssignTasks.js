@@ -304,7 +304,7 @@ const AssignTasks = () => {
               setWarningText("Please fill in all fields")
             }}
           >
-            Submit
+            Create tasks
           </Button>
           :
           <Modal
@@ -313,7 +313,7 @@ const AssignTasks = () => {
             onOpen={() => setOpen(true)}
             trigger={<Button
               color='blue' >
-              Submit
+              Create tasks
             </Button>}
           //content='You will not be able to make any more changes to this annotation task.'
           //actions={['Submit', { key: 'done', content: 'Back to annotating', positive: true }]}
