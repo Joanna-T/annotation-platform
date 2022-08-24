@@ -56,5 +56,34 @@
         }
       }
     }
+  },
+  "final": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-annotationplatform-final-215941-authRole",
+      "UnauthRoleArn": "arn:aws:iam::474076373312:role/amplify-annotationplatform-final-215941-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::474076373312:role/amplify-annotationplatform-final-215941-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-annotationplatform-final-215941-deployment",
+      "UnauthRoleName": "amplify-annotationplatform-final-215941-unauthRole",
+      "StackName": "amplify-annotationplatform-final-215941",
+      "StackId": "arn:aws:cloudformation:eu-west-2:474076373312:stack/amplify-annotationplatform-final-215941/d7afeb40-2001-11ed-bd8b-0a24e1866e62",
+      "AmplifyAppId": "dga9il4i162cv"
+    },
+    "categories": {
+      "auth": {
+        "annotationplatformac3c8d5b": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "AdminQueries4b39eb17": {
+          "deploymentBucketName": "amplify-annotationplatform-final-215941-deployment",
+          "s3Key": "amplify-builds/AdminQueries4b39eb17-437568717a4a725a5a71-build.zip"
+        },
+        "amplifyInterAnnotatorAgreement": {
+          "deploymentBucketName": "amplify-annotationplatform-final-215941-deployment",
+          "s3Key": "amplify-builds/amplifyInterAnnotatorAgreement-6f53424a654e42554763-build.zip"
+        }
+      }
+    }
   }
 }

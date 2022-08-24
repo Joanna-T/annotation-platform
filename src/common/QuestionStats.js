@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Segment, Icon } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
+import { memo } from "react";
 
 const QuestionStats = ({ questionAnswers, questionForm }) => {
   const [formQuestions, setFormQuestions] = useState([]);
@@ -51,8 +52,25 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
     setBarData([...allDataItems])
   }
 
-
   const colours = [
+    "#009E73",
+    "#F0E442",
+    "#56B4E9",
+    "#E69F00",
+
+    "#CC79A7",
+    "#D55E00"
+  ]
+
+  const colours2 = [
+    "#AA4499",
+    "#DDCC77",
+    "#CC6677",
+    "#88CCEE",
+    "#147334",
+    "#882255"
+  ]
+  const colours1 = [
     "hsl(142, 0%, 50%)",
     "hsl(127, 70%, 50%)",
     "hsl(247, 70%, 50%)",
@@ -60,13 +78,13 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
     "hsl(331, 70%, 50%)",
     "hsl(62, 70%, 50%)"
   ]
-  const colours1 = {
-    "option1": "hsl(142, 0%, 50%)",
-    "option2": "hsl(127, 70%, 50%)",
-    "option3": "hsl(247, 70%, 50%)",
-    "option5": "hsl(331, 70%, 50%)",
-    "option6": "hsl(62, 70%, 50%)"
-  }
+  // const colours1 = {
+  //   "option1": "hsl(142, 0%, 50%)",
+  //   "option2": "hsl(127, 70%, 50%)",
+  //   "option3": "hsl(247, 70%, 50%)",
+  //   "option5": "hsl(331, 70%, 50%)",
+  //   "option6": "hsl(62, 70%, 50%)"
+  // }
 
   const orderColours = (item, option) => {
     let index = 0
@@ -131,14 +149,14 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
       />} */}
     {barData.map((item, index) => {
       return (
-        <div style={{ "height": "100px" }}>
+        <div key={index} style={{ "height": "100px" }}>
           <p>{index + 1}{". "}{formQuestions[index].question_text}</p>
           {formQuestions[index].options.map((option, innerIndex) => {
             let coloursIndex = orderColours(item, option)
             let keyColor = colours[coloursIndex - 1];
             console.log("KEY COLORRRRRRRR", keyColor)
             return (
-              <p style={{ display: "inline" }}>{option}<Icon style={{ color: keyColor }} name="circle"></Icon></p>
+              <p key={option} style={{ display: "inline" }}>{option}<Icon style={{ color: keyColor }} name="circle"></Icon></p>
 
             )
           })}
@@ -256,4 +274,4 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
 }
 
 
-export default QuestionStats;
+export default memo(QuestionStats);

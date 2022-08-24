@@ -1,24 +1,23 @@
-import logo from './logo.svg';
 import './App.css';
 import React, { useLayoutEffect } from "react";
-import Navbar from './Navbar.js';
+import Navbar from './common/Navbar.js';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from './Home';
-import Tasks from './Tasks';
-import SignInPage from './SignInPage';
-import TasksId from './TasksId';
+import Home from './common/Home';
+import Tasks from './curator/Tasks';
+import SignInPage from './common/SignInPage';
+import TasksId from './curator/TasksId';
 import AssignTasks from './admin/AssignTasks';
 import ActiveTasks from './admin/ActiveTasks';
 import CompletedTasks from './admin/CompletedTasks';
-import DisplayResults from './admin/DisplayResults';
-import QuestionDocuments from './QuestionDocuments';
+import DisplayResults from './common/DisplayResults';
+import QuestionDocuments from './common/QuestionDocuments';
 import awsmobile from './aws-exports';
 import Amplify, { API } from "aws-amplify"
-import ReassignTasks from './ReassignTasks';
+import ReassignTasks from './admin/ReassignTasks';
 import CuratorViewResults from './curator/CuratorViewResults';
 import CuratorListResults from './curator/CuratorListResults';
 import { Auth } from "@aws-amplify/auth"
-import PageNotFound from './PageNotFound'
+import PageNotFound from './common/PageNotFound'
 
 
 API.configure(awsmobile)
@@ -27,10 +26,11 @@ Amplify.configure(awsmobile);
 
 
 function App() {
+
   useLayoutEffect(() => {
-    console.log = () => { };
-    console.warn = () => { };
-    console.error = () => { };
+    // console.log = () => { };
+    // console.warn = () => { };
+    // console.error = () => { };
 
     console.error('Something bad happened.');
   }, []);

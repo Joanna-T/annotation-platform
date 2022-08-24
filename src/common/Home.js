@@ -1,15 +1,20 @@
 import Layout from "./Layout";
 import { useState, useEffect } from "react";
-import { Search, Segment, Input, Card, Header, Icon } from "semantic-ui-react";
+import { Search, Segment, Input, Card, Header, Icon, Modal, Button, Message } from "semantic-ui-react";
 //import { fetchQuestions } from "./queryUtils";
-import { findCompletedTasks, groupTasksByDocument } from "./documentUtils";
-import { listMedicalQuestions } from "./graphql/queries";
-import { API, graphqlOperation } from "aws-amplify"
+import { findCompletedTasks, groupTasksByDocument } from "../utils/documentUtils";
+import { listMedicalQuestions } from "../graphql/queries";
+import { submitSuggestion } from "../utils/mutationUtils";
+import { API, graphqlOperation, Auth } from "aws-amplify"
 const Home = () => {
     const [searchInput, setSearchInput] = useState("");
     const [allQuestions, setAllQuestions] = useState([,
     ])
     const [visibleQuestions, setVisibleQuestions] = useState([])
+    const [admin, setAdmin] = useState(false)
+    const [open, setOpen] = useState(false)
+    const [confirmationMessage, setConfirmationMessage] = useState(false)
+    const [suggestionInput, setSuggestionInput] = useState("")
 
     useEffect(() => {
         let newQuestions = allQuestions.filter((question) => {
@@ -22,6 +27,7 @@ const Home = () => {
     //const [questionNumber, setQuestionNumber] = useState(false);
     useEffect(() => {
         //API.graphql(graphqlOperation(listMedicalQuestions))
+        authListener();
         fetchQuestions("API_KEY")
             .then(result => {
                 let questionsArray = []
@@ -46,6 +52,12 @@ const Home = () => {
         setSearchInput(e.target.value)
 
     }
+
+    const handleSuggestionChange = (e) => {
+        e.preventDefault();
+        setSuggestionInput(e.target.value)
+    }
+
     async function fetchQuestions() {
         const questionsData = await API.graphql({
             query: listMedicalQuestions,
@@ -55,6 +67,30 @@ const Home = () => {
         console.log("questions", questionsData.data.listMedicalQuestions.items);
         //setQuestions(questionsData.data.listMedicalQuestions.items);
         return questionsData.data.listMedicalQuestions.items
+
+    }
+
+    async function authListener() {
+        try {
+            const user = await Auth.currentAuthenticatedUser();
+
+            const groups = user.signInUserSession.accessToken.payload["cognito:groups"];
+            if (groups) {
+                if (groups.includes("Admin")) {
+                    setAdmin(true);
+                }
+            }
+
+        } catch (err) { }
+    }
+
+    async function handleSubmit() {
+        const suggestion = {
+            text: suggestionInput
+        }
+        setOpen(false)
+        setConfirmationMessage(true)
+        submitSuggestion(suggestion, "API_KEY")
 
     }
 
@@ -93,7 +129,9 @@ const Home = () => {
                     <Header.Content>Welcome to AnnotateIt</Header.Content>
                 </Header>
                 <p>Please enter a search query below to find relevant annotation question results</p>
+
             </Segment>
+
             <Segment basic style={{ "paddingLeft": "10%", "paddingRight": "10%" }}>
 
                 <Input
@@ -103,6 +141,56 @@ const Home = () => {
                     onChange={handleChange}
                     value={searchInput}
                     style={{ "borderColor": "blue", width: "100%", "borderRadius": "30px", }} />
+                {
+                    // admin && (
+                    true && (
+                        <div>
+                            <small>Cant find what you're looking for? </small>
+                            <Modal
+                                open={open}
+                                onClose={() => setOpen(false)}
+                                onOpen={() => setOpen(true)}
+                                trigger={<small><u>Click here to submit a new question for review.</u></small>}
+                            >
+                                <Modal.Header> Suggestion submission</Modal.Header>
+                                <Modal.Description>
+                                    <Segment>
+                                        <p>Please enter the question you would like to be annotated below:</p>
+                                        <Input
+                                            icon="pencil"
+                                            type="text"
+                                            placeholder="Query here"
+                                            onChange={handleSuggestionChange}
+                                            value={suggestionInput}
+                                            style={{ "borderColor": "blue", width: "100%", "borderRadius": "30px", }} />
+                                    </Segment>
+
+                                </Modal.Description>
+                                <Modal.Actions>
+                                    <Button color="green" onClick={handleSubmit}>
+                                        Submit suggestion
+                                    </Button>
+                                    <Button
+                                        color="red"
+                                        icon="checkmark"
+                                        labelPosition='right'
+                                        onClick={() => setOpen(false)}>
+                                        Back
+                                    </Button>
+                                </Modal.Actions>
+
+                            </Modal>
+                            {
+                                confirmationMessage &&
+                                <Message
+                                    color="green"
+                                    onDismiss={() => setConfirmationMessage(false)}
+                                    content={"Suggestion successfully submitted"}
+                                />
+                            }
+                        </div>
+                    )
+                }
 
             </Segment>
 
@@ -112,6 +200,7 @@ const Home = () => {
                     visibleQuestions.map((question, index) => {
                         return (
                             <Card
+                                key={question.id}
                                 fluid color="blue"
                                 style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
                                 href={`/completed_tasks/${question.id}`}

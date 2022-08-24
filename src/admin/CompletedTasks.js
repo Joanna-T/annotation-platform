@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Segment, Card, } from "semantic-ui-react";
-import { findCompletedTasks, groupTasksByDocument } from "../documentUtils";
-import Layout from "../Layout";
-import { fetchQuestions } from "../queryUtils";
+import { findCompletedTasks, groupTasksByDocument } from "../utils/documentUtils";
+import Layout from "../common/Layout";
+import { fetchQuestions } from "../utils/queryUtils";
 
 const CompletedTasks = () => {
     const [questions, setQuestions] = useState([]);
@@ -50,6 +50,7 @@ const CompletedTasks = () => {
                             return (
 
                                 <Card
+                                    key={question.id}
                                     fluid color="blue"
                                     style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
                                     href={`/completed_tasks/${question.id}`}

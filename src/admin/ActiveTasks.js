@@ -4,9 +4,9 @@ import { API, Auth } from "aws-amplify";
 import { listAnnotationTasks, listQuestionForms } from "../graphql/queries";
 import { Link } from "react-router-dom";
 import { List, Segment, Grid, Image, Card } from "semantic-ui-react";
-import { findCompletedTasks, groupTasksByDocument } from "../documentUtils";
-import Layout from "../Layout";
-import { fetchQuestions } from "../queryUtils";
+import { findCompletedTasks, groupTasksByDocument } from "../utils/documentUtils";
+import Layout from "../common/Layout";
+import { fetchQuestions } from "../utils/queryUtils";
 
 const ActiveTasks = () => {
     const [questions, setQuestions] = useState([]);
@@ -53,6 +53,7 @@ const ActiveTasks = () => {
                             return (
 
                                 <Card
+                                    key={question.id}
                                     fluid color="blue"
                                     style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
                                     href={`/active_tasks/${question.id}`}

@@ -21,6 +21,7 @@ export const getAnnotationTask = /* GraphQL */ `
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
+              instructionLink
               createdAt
               updatedAt
             }
@@ -44,6 +45,7 @@ export const getAnnotationTask = /* GraphQL */ `
         interannotatorAgreement
         semanticAgreement
         aggregatedAnswers
+        instructionLink
         createdAt
         updatedAt
       }
@@ -96,6 +98,7 @@ export const listAnnotationTasks = /* GraphQL */ `
           interannotatorAgreement
           semanticAgreement
           aggregatedAnswers
+          instructionLink
           createdAt
           updatedAt
         }
@@ -158,6 +161,7 @@ export const tasksByUsername = /* GraphQL */ `
           interannotatorAgreement
           semanticAgreement
           aggregatedAnswers
+          instructionLink
           createdAt
           updatedAt
         }
@@ -201,6 +205,7 @@ export const getAnnotationResult = /* GraphQL */ `
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
+              instructionLink
               createdAt
               updatedAt
             }
@@ -224,6 +229,7 @@ export const getAnnotationResult = /* GraphQL */ `
         interannotatorAgreement
         semanticAgreement
         aggregatedAnswers
+        instructionLink
         createdAt
         updatedAt
       }
@@ -279,6 +285,7 @@ export const listAnnotationResults = /* GraphQL */ `
           interannotatorAgreement
           semanticAgreement
           aggregatedAnswers
+          instructionLink
           createdAt
           updatedAt
         }
@@ -347,6 +354,7 @@ export const getMedicalQuestion = /* GraphQL */ `
             interannotatorAgreement
             semanticAgreement
             aggregatedAnswers
+            instructionLink
             createdAt
             updatedAt
           }
@@ -370,6 +378,7 @@ export const getMedicalQuestion = /* GraphQL */ `
       interannotatorAgreement
       semanticAgreement
       aggregatedAnswers
+      instructionLink
       createdAt
       updatedAt
     }
@@ -400,6 +409,7 @@ export const listMedicalQuestions = /* GraphQL */ `
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
+              instructionLink
               createdAt
               updatedAt
             }
@@ -423,6 +433,38 @@ export const listMedicalQuestions = /* GraphQL */ `
         interannotatorAgreement
         semanticAgreement
         aggregatedAnswers
+        instructionLink
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getQuestionSuggestions = /* GraphQL */ `
+  query GetQuestionSuggestions($id: ID!) {
+    getQuestionSuggestions(id: $id) {
+      id
+      text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listQuestionSuggestions = /* GraphQL */ `
+  query ListQuestionSuggestions(
+    $filter: ModelQuestionSuggestionsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listQuestionSuggestions(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        text
         createdAt
         updatedAt
       }

@@ -3,8 +3,45 @@ import {
     createAnnotationTask,
     updateAnnotationTask,
     createMedicalQuestion,
-    updateMedicalQuestion
-} from "./graphql/mutations";
+    updateMedicalQuestion,
+    createQuestionSuggestions,
+    deleteQuestionSuggestions
+} from "../graphql/mutations";
+
+export async function deleteSuggestion(suggestionID, authMethod) {
+    if (!authMethod) {
+        authMethod = "AMAZON_COGNITO_USER_POOLS"
+    }
+    let deleteObj = {
+        id: suggestionID
+    }
+    let createdTasks = await API.graphql({
+        query: deleteQuestionSuggestions,
+        variables: {
+            input: deleteObj
+        },
+        authMode: authMethod
+    })
+    console.log("this is the final submitted task", createdTasks)
+    //return createdTasks
+
+}
+
+export async function submitSuggestion(suggestion, authMethod) {
+    if (!authMethod) {
+        authMethod = "AMAZON_COGNITO_USER_POOLS"
+    }
+    let createdTasks = await API.graphql({
+        query: createQuestionSuggestions,
+        variables: {
+            input: suggestion
+        },
+        authMode: authMethod
+    })
+    console.log("this is the final submitted task", createdTasks)
+    //return createdTasks
+
+}
 
 export async function submitTask(task, authMethod) {
     if (!authMethod) {
@@ -36,14 +73,14 @@ export async function submitQuestion(question, authMethod) {
     if (!authMethod) {
         authMethod = "AMAZON_COGNITO_USER_POOLS"
     }
-    const questionObj = {
-        text: question
-    }
+    // const questionObj = {
+    //     text: question
+    // }
 
     const createdQuestion = await API.graphql({
         query: createMedicalQuestion,
         variables: {
-            input: questionObj
+            input: question
         },
         authMode: authMethod
     })

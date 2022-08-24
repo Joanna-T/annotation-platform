@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { listMedicalQuestions, getMedicalQuestion } from "./graphql/queries";
-import { createAnnotationTask } from "./graphql/mutations";
-import { Card, Grid, Segment, Label, Button, Icon, Message, Modal } from "semantic-ui-react";
+import { listMedicalQuestions, getMedicalQuestion } from "../graphql/queries";
+import { createAnnotationTask } from "../graphql/mutations";
+import { Card, Grid, Segment, Label, Button, Icon, Message, Modal, Checkbox } from "semantic-ui-react";
 import { API, Storage, Amplify, Auth } from "aws-amplify";
-import { groupTasksByDocument, findCompletedTasks, createReassignedTasks } from "./documentUtils";
-import { listCurators, fetchQuestions } from "./queryUtils";
-import { submitTask } from "./mutationUtils";
-import Layout from "./Layout";
+import { groupTasksByDocument, findCompletedTasks, createReassignedTasks } from "../utils/documentUtils";
+import { listCurators, fetchQuestions, fetchSuggestions } from "../utils/queryUtils";
+import { submitTask, deleteSuggestion } from "../utils/mutationUtils";
+import Layout from "../common/Layout";
 import { Navigate, useNavigate } from "react-router-dom";
 
 
@@ -76,6 +76,9 @@ const ReassignTasks = () => {
             <Segment style={{ textAlign: "left" }}>
 
                 <p><Icon name='hand point right' />Please choose a task to reassign</p>
+
+
+
                 <p><b>NOTE:</b> "Completed" denotes the number of document annotated by the required number of curators,
                     which is currently set at {process.env.REACT_APP_NUMBER_CURATORS}
                 </p>
@@ -85,6 +88,7 @@ const ReassignTasks = () => {
                             incompleteQuestions.map((question, index) => (
 
                                 <Card
+                                    key={question.id}
                                     fluid color={(chosenQuestion === question) ? "blue" : ""}
                                     style={{ "margin-top": 2, "margin-bottom": 2, "text-align": "left", "padding": "2%" }}
                                     onClick={() => setChosenQuestion(question)}
@@ -117,6 +121,7 @@ const ReassignTasks = () => {
                             allQuestionTasks[chosenQuestion.id].map((tasks, index) => (
 
                                 <Card
+                                    key={tasks[0].id}
                                     fluid
                                     style={{ "margin-top": 2, "margin-bottom": 2, "text-align": "left", "padding": "2%" }}
                                     header={`Document title: ${tasks[0].document_title}`}

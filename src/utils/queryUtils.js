@@ -5,8 +5,9 @@ import {
   listAnnotationTasks,
   getAnnotationTask,
   listQuestionForms,
-  getQuestionForm
-} from "./graphql/queries";
+  getQuestionForm,
+  listQuestionSuggestions
+} from "../graphql/queries";
 import { parseDocumentContents } from "./documentUtils"
 
 let nextToken;
@@ -31,6 +32,20 @@ export async function listCurators() {
   console.log("curators")
   console.log(users)
   return users;
+}
+
+export async function fetchSuggestions(authMethod) {
+  if (!authMethod) {
+    authMethod = "AMAZON_COGNITO_USER_POOLS"
+  }
+  const suggestionsData = await API.graphql({
+    query: listQuestionSuggestions,
+    authMode: authMethod
+
+  })
+  console.log("questions", suggestionsData.data.listQuestionSuggestions.items);
+  return suggestionsData.data.listQuestionSuggestions.items
+
 }
 
 export async function fetchQuestions(authMethod) {

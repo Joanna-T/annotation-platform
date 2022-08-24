@@ -4,8 +4,8 @@ import { API, Auth } from "aws-amplify";
 import { listAnnotationTasks, listQuestionForms } from "../graphql/queries";
 import { Link } from "react-router-dom";
 import { List, Segment, Grid, Image, Card } from "semantic-ui-react";
-import Layout from "../Layout";
-import { fetchTasks, getTaskDocumentTitles } from "../queryUtils";
+import Layout from "../common/Layout";
+import { fetchTasks, getTaskDocumentTitles } from "../utils/queryUtils";
 
 const CuratorListResults = () => {
     const [tasks, setTasks] = useState([]);
@@ -39,6 +39,7 @@ const CuratorListResults = () => {
                         tasks.map((task, index) => (
 
                             <Card
+                                key={task.id}
                                 fluid color="blue"
                                 style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
                                 href={`/completed_curator_tasks/${task.id}`}

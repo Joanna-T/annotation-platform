@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Storage } from "aws-amplify";
 import {
   Segment,
@@ -10,12 +10,13 @@ import {
   Icon,
   Checkbox,
   Message,
-  Modal
+  Modal,
+  List
 } from "semantic-ui-react";
 import { Navigate, useNavigate } from "react-router-dom";
-import Layout from "../Layout";
-import { fetchQuestionForms, listCurators } from "../queryUtils";
-import { submitQuestion, submitTask } from "../mutationUtils";
+import Layout from "../common/Layout";
+import { fetchQuestionForms, listCurators, fetchSuggestions } from "../utils/queryUtils";
+import { submitQuestion, submitTask, deleteSuggestion } from "../utils/mutationUtils";
 import { distributeAnnotationTasks } from "./assignTaskUtils";
 import { useAmplify } from "@aws-amplify/ui-react";
 
@@ -47,6 +48,8 @@ const AssignTasks = () => {
   const [chosenQuestionForm, setChosenQuestionForm] = useState(null);
 
   const [medicalQuestion, setMedicalQuestion] = useState("");
+  const [instructionLink, setInstructionLink] = useState("")
+  const [linkIsValid, setLinkIsValid] = useState(true)
   const [folders, setFolders] = useState(null)
   const [chosenFolder, setChosenFolder] = useState(null)
 
@@ -56,10 +59,20 @@ const AssignTasks = () => {
   const [warningMessage, setWarningMessage] = useState(false);
   const [warningText, setWarningText] = useState("Please fill in all fields")
 
+  const [suggestions, setSuggestions] = useState([])
+  const [selectedSuggestion, setSelectedSuggestion] = useState()
+  const [suggestionOpen, setSuggestionOpen] = useState(false)
+
   const navigate = useNavigate();
   useEffect(() => {
     //distributeAnnotationTasks(testQuestionForm, testDocuments, testQuestion, testUsers);
     fetchDocumentFolders()
+
+    fetchSuggestions().then(results => {
+      console.log("suggestions", results)
+      setSuggestions(results)
+    }
+    )
 
     fetchQuestionForms()
       .then(questions => {
@@ -69,7 +82,7 @@ const AssignTasks = () => {
   }, [])
 
   useEffect(() => {
-    console.log(medicalQuestion);
+    console.log("medicalQuestion", medicalQuestion);
   }, [medicalQuestion])
 
   async function fetchDocumentFolders() {
@@ -96,6 +109,11 @@ const AssignTasks = () => {
       })
       .catch(err => console.log(err));
   }
+
+  function isValidURL(string) {
+    var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+    return (res !== null)
+  };
 
   // async function fetchQuestionForms() {
   //   const formData = await API.graphql({
@@ -132,6 +150,19 @@ const AssignTasks = () => {
     }
   }
 
+  const handleInstructionLinkChange = (string) => {
+    setInstructionLink(string)
+    if (string === "") {
+      setLinkIsValid(true)
+      return
+    }
+    if (isValidURL(string)) {
+      setLinkIsValid(true)
+    } else {
+      setLinkIsValid(false)
+    }
+  }
+
   async function handleSubmit() {
     // if (!chosenFolder || !chosenQuestionForm || !medicalQuestion) {
     //   setWarningMessage(true);
@@ -159,7 +190,13 @@ const AssignTasks = () => {
       setOpen(false)
       return
     }
-    Promise.all([submitQuestion(medicalQuestion, "API_KEY"), listCurators()])
+    let questionToSubmit = {
+      text: medicalQuestion
+    }
+    if (instructionLink !== "" && linkIsValid) {
+      questionToSubmit.instructionLink = instructionLink
+    }
+    Promise.all([submitQuestion(questionToSubmit, "API_KEY"), listCurators()])
       .then(results => {
         if (results[1].length < process.env.REACT_APP_NUMBER_CURATORS) {
           console.log("Insufficient number of curators")
@@ -195,6 +232,7 @@ const AssignTasks = () => {
       .catch(err => console.log(err))
 
   }
+
   return (
     <Layout>
       {
@@ -217,8 +255,69 @@ const AssignTasks = () => {
           <Icon name='hand point right' />
           Please enter the new medical question below
         </p>
+        <Modal
+          open={suggestionOpen}
+          onClose={() => setSuggestionOpen(false)}
+          onOpen={() => setSuggestionOpen(true)}
+          trigger={<Button
+            color='blue' >
+            View question suggestions
+          </Button>}
+        >
+          <Modal.Header> Select a suggestion to use as the new question heading</Modal.Header>
+          <Modal.Content>
+            <Segment maxHeight="50vh">
+              <List divided>
+                {suggestions &&
+                  suggestions.map(suggestion => {
+                    return (
+                      <List.Item
+                        key={suggestion.id}>
+                        <p style={{ display: "inline" }}>{suggestion.text}</p>
+                        <List.Content floated='right'>
 
-        <Input fluid icon='pencil' placeholder='Question here...' onChange={event => setMedicalQuestion(event.target.value)} />
+                          <Button
+                            size="small"
+                            color={selectedSuggestion === suggestion.id ? "blue" : "grey"}
+                            onClick={() => {
+                              setSelectedSuggestion(suggestion.id)
+                              setMedicalQuestion(suggestion.text)
+                            }
+                            }>
+                            Set question</Button>
+                          <Button
+                            size="small"
+                            color="red"
+                            onClick={() => {
+                              deleteSuggestion(suggestion.id)
+                              setSuggestions(suggestions.filter(result => result.id !== suggestion.id))
+                            }}>Delete</Button>
+                        </List.Content>
+                      </List.Item>
+                    )
+                  }
+
+                  )
+                }
+              </List>
+            </Segment>
+
+          </Modal.Content>
+          <Modal.Actions>
+
+            <Button
+              color="red"
+              labelPosition='right'
+              icon='checkmark'
+              onClick={() => setSuggestionOpen(false)}>
+              Back to form
+            </Button>
+          </Modal.Actions>
+
+        </Modal>
+        <br></br>
+        <br></br>
+        <Input value={medicalQuestion} fluid icon='pencil' placeholder='Question here...' onChange={event => setMedicalQuestion(event.target.value)} />
         <br></br>
         <p>
           <Icon name='hand point right' />
@@ -230,7 +329,9 @@ const AssignTasks = () => {
         <Segment style={{ overflow: "auto", maxHeight: '30vh' }}>
           {questionForms ? (questionForms.map((form, index) => {
             return (
-              <Card style={{ "margin-bottom": 5, "text-align": "left", "padding": "2%" }} fluid >
+              <Card
+                key={form.id}
+                style={{ "margin-bottom": 5, "text-align": "left", "padding": "2%" }} fluid >
                 <Accordion>
                   <Accordion.Title
                     active={activeIndex === index}
@@ -279,7 +380,9 @@ const AssignTasks = () => {
           {
             folders ? (folders.map((folder, index) => {
               return (
-                <Card style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "3%" }} fluid>
+                <Card
+                  key={index}
+                  style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "3%" }} fluid>
                   <p>{folder}
                     <Checkbox
                       checked={chosenFolder === folder}
@@ -295,8 +398,19 @@ const AssignTasks = () => {
           }
 
         </Segment>
+        <Segment>
+          <p>
+            <Icon name='hand point right' />
+            OPTIONAL: If you have a link to detailed instructions regarding your annotation task, please paste it here:
+          </p>
+          {
+            !linkIsValid &&
+            <Label color="red">Please enter a valid URL</Label>
+          }
+          <Input value={instructionLink} fluid icon='linkify' placeholder='Link here...' onChange={event => handleInstructionLinkChange(event.target.value)} />
+        </Segment>
 
-        {!chosenFolder || !chosenQuestionForm || !medicalQuestion ?
+        {!chosenFolder || !chosenQuestionForm || !medicalQuestion || !linkIsValid ?
           <Button
             color='grey'
             onClick={() => {

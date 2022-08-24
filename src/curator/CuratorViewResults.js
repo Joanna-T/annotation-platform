@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import TextHeatMap from "../TextHeatMap";
+import TextHeatMap from "../common/TextHeatMap";
 import { API, Auth, Storage } from "aws-amplify";
 import { listQuestionForms, getAnnotationTask, getQuestionForm } from "../graphql/queries";
 import { Link } from "react-router-dom";
 import { List, Segment, Grid, Image, Card, Button, Tab, Form, Label } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
-import { fetchTask, fetchDocument, fetchQuestionForm, fetchQuestion } from "../queryUtils";
-import useWindowSize from "../useWindowSize";
+import { fetchTask, fetchDocument, fetchQuestionForm, fetchQuestion } from "../utils/queryUtils";
+import useWindowSize from "../common/useWindowSize";
 
 const CuratorViewResults = () => {
   const size = useWindowSize();
@@ -83,13 +83,14 @@ const CuratorViewResults = () => {
       <Form text-align="left" inverted style={{ overflow: "auto", maxHeight: "90vh" }} >
         {questions && questions.map(function (question, index) {
           return (
-            <Form.Group grouped >
+            <Form.Group key={index} grouped >
               <h5> {index + 1} {". "} {question.question_text}</h5>
 
               {
                 question.options.map((option) => {
                   return (
                     <Form.Field
+                      key={option}
                       label={option}
                       control='input'
                       type={question.question_type}

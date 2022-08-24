@@ -21,6 +21,7 @@ export const onCreateAnnotationTask = /* GraphQL */ `
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
+              instructionLink
               createdAt
               updatedAt
             }
@@ -44,6 +45,7 @@ export const onCreateAnnotationTask = /* GraphQL */ `
         interannotatorAgreement
         semanticAgreement
         aggregatedAnswers
+        instructionLink
         createdAt
         updatedAt
       }
@@ -84,6 +86,7 @@ export const onUpdateAnnotationTask = /* GraphQL */ `
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
+              instructionLink
               createdAt
               updatedAt
             }
@@ -107,6 +110,7 @@ export const onUpdateAnnotationTask = /* GraphQL */ `
         interannotatorAgreement
         semanticAgreement
         aggregatedAnswers
+        instructionLink
         createdAt
         updatedAt
       }
@@ -147,6 +151,7 @@ export const onDeleteAnnotationTask = /* GraphQL */ `
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
+              instructionLink
               createdAt
               updatedAt
             }
@@ -170,6 +175,7 @@ export const onDeleteAnnotationTask = /* GraphQL */ `
         interannotatorAgreement
         semanticAgreement
         aggregatedAnswers
+        instructionLink
         createdAt
         updatedAt
       }
@@ -211,6 +217,7 @@ export const onCreateAnnotationResult = /* GraphQL */ `
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
+              instructionLink
               createdAt
               updatedAt
             }
@@ -234,6 +241,7 @@ export const onCreateAnnotationResult = /* GraphQL */ `
         interannotatorAgreement
         semanticAgreement
         aggregatedAnswers
+        instructionLink
         createdAt
         updatedAt
       }
@@ -273,6 +281,7 @@ export const onUpdateAnnotationResult = /* GraphQL */ `
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
+              instructionLink
               createdAt
               updatedAt
             }
@@ -296,6 +305,7 @@ export const onUpdateAnnotationResult = /* GraphQL */ `
         interannotatorAgreement
         semanticAgreement
         aggregatedAnswers
+        instructionLink
         createdAt
         updatedAt
       }
@@ -335,6 +345,7 @@ export const onDeleteAnnotationResult = /* GraphQL */ `
               interannotatorAgreement
               semanticAgreement
               aggregatedAnswers
+              instructionLink
               createdAt
               updatedAt
             }
@@ -358,6 +369,7 @@ export const onDeleteAnnotationResult = /* GraphQL */ `
         interannotatorAgreement
         semanticAgreement
         aggregatedAnswers
+        instructionLink
         createdAt
         updatedAt
       }
@@ -428,6 +440,7 @@ export const onCreateMedicalQuestion = /* GraphQL */ `
             interannotatorAgreement
             semanticAgreement
             aggregatedAnswers
+            instructionLink
             createdAt
             updatedAt
           }
@@ -451,6 +464,7 @@ export const onCreateMedicalQuestion = /* GraphQL */ `
       interannotatorAgreement
       semanticAgreement
       aggregatedAnswers
+      instructionLink
       createdAt
       updatedAt
     }
@@ -475,6 +489,7 @@ export const onUpdateMedicalQuestion = /* GraphQL */ `
             interannotatorAgreement
             semanticAgreement
             aggregatedAnswers
+            instructionLink
             createdAt
             updatedAt
           }
@@ -498,6 +513,7 @@ export const onUpdateMedicalQuestion = /* GraphQL */ `
       interannotatorAgreement
       semanticAgreement
       aggregatedAnswers
+      instructionLink
       createdAt
       updatedAt
     }
@@ -522,6 +538,7 @@ export const onDeleteMedicalQuestion = /* GraphQL */ `
             interannotatorAgreement
             semanticAgreement
             aggregatedAnswers
+            instructionLink
             createdAt
             updatedAt
           }
@@ -545,6 +562,37 @@ export const onDeleteMedicalQuestion = /* GraphQL */ `
       interannotatorAgreement
       semanticAgreement
       aggregatedAnswers
+      instructionLink
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateQuestionSuggestions = /* GraphQL */ `
+  subscription OnCreateQuestionSuggestions {
+    onCreateQuestionSuggestions {
+      id
+      text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateQuestionSuggestions = /* GraphQL */ `
+  subscription OnUpdateQuestionSuggestions {
+    onUpdateQuestionSuggestions {
+      id
+      text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteQuestionSuggestions = /* GraphQL */ `
+  subscription OnDeleteQuestionSuggestions {
+    onDeleteQuestionSuggestions {
+      id
+      text
       createdAt
       updatedAt
     }

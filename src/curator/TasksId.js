@@ -1,8 +1,8 @@
 import { API, Storage } from "aws-amplify";
 //import ReactMarkDown from "react-markdown"
-import awsmobile from "./aws-exports";
-import { getAnnotationTask, tasksByUsername } from "./graphql/queries"
-import { createAnnotationResult, updateAnnotationTask } from "./graphql/mutations";
+import awsmobile from "../aws-exports";
+import { getAnnotationTask, tasksByUsername } from "../graphql/queries"
+import { createAnnotationResult, updateAnnotationTask } from "../graphql/mutations";
 import { useHistory, useParams, useLocation } from "react-router-dom";
 import { ComponentPropsToStylePropsMap, Divider } from "@aws-amplify/ui-react";
 import { useState, useEffect, useRef } from "react";
@@ -27,13 +27,13 @@ import {
     Tab
 } from 'semantic-ui-react';
 import { Navigate } from "react-router-dom";
-import { updateTask, updateQuestion } from "./mutationUtils";
-import { fetchTask, fetchDocument, fetchQuestion, fetchQuestionForm } from "./queryUtils";
-import { calculateAllFleissKappa, groupAnswers } from "./curationScoreUtils";
-import { groupTasksByDocument } from "./documentUtils";
+import { updateTask, updateQuestion } from "../utils/mutationUtils";
+import { fetchTask, fetchDocument, fetchQuestion, fetchQuestionForm } from "../utils/queryUtils";
+import { calculateAllFleissKappa, groupAnswers } from "../utils/curationScoreUtils";
+import { groupTasksByDocument, parseDocumentContents } from "../utils/documentUtils";
 import { stackOffsetFromProp } from "nivo/lib/props/stack";
-import useWindowSize from "./useWindowSize";
-import { parseDocumentContents } from "./documentUtils";
+import useWindowSize from "../common/useWindowSize";
+
 
 
 const TasksId = () => {
@@ -43,9 +43,10 @@ const TasksId = () => {
     const [task, setTask] = useState(null);
 
     const [documentText, setDocumentText] = useState("");
+    //question form
     const [questions, setQuestions] = useState(null);
     const [answers, setAnswers] = useState(null);
-
+    //medical question
     const [question, setQuestion] = useState(null);
     const [questionForm, setQuestionForm] = useState(null)
 
@@ -234,6 +235,10 @@ const TasksId = () => {
                             <Icon circular name='info' size='small' />
                             <Header.Content>Instructions</Header.Content>
                         </Header>
+                        {
+                            question && ("instructionLink" in question) && (question.instructionLink !== null) &&
+                            <Button as="a" href={question.instructionLink} target="_blank"> View detailed instructions</Button>
+                        }
                         <Segment basic style={{ maxHeight: "60vh", overflow: "auto" }}>
                             <p>Toggle the Instructions and Questions tickboxes or tabs above
                                 to see or hide the instructions and questions sections.

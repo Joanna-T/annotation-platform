@@ -1,7 +1,8 @@
 import { API, Storage } from "aws-amplify";
-import { getAnnotationTask, } from "./graphql/queries"
+import { getAnnotationTask, } from "../graphql/queries"
 import { Form, Label, Segment } from "semantic-ui-react";
 import { useState, useEffect } from "react";
+import { memo } from "react";
 
 // const testQuestions = [
 //     {
@@ -34,12 +35,13 @@ const AnnotationQuestions = ({ questions, handleAnswerChange, answers }) => {
         <Form fluid textAlign="left" inverted style={{ overflow: "auto", maxHeight: "80vh" }} >
             {questions.map(function (question, index) {
                 return (
-                    <Form.Group grouped >
+                    <Form.Group grouped key={index}>
                         <h5> {index + 1} {". "} {question.question_text}</h5>
                         {
                             question.options.map((option) => {
                                 return (
                                     <Form.Field
+                                        key={option}
                                         label={option}
                                         control='input'
                                         type={question.question_type}
@@ -64,4 +66,4 @@ const AnnotationQuestions = ({ questions, handleAnswerChange, answers }) => {
 
 }
 
-export default AnnotationQuestions;
+export default memo(AnnotationQuestions);

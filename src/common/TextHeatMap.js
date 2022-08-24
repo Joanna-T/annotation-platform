@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { memo } from "react";
 
 const TextHeatMap = ({ documentLabels, documentText, tag }) => {
   const [highlightedText, setHighlightedText] = useState("Loading text...");
@@ -109,4 +110,4 @@ const TextHeatMap = ({ documentLabels, documentText, tag }) => {
   );
 }
 
-export default TextHeatMap;
+export default memo(TextHeatMap);

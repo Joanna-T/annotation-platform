@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { API, Storage } from "aws-amplify";
-import { getQuestionForm } from "./graphql/queries";
+import { getQuestionForm } from "../graphql/queries";
 import { Segment, Icon, Button, Modal } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
-import { fetchQuestion, fetchQuestionForm } from "./queryUtils";
-import { groupAnswers, calculateAllFleissKappa } from "./curationScoreUtils";
+import { fetchQuestion, fetchQuestionForm } from "../utils/queryUtils";
+import { groupAnswers, calculateAllFleissKappa } from "../utils/curationScoreUtils";
+import { memo } from "react";
 
 const InterannotatorAgreement = ({ grouped_tasks }) => {
   const [groupedAnswers, setGroupedAnswers] = useState([]);
@@ -255,6 +256,15 @@ const InterannotatorAgreement = ({ grouped_tasks }) => {
   }
 
   const colours = [
+    "#009E73",
+    "#F0E442",
+    "#56B4E9",
+    "#E69F00",
+    "#CC79A7",
+    "#D55E00"
+  ]
+
+  const colours1 = [
     "hsl(142, 0%, 50%)",
     "hsl(127, 70%, 50%)",
     "hsl(247, 70%, 50%)",
@@ -284,14 +294,14 @@ const InterannotatorAgreement = ({ grouped_tasks }) => {
     {aggregatedBarData && aggregatedBarData.map((item, index) => {
       return (
 
-        <div style={{ "height": "100px" }}>
+        <div key={index} style={{ "height": "100px" }}>
           <p>IA:{" "}<b>{fleissKappa && fleissKappa[item["category"]]}</b>
             {" "}{fleissKappa && likelihoodToText(fleissKappa[item["category"]])}</p>
           {Object.keys(item).map((option, innerIndex) => {
             let keyColor = colours[innerIndex];
             if (option !== "category") {
               return (
-                <p style={{ display: "inline" }}>{option}<Icon style={{ color: keyColor }} name="circle"></Icon></p>
+                <p key={index} style={{ display: "inline" }}>{option}<Icon style={{ color: keyColor }} name="circle"></Icon></p>
               )
             }
 
@@ -316,4 +326,4 @@ const InterannotatorAgreement = ({ grouped_tasks }) => {
   </div>);
 }
 
-export default InterannotatorAgreement;
+export default memo(InterannotatorAgreement);

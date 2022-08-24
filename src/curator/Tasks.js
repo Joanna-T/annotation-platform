@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { API, Auth } from "aws-amplify";
-import { listAnnotationTasks, listQuestionForms } from "./graphql/queries";
+import { listAnnotationTasks, listQuestionForms } from "../graphql/queries";
 import { Link } from "react-router-dom";
 import { List, Segment, Grid, Image, Card } from "semantic-ui-react";
-import { tasksByUsername } from "./graphql/queries";
-import Layout from "./Layout";
-import { fetchTasks } from "./queryUtils"
-import { fetchDocument, getTaskDocumentTitles } from "./queryUtils";
+import { tasksByUsername } from "../graphql/queries";
+import Layout from "../common/Layout";
+import { fetchTasks } from "../utils/queryUtils"
+import { fetchDocument, getTaskDocumentTitles } from "../utils/queryUtils";
 
 const Tasks = () => {
     const [tasks, setTasks] = useState([]);
@@ -66,6 +66,7 @@ const Tasks = () => {
                         tasks.map((task, index) => (
 
                             <Card
+                                key={task.id}
                                 fluid color="blue"
                                 style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
                                 href={`/annotation_tasks/${task.id}`}

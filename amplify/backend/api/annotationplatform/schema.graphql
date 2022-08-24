@@ -67,5 +67,20 @@ type MedicalQuestion @model
   interannotatorAgreement:AWSJSON
   semanticAgreement:AWSJSON
   aggregatedAnswers:AWSJSON
+  instructionLink:String
 }
+
+type QuestionSuggestions @model 
+  @auth(
+    rules: [
+      {allow: public, operations: [create,read,update,delete]},
+      {allow: groups, groups: ["Admin","Curators"], operations: [create,read,update,delete]}
+    ]
+  ){
+  id: ID!
+  text: String!
+
+
+}
+
 

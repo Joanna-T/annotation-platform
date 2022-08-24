@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { TokenAnnotator, TextAnnotator } from "react-text-annotate";
 import { Segment, Button } from "semantic-ui-react";
+import { memo } from "react";
 
 
 const TAG_COLORS = {
@@ -90,4 +91,4 @@ const AnnotationPage = ({ annotationText, handleLabelChange, parentLabels }) => 
   );
 }
 
-export default AnnotationPage;
+export default memo(AnnotationPage);

@@ -447,18 +447,19 @@ const calculateFleissKappa = (category, values, tasks) => {
 
   let kappa = (Pmean - P_e_mean) / (1 - P_e_mean);
 
-  if (!kappa) {
-    return {
-      "kappaValue": "-1 (Incomplete Data)",
-      "aggregatedCategoryData": aggregatedCategoryData
-    }
-  }
+
   // if (kappa < 0) {
   //     return "-"
   // }
   if (numInstances < (values.length)) {
     return {
       "kappaValue": kappa.toFixed(3) + " (Incomplete Data)",
+      "aggregatedCategoryData": aggregatedCategoryData
+    }
+  }
+  if (!kappa) {
+    return {
+      "kappaValue": "-1 (Poor Agreement)",
       "aggregatedCategoryData": aggregatedCategoryData
     }
   }

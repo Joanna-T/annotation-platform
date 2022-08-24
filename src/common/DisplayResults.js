@@ -1,16 +1,16 @@
 import { Button, Grid, Icon, Segment, Modal, Dropdown, Tab, Label } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
-import BarChart from "../BarChart";
+import BarChart from "./BarChart";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { API, Storage } from "aws-amplify";
 import { getQuestionForm } from "../graphql/queries";
-import TextHeatMap from "../TextHeatMap"
-import QuestionStats from "../QuestionStats";
-import InterannotatorAgreement from "../InterannotatorAgreement";
-import { fetchQuestion, fetchQuestionForm } from "../queryUtils";
-import { fetchDocument, getTaskDocumentTitles } from "../queryUtils";
-import useWindowSize from "../useWindowSize";
+import TextHeatMap from "./TextHeatMap"
+import QuestionStats from "./QuestionStats";
+import InterannotatorAgreement from "./InterannotatorAgreement";
+import { fetchQuestion, fetchQuestionForm } from "../utils/queryUtils";
+import { fetchDocument, getTaskDocumentTitles } from "../utils/queryUtils";
+import useWindowSize from "./useWindowSize";
 
 
 

@@ -6,10 +6,10 @@ import {
     Segment,
     Card
 } from 'semantic-ui-react';
-import { fetchQuestion } from "./queryUtils";
+import { fetchQuestion } from "../utils/queryUtils";
 import Layout from "./Layout";
-import { groupTasksByDocument } from "./documentUtils";
-import { getTaskDocumentTitles } from "./queryUtils";
+import { groupTasksByDocument } from "../utils/documentUtils";
+import { getTaskDocumentTitles } from "../utils/queryUtils";
 
 
 const QuestionDocuments = () => {
@@ -56,6 +56,7 @@ const QuestionDocuments = () => {
                     question && groupedTasks.map((tasks, index) => (
 
                         <Card
+                            key={tasks[0].id}
                             fluid color="blue"
                             style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
                             onClick={() => handleNavigate(tasks)}
