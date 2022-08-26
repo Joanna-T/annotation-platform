@@ -49,16 +49,18 @@ const TasksId = () => {
     //medical question
     const [question, setQuestion] = useState(null);
     const [questionForm, setQuestionForm] = useState(null)
+    const [labelDescriptions, setLabelDescriptions] = useState(null)
 
     const [instructionsVisible, setInstructionsVisible] = useState(true);
     const [questionsVisible, setQuestionsVisible] = useState(true);
     const [instructionWidth, setInstructionWidth] = useState(2);
     const [mainWidth, setMainWidth] = useState(12);
     const [questionsWidth, setQuestionWidth] = useState(2);
-    const [parentLabels, setParentLabels] = useState([{ start: 15, end: 20, tag: "SUMMARY" }]);
+    const [parentLabels, setParentLabels] = useState([]);
     const [documentTitle, setDocumentTitle] = useState("Loading document...")
 
     const [open, setOpen] = useState(false);
+
 
     const handleAnswerChange = (e => {
         const questionDescription = e.target.name;
@@ -128,6 +130,7 @@ const TasksId = () => {
                         setDocumentText(result[0]["abstract"] + "\n\n" + result[0]["mainText"])
                         setDocumentTitle(result[0]["title"])
                         setQuestion(result[1])
+                        setLabelDescriptions(JSON.parse(result[1].labelDescriptions))
                         setQuestionForm(result[2])
                     })
                     .catch(err => console.log(err))
@@ -195,10 +198,7 @@ const TasksId = () => {
 
             updateTask(finalStoredAnswer)
         }
-
-
         console.log("answer submitted")
-
     }
 
     async function storeLabels() {
@@ -266,7 +266,8 @@ const TasksId = () => {
         <AnnotationPage
             annotationText={documentText}
             handleLabelChange={handleLabelChange}
-            parentLabels={parentLabels}>
+            parentLabels={parentLabels}
+            labelDescriptions={labelDescriptions}>
         </AnnotationPage>
     )
 

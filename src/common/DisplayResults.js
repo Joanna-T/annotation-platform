@@ -31,6 +31,7 @@ const DisplayResults = () => {
   const [questionForms, setQuestionForms] = useState([])
   const [medicalQuestion, setmedicalQuestion] = useState(null)
   const [semanticAgreement, setSemanticAgreement] = useState(null)
+  const [labelDescriptions, setLabelDescriptions] = useState(null)
 
   useEffect(() => {
     console.log("display results")
@@ -64,6 +65,7 @@ const DisplayResults = () => {
         .then(question => {
           setmedicalQuestion(question)
           setSemanticAgreement(JSON.parse(JSON.parse(question.semanticAgreement)))
+          setLabelDescriptions(JSON.parse(question.labelDescriptions))
         })
     }
 
@@ -166,9 +168,21 @@ const DisplayResults = () => {
 
   const heatMapSection = (
     <div>
+
       <Segment style={{ "margin-bottom": "0%", "text-align": "left" }}>
         <p style={{ display: "inline" }}><b>Toggle document labels:{"  "}</b></p>
-        <Button inverted color='orange'
+        {
+          labelDescriptions && labelDescriptions.map(labelDescription => {
+            return (
+              <Button inverted color={labelDescription.buttonColour}
+                active={(tag == labelDescription.tagName)}
+                onClick={() => setTag(labelDescription.tagName)}>
+                {labelDescription.tagName}
+              </Button>
+            )
+          })
+        }
+        {/* <Button inverted color='orange'
           active={(tag == "Summary")}
           onClick={() => setTag("Summary")}>
           Summary
@@ -182,7 +196,7 @@ const DisplayResults = () => {
           active={(tag == "Relevancy")}
           onClick={() => setTag("Relevancy")}>
           Relevancy
-        </Button>
+        </Button> */}
 
       </Segment>
       <Segment style={{ "overflow": "auto", "text-align": "left", "white-space": "pre-wrap", height: size.height * 0.9, "margin-top": "0%" }}>

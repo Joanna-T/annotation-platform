@@ -43,6 +43,37 @@ import { useAmplify } from "@aws-amplify/ui-react";
 //   id: "1234questionForm"
 // }
 
+const labelColours = [
+  {
+    buttonColour: "red",
+    labelColour: "#ff6e63"
+  },
+  {
+    buttonColour: "purple",
+    labelColour: "#c07dff"
+  },
+  {
+    buttonColour: "yellow",
+    labelColour: "#fff980"
+  },
+  {
+    buttonColour: "green",
+    labelColour: "#a7ff78"
+  },
+  {
+    buttonColour: "blue",
+    labelColour: "#69c5ff"
+  },
+  {
+    buttonColour: "brown",
+    labelColour: "#c7853e"
+  },
+  {
+    buttonColour: "black",
+    labelColour: "#c4c4c4"
+  }
+]
+
 const AssignTasks = () => {
   const [questionForms, setQuestionForms] = useState(null);
   const [chosenQuestionForm, setChosenQuestionForm] = useState(null);
@@ -52,6 +83,8 @@ const AssignTasks = () => {
   const [linkIsValid, setLinkIsValid] = useState(true)
   const [folders, setFolders] = useState(null)
   const [chosenFolder, setChosenFolder] = useState(null)
+  const [labels, setLabels] = useState([])
+  const [currentLabel, setCurrentLabel] = useState("")
 
 
   const [activeIndex, setActiveIndex] = useState(null);
@@ -163,6 +196,25 @@ const AssignTasks = () => {
     }
   }
 
+  const addLabel = () => {
+    console.log("new label added")
+    var newLabel = {};
+    if (labels.length < 7 && currentLabel !== "") {
+      for (let i = 0; i < labelColours.length; i++) {
+        console.log(labelColours[i])
+        let labelColourAlreadyUsed = labels.filter(result => result.buttonColour === labelColours[i].buttonColour)
+        if (labelColourAlreadyUsed.length === 0) {
+          newLabel.tagName = currentLabel
+          newLabel.buttonColour = labelColours[i].buttonColour
+          newLabel.labelColour = labelColours[i].labelColour
+          break
+        }
+      }
+      console.log(newLabel)
+      setLabels([...labels, newLabel])
+      setCurrentLabel("")
+    }
+  }
   async function handleSubmit() {
     // if (!chosenFolder || !chosenQuestionForm || !medicalQuestion) {
     //   setWarningMessage(true);
@@ -191,7 +243,9 @@ const AssignTasks = () => {
       return
     }
     let questionToSubmit = {
-      text: medicalQuestion
+      text: medicalQuestion,
+      labelDescriptions: JSON.stringify(labels)
+
     }
     if (instructionLink !== "" && linkIsValid) {
       questionToSubmit.instructionLink = instructionLink
@@ -203,7 +257,8 @@ const AssignTasks = () => {
           return
         }
         try {
-          distributeAnnotationTasks(chosenQuestionForm, chosenFolder, results[0], results[1])
+          let JSONLabels = JSON.stringify(labels)
+          distributeAnnotationTasks(chosenQuestionForm, chosenFolder, results[0], results[1], JSONLabels)
             .then(() => {
               navigate("/")
             })
@@ -398,6 +453,25 @@ const AssignTasks = () => {
           }
 
         </Segment>
+
+        <p>
+          <Icon name='hand point right' />
+          Please add the annotation labels
+        </p>
+        <Segment basic>
+          {labels && labels.map(label => {
+            return (
+              <Label color={label.buttonColour}
+                onClick={() => { setLabels(labels.filter(result => result.buttonColour !== label.buttonColour)) }} >
+                {label.tagName}
+                <Icon name='delete' />
+              </Label>
+            )
+          })}
+        </Segment>
+        <Button onClick={addLabel}>Add Label</Button>
+        <Input value={currentLabel} placeholder='Enter label name here...' onChange={event => setCurrentLabel(event.target.value)} />
+        {/* action={{ icon: 'add', onClick: { addLabel } }} */}
         <Segment>
           <p>
             <Icon name='hand point right' />
@@ -410,7 +484,7 @@ const AssignTasks = () => {
           <Input value={instructionLink} fluid icon='linkify' placeholder='Link here...' onChange={event => handleInstructionLinkChange(event.target.value)} />
         </Segment>
 
-        {!chosenFolder || !chosenQuestionForm || !medicalQuestion || !linkIsValid ?
+        {!chosenFolder || !chosenQuestionForm || !medicalQuestion || !linkIsValid || labels.length === 0 ?
           <Button
             color='grey'
             onClick={() => {
@@ -427,7 +501,7 @@ const AssignTasks = () => {
             onOpen={() => setOpen(true)}
             trigger={<Button
               color='blue' >
-              Submit
+              Create tasks
             </Button>}
           //content='You will not be able to make any more changes to this annotation task.'
           //actions={['Submit', { key: 'done', content: 'Back to annotating', positive: true }]}
@@ -435,7 +509,7 @@ const AssignTasks = () => {
             <Modal.Header> Are you sure you want to create new tasks?</Modal.Header>
             <Modal.Actions>
               <Button color="green" onClick={handleSubmit}>
-                Submit
+                Create tasks
               </Button>
               <Button
                 color="red"

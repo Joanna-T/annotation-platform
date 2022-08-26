@@ -16,7 +16,7 @@ const TextHeatMap = ({ documentLabels, documentText, tag }) => {
 
   useEffect(() => {
     console.log("this is heatmap?", documentText)
-    insertSpan(documentText, "Summary");
+    insertSpan(documentText, " ");
     setLabelsText({})
   }, [documentText])
 

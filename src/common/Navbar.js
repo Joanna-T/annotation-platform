@@ -140,6 +140,20 @@ const Navbar = () => {
             {
                 signedUser && admin && (
                     <Menu.Item
+                        as={Link} to="/delete_tasks"
+                        name='DeleteTasks'
+                        active={currentItem === 'DeleteTasks'}
+                        onClick={() => {
+                            handleItemClick('DeleteTasks');
+                        }}
+                    ><Icon name="delete"></Icon>{size.width > 940 ? "  Delete Tasks" : ""}</Menu.Item>
+
+                )
+            }
+
+            {
+                signedUser && admin && (
+                    <Menu.Item
                         as={Link} to="/active_tasks"
                         name='ActiveTasks'
                         active={currentItem === 'ActiveTasks'}
@@ -224,6 +238,9 @@ const findCorrectTab = (pathname, signedUser, admin) => {
     }
     else if (pathname.includes("active_tasks")) {
         return "ActiveTasks"
+    }
+    else if (pathname.includes("delete_tasks")) {
+        return "DeleteTasks"
     }
     else if (pathname.includes("reassign_tasks")) {
         return "ReassignTask"

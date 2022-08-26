@@ -7,7 +7,36 @@ import { List, Segment, Grid, Image, Card, Button, Tab, Form, Label } from "sema
 import { useParams } from "react-router-dom";
 import { fetchTask, fetchDocument, fetchQuestionForm, fetchQuestion } from "../utils/queryUtils";
 import useWindowSize from "../common/useWindowSize";
-
+const labelColours = [
+  {
+    buttonColour: "red",
+    labelColour: "#ff6e63"
+  },
+  {
+    buttonColour: "grey",
+    labelColour: "#c4c4c4"
+  },
+  {
+    buttonColour: "purple",
+    labelColour: "#c07dff"
+  },
+  {
+    buttonColour: "yellow",
+    labelColour: "#fff980"
+  },
+  {
+    buttonColour: "green",
+    labelColour: "#a7ff78"
+  },
+  {
+    buttonColour: "blue",
+    labelColour: "#69c5ff"
+  },
+  {
+    buttonColour: "brown",
+    labelColour: "#c7853e"
+  },
+]
 const CuratorViewResults = () => {
   const size = useWindowSize();
   const { id } = useParams();
@@ -19,6 +48,7 @@ const CuratorViewResults = () => {
   const [questions, setQuestions] = useState(null)
   const [medicalQuestion, setMedicalQuestion] = useState(null)
   const [documentTitle, setDocumentTitle] = useState("Loading...");
+  const [labelDescriptions, setLabelDescriptions] = useState([])
 
 
   useEffect(() => {
@@ -38,6 +68,7 @@ const CuratorViewResults = () => {
             setDocumentTitle(result[0]["title"])
             setQuestions(JSON.parse(result[1].questions))
             setMedicalQuestion(result[2])
+            setLabelDescriptions(JSON.parse(result[2].labelDescriptions))
           })
       })
 
@@ -48,7 +79,18 @@ const CuratorViewResults = () => {
       <Segment style={{ "marginBottom": "0%", "textAlign": "left" }}>
         <b>Toggle document labels:</b>
         {" "}
-        <Button inverted color='orange'
+        {
+          labelDescriptions && labelDescriptions.map(labelDescription => {
+            return (
+              <Button inverted color={labelDescription.buttonColour}
+                active={(tag == labelDescription.tagName)}
+                onClick={() => setTag(labelDescription.tagName)}>
+                {labelDescription.tagName}
+              </Button>
+            )
+          })
+        }
+        {/* <Button inverted color='orange'
           active={(tag == "Summary")}
           onClick={() => setTag("Summary")}>
           Summary
@@ -62,7 +104,7 @@ const CuratorViewResults = () => {
           active={(tag == "Relevancy")}
           onClick={() => setTag("Relevancy")}>
           Relevancy
-        </Button>
+        </Button> */}
 
       </Segment>
       <Segment style={{ "overflow": "auto", "textAlign": "left", "whiteSpace": "pre-wrap", height: "90vh", "marginTop": "0%" }}>

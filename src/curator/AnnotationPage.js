@@ -4,21 +4,31 @@ import { Segment, Button } from "semantic-ui-react";
 import { memo } from "react";
 
 
-const TAG_COLORS = {
-  Summary: "#F6B445",
-  Quality: "#F3E322",
-  Relevancy: "#d0b6fa"
-};
+// const TAG_COLORS = {
+//   Summary: "#F6B445",
+//   Quality: "#F3E322",
+//   Relevancy: "#d0b6fa"
+// };
 // Relevancy: "#E9E836"
-const AnnotationPage = ({ annotationText, handleLabelChange, parentLabels }) => {
+const AnnotationPage = ({ annotationText, handleLabelChange, parentLabels, labelDescriptions }) => {
   const [tag, setTag] = useState("Quality");
-  const [labels, setLabels] = useState([])
-
+  const [labels, setLabels] = useState([]);
+  const [tagColours, setTagColours] = useState({});
 
   useEffect(() => {
     console.log("these are the labels in the parent", parentLabels)
   }, [parentLabels])
 
+  useEffect(() => {
+    let tempTagColours = {}
+    if (labelDescriptions) {
+      for (let i = 0; i < labelDescriptions.length; i++) {
+        tempTagColours[labelDescriptions[i].tagName] = labelDescriptions[i].labelColour
+      }
+      setTagColours(tempTagColours)
+    }
+
+  }, [labelDescriptions])
 
   if (!annotationText) {
     return (
@@ -46,7 +56,18 @@ const AnnotationPage = ({ annotationText, handleLabelChange, parentLabels }) => 
       <h4>Please select the relevant label and highlight the text.
         Click on the highlighted text again to delete them.
       </h4>
-      <Button inverted color='orange'
+      {
+        labelDescriptions && labelDescriptions.map(labelDescription => {
+          return (
+            <Button inverted color={labelDescription.buttonColour}
+              active={(tag == labelDescription.tagName)}
+              onClick={() => setTag(labelDescription.tagName)}>
+              {labelDescription.tagName}
+            </Button>
+          )
+        })
+      }
+      {/* <Button inverted color='orange'
         active={(tag == "Summary")}
         onClick={() => setTag("Summary")}>
         Summary
@@ -60,7 +81,7 @@ const AnnotationPage = ({ annotationText, handleLabelChange, parentLabels }) => 
         active={(tag == "Relevancy")}
         onClick={() => setTag("Relevancy")}>
         Relevancy
-      </Button>
+      </Button> */}
       <Button content='Restart' icon='eraser' labelPosition='left' onClick={() => handleLabelChange([])} />
 
       <Segment style={{ overflow: 'auto', maxHeight: '80vh' }}>
@@ -77,7 +98,7 @@ const AnnotationPage = ({ annotationText, handleLabelChange, parentLabels }) => 
             getSpan={span => ({
               ...span,
               tag: tag,
-              color: TAG_COLORS[tag]
+              color: tagColours[tag]
             })}
 
 

@@ -68,6 +68,7 @@ type MedicalQuestion @model
   semanticAgreement:AWSJSON
   aggregatedAnswers:AWSJSON
   instructionLink:String
+  labelDescriptions:AWSJSON
 }
 
 type QuestionSuggestions @model 
@@ -79,7 +80,6 @@ type QuestionSuggestions @model
   ){
   id: ID!
   text: String!
-
 
 }
 

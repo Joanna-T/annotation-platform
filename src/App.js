@@ -18,7 +18,7 @@ import CuratorViewResults from './curator/CuratorViewResults';
 import CuratorListResults from './curator/CuratorListResults';
 import { Auth } from "@aws-amplify/auth"
 import PageNotFound from './common/PageNotFound'
-
+import DeleteTasks from './admin/DeleteTasks'
 
 API.configure(awsmobile)
 Auth.configure(awsmobile)
@@ -48,6 +48,7 @@ function App() {
             <Route exact path="/active_tasks/:questions/results" element={<DisplayResults />} />
             <Route exact path="/active_tasks/:id" element={<QuestionDocuments />} />
             <Route exact path="/active_tasks" element={<ActiveTasks />} />
+            <Route exact path="/delete_tasks" element={<DeleteTasks />} />
             <Route exact path="/reassign_tasks" element={<ReassignTasks />} />
             <Route exact path="/completed_tasks/:questions/results" element={<DisplayResults />} />
             <Route exact path="/completed_tasks/:id" element={<QuestionDocuments />} />

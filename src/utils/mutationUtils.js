@@ -5,8 +5,48 @@ import {
     createMedicalQuestion,
     updateMedicalQuestion,
     createQuestionSuggestions,
-    deleteQuestionSuggestions
+    deleteQuestionSuggestions,
+    deleteMedicalQuestion,
+    deleteAnnotationTask
 } from "../graphql/mutations";
+
+export async function deleteTask(taskID, authMethod) {
+    if (!authMethod) {
+        authMethod = "AMAZON_COGNITO_USER_POOLS"
+    }
+    let deleteObj = {
+        id: taskID
+    }
+    let deletedQuestion = await API.graphql({
+        query: deleteAnnotationTask,
+        variables: {
+            input: deleteObj
+        },
+        authMode: authMethod
+    })
+    console.log("this is the final deleted question task", deletedQuestion)
+    //return createdTasks
+
+}
+
+export async function deleteQuestion(questionID, authMethod) {
+    if (!authMethod) {
+        authMethod = "AMAZON_COGNITO_USER_POOLS"
+    }
+    let deleteObj = {
+        id: questionID
+    }
+    let deletedQuestion = await API.graphql({
+        query: deleteMedicalQuestion,
+        variables: {
+            input: deleteObj
+        },
+        authMode: authMethod
+    })
+    console.log("this is the final deleted question task", deletedQuestion)
+    //return createdTasks
+
+}
 
 export async function deleteSuggestion(suggestionID, authMethod) {
     if (!authMethod) {
@@ -15,14 +55,14 @@ export async function deleteSuggestion(suggestionID, authMethod) {
     let deleteObj = {
         id: suggestionID
     }
-    let createdTasks = await API.graphql({
+    let deletedSuggestion = await API.graphql({
         query: deleteQuestionSuggestions,
         variables: {
             input: deleteObj
         },
         authMode: authMethod
     })
-    console.log("this is the final submitted task", createdTasks)
+    console.log("this is the final submitted task", deletedSuggestion)
     //return createdTasks
 
 }
@@ -31,14 +71,14 @@ export async function submitSuggestion(suggestion, authMethod) {
     if (!authMethod) {
         authMethod = "AMAZON_COGNITO_USER_POOLS"
     }
-    let createdTasks = await API.graphql({
+    let submittedSuggestion = await API.graphql({
         query: createQuestionSuggestions,
         variables: {
             input: suggestion
         },
         authMode: authMethod
     })
-    console.log("this is the final submitted task", createdTasks)
+    console.log("this is the final submitted task", submittedSuggestion)
     //return createdTasks
 
 }
