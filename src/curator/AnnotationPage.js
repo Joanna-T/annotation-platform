@@ -4,7 +4,6 @@ import { Segment, Button } from "semantic-ui-react";
 import { memo } from "react";
 
 
-
 const AnnotationPage = ({ annotationText, handleLabelChange, parentLabels, labelDescriptions }) => {
   const [tag, setTag] = useState(() => labelDescriptions ? labelDescriptions[0].tagName : "");
   const [tagColours, setTagColours] = useState({});

@@ -182,35 +182,39 @@ describe("display results tests", () => {
         expect(labelHeading).toBeInTheDocument();
 
     })
-    // it("successfully renders label section", async () => {
 
-    //     act(() => {
-    //         render(
-    //             <MemoryRouter initialEntries={[mockUseLocationValue]}>
-    //                 <DisplayResults />
-    //             </MemoryRouter>)
-    //     })
+    it("displays the annotation document", async () => {
 
-    //     const questionText = screen.getByText(/Test question/)
+        await act(() => {
+            render(
+                <MemoryRouter initialEntries={[mockUseLocationValue]}>
+                    <DisplayResults />
+                </MemoryRouter>)
+        })
+
+        const documentTitle = screen.getAllByText(/This is the title/)
 
 
-    //     expect(questionText).toBeInTheDocument();
+        expect(documentTitle[0]).toBeInTheDocument();
 
-    // })
+    })
+
     // it("displays the annotation question", async () => {
-    //     act(() => {
+
+    //     await act(() => {
     //         render(
     //             <MemoryRouter initialEntries={[mockUseLocationValue]}>
     //                 <DisplayResults />
     //             </MemoryRouter>)
     //     })
 
-    //     const questionText = screen.queryByText(/Test question/)
+    //     //const documentTitle = screen.getAllByText(/This is the title/)
 
 
-    //     expect(questionText).toBeInTheDocument();
+    //     expect(await screen.getByText("Test question")).toBeInTheDocument();
 
     // })
+
 
 
 })

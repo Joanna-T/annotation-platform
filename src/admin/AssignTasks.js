@@ -102,7 +102,7 @@ const AssignTasks = () => {
 
 
   const handleAccordionClick = (index) => {
-    console.log(index);
+    //console.log(index);
     if (index === activeIndex) {
       setActiveIndex(-1);
       return
@@ -198,7 +198,7 @@ const AssignTasks = () => {
 
   const formCardStyle = { "marginBottom": 5, "textalign": "left", "padding": "2%" }
   const folderCardStyle = { "marginTop": 5, "marginBottom": 5, "textalign": "left", "padding": "3%" }
-  const constainerSegmentStyle = { overflow: 'auto', "textAlign": "left" }
+  const containerSegmentStyle = { overflow: 'auto', "textAlign": "left" }
 
   return (
     <Layout>
@@ -216,7 +216,7 @@ const AssignTasks = () => {
           Click "Create tasks" to submit details.
         </h4>
       </Segment>
-      <Segment style={constainerSegmentStyle}>
+      <Segment style={containerSegmentStyle}>
         <p><b>NOTE:</b> current number of curators per document is set to {process.env.REACT_APP_NUMBER_CURATORS}</p>
         <p>
           <Icon name='hand point right' />

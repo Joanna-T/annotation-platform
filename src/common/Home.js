@@ -1,11 +1,10 @@
 import Layout from "./Layout";
 import { useState, useEffect } from "react";
 import { Segment, Input, Card, Header, Icon, Modal, Button, Message, Popup } from "semantic-ui-react";
-import { findCompletedTasks, groupTasksByDocument } from "../utils/documentUtils";
 import { fetchQuestions } from "../utils/queryUtils";
 import { submitSuggestion } from "../utils/mutationUtils";
 import { returnCompletedQuestions } from "../utils/documentUtils";
-//import { Auth } from "aws-amplify"
+
 const Home = () => {
     const [searchInput, setSearchInput] = useState("");
     const [allQuestions, setAllQuestions] = useState([])
@@ -24,7 +23,6 @@ const Home = () => {
 
     useEffect(() => {
 
-        //authListener();
         fetchQuestions("API_KEY")
             .then(result => {
 
@@ -46,20 +44,6 @@ const Home = () => {
         e.preventDefault();
         setSuggestionInput(e.target.value)
     }
-
-    // async function authListener() {
-    //     try {
-    //         const user = await Auth.currentAuthenticatedUser();
-
-    //         const groups = user.signInUserSession.accessToken.payload["cognito:groups"];
-    //         if (groups) {
-    //             if (groups.includes("Admin")) {
-    //                 setAdmin(true);
-    //             }
-    //         }
-
-    //     } catch (err) { }
-    // }
 
     async function handleSubmit() {
         const suggestion = {

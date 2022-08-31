@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
-import { API, Storage } from "aws-amplify";
-import { getQuestionForm } from "../graphql/queries";
-import { Segment, Icon, Button, Modal } from "semantic-ui-react";
+import { Icon, Button, Modal } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
-import { fetchQuestion, fetchQuestionForm } from "../utils/queryUtils";
-import { groupAnswers, calculateAllFleissKappa } from "../utils/curationScoreUtils";
 import { memo } from "react";
 
 const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
@@ -15,23 +11,11 @@ const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
 
   useEffect(() => {
     if (medicalQuestion) {
-      console.log("There is a valid question")
-      let semanticAgreement;
       let parsedFleissKappa = JSON.parse(JSON.parse(medicalQuestion.interannotatorAgreement))
       let parsedAggregatedData = JSON.parse(JSON.parse(medicalQuestion.aggregatedAnswers))
-      if (!medicalQuestion.semanticAgreement) {
-        semanticAgreement = 0
-      }
-      else {
-        let parsedSemanticAgreement = JSON.parse(JSON.parse(medicalQuestion.semanticAgreement))
-        //semanticAgreement = parsedSemanticAgreement["semanticAgreement"]
-      }
 
-      console.log("parsedfleiss", parsedFleissKappa)
-      console.log("parsedaggreg", parsedAggregatedData)
       setFleissKappa(parsedFleissKappa)
       setAggregatedBarData(parsedAggregatedData)
-      //setSemanticAgreement(semanticAgreement)
     }
 
 
@@ -76,14 +60,6 @@ const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
     "#D55E00"
   ]
 
-  const colours1 = [
-    "hsl(142, 0%, 50%)",
-    "hsl(127, 70%, 50%)",
-    "hsl(247, 70%, 50%)",
-    "hsl(274, 70%, 50%)",
-    "hsl(331, 70%, 50%)",
-    "hsl(62, 70%, 50%)"
-  ]
 
   const marginProperties = { top: 50, right: 50, bottom: 50, left: 100 }
   const containerDivStyle = { "maxHeight": "50vh", "overflow": "auto" }

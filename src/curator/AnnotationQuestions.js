@@ -1,23 +1,7 @@
-import { API, Storage } from "aws-amplify";
-import { getAnnotationTask, } from "../graphql/queries"
-import { Form, Label, Segment } from "semantic-ui-react";
-import { useState, useEffect } from "react";
+import { Form } from "semantic-ui-react";
 import { memo } from "react";
 
-// const testQuestions = [
-//     {
-//         "question_description": "Category 1",
-//         "question_text": "This is question one",
-//         "options": ["Option 1", "Option 2", "Option 3"],
-//         "question_type": "radio"
-//     },
-//     {
-//         "question_description": "Category 2",
-//         "question_text": "This is question two",
-//         "options": ["Option 4", "Option 5", "Option 6"],
-//         "question_type": "radio"
-//     }
-// ]
+
 
 const AnnotationQuestions = ({ questions, handleAnswerChange, answers }) => {
 

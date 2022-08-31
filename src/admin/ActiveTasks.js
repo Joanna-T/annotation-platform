@@ -27,6 +27,8 @@ const ActiveTasks = () => {
         )
     }
 
+    const viewCardStyle = { "marginTop": 5, "marginBottom": 5, "textAlign": "left", "padding": "2%" }
+
     return (
         <div className="tasks">
 
@@ -43,7 +45,7 @@ const ActiveTasks = () => {
                                 <Card
                                     key={question.id}
                                     fluid color="blue"
-                                    style={{ "marginTop": 5, "marginBottom": 5, "textAlign": "left", "padding": "2%" }}
+                                    style={viewCardStyle}
                                     href={`/active_tasks/${question.id}`}
                                     header={`Question title: ${question.text}`}
                                     meta={`Question ${index + 1}`}

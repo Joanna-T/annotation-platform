@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react";
-import CompletedTasks from "../admin/CompletedTasks";
-import { API, Auth } from "aws-amplify";
-import { listAnnotationTasks, listQuestionForms } from "../graphql/queries";
-import { Link } from "react-router-dom";
-import { List, Segment, Grid, Image, Card } from "semantic-ui-react";
+import { Segment, Card } from "semantic-ui-react";
 import Layout from "../common/Layout";
 import { fetchTasks, getTaskDocumentTitles } from "../utils/queryUtils";
 
@@ -20,6 +16,8 @@ const CuratorListResults = () => {
             .then(result => setDocumentTitle(result))
 
     }, [])
+
+    const cardStyle = { "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }
 
     return (
         <div className="completed-tasks">
@@ -41,7 +39,7 @@ const CuratorListResults = () => {
                             <Card
                                 key={task.id}
                                 fluid color="blue"
-                                style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
+                                style={cardStyle}
                                 href={`/completed_curator_tasks/${task.id}`}
                                 header={`Document title: ${documentTitle[task.id]}`}
                                 meta={`Created ${task.createdAt.substring(0, 10)}`}

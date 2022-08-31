@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
-import { API, Auth } from "aws-amplify";
-import { listAnnotationTasks, listQuestionForms } from "../graphql/queries";
-import { Link } from "react-router-dom";
-import { List, Segment, Grid, Image, Card } from "semantic-ui-react";
-import { tasksByUsername } from "../graphql/queries";
+import { Segment, Card } from "semantic-ui-react";
 import Layout from "../common/Layout";
 import { fetchTasks } from "../utils/queryUtils"
-import { fetchDocument, getTaskDocumentTitles } from "../utils/queryUtils";
+import { getTaskDocumentTitles } from "../utils/queryUtils";
 
 const Tasks = () => {
     const [tasks, setTasks] = useState([]);

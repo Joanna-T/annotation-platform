@@ -7,25 +7,22 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
   const [formQuestions, setFormQuestions] = useState([]);
   const [barData, setBarData] = useState([])
 
-  useEffect(() => {
-    console.log("BAR DATA", barData)
-  }, [barData])
 
   useEffect(() => {
-    console.log("Answers", questionAnswers);
-    console.log("form", questionForm)
+    //console.log("Answers", questionAnswers);
+    //console.log("form", questionForm)
     createBarData(questionAnswers, questionForm)
   }, [questionAnswers, questionForm])
 
   async function createBarData(answers, inputQuestionsForm) {
     let questions = JSON.parse(inputQuestionsForm.questions);
-    console.log("createbardataanswers", answers)
+    //console.log("createbardataanswers", answers)
     setFormQuestions(questions)
-    console.log("createBarData");
+    //console.log("createBarData");
     let allDataItems = [];
     let kappaValues = [];
     for (let i = 0; i < questions.length; i++) {
-      console.log("createBarData", questions[i])
+      //console.log("createBarData", questions[i])
       let newQuestion = {
         "category": questions[i].question_description,
 
@@ -47,7 +44,7 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
       }
       allDataItems.push(newQuestion)
     }
-    console.log("ENDcreatebardata", allDataItems)
+    //console.log("ENDcreatebardata", allDataItems)
     setBarData([...allDataItems])
   }
 

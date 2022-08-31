@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Layout from "../common/Layout";
 import { fetchQuestions } from "../utils/queryUtils";
 import { deleteTask, deleteQuestion } from "../utils/mutationUtils";
-import { Card, Grid, Segment, Label, Button, Icon, Message, Modal, Checkbox } from "semantic-ui-react";
+import { Card, Segment, Button, Icon, Message, Modal } from "semantic-ui-react";
 
 const DeleteTasks = () => {
 

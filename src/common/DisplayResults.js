@@ -1,10 +1,6 @@
-import { Button, Grid, Icon, Segment, Modal, Dropdown, Tab, Label } from "semantic-ui-react";
-import { ResponsiveBar } from "nivo/lib/components/charts/bar";
-import BarChart from "./BarChart";
+import { Button, Grid, Segment, Modal, Dropdown, Tab, Label } from "semantic-ui-react";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { API, Storage } from "aws-amplify";
-import { getQuestionForm } from "../graphql/queries";
 import TextHeatMap from "./TextHeatMap"
 import QuestionStats from "./QuestionStats";
 import InterannotatorAgreement from "./InterannotatorAgreement";
@@ -50,7 +46,7 @@ const DisplayResults = () => {
   }, [])
 
   useEffect(() => {
-    console.log("Stored document info", storedDocumentInfo)
+
     if (currentTasks && storedDocumentInfo[currentTasks[0].document_title]) {
       retrieveStoredDocumentData(currentTasks[0].document_title)
     }
@@ -79,51 +75,11 @@ const DisplayResults = () => {
           })
 
         })
-      // fetchQuestionForm(currentTasks[0].questionFormID, "API_KEY")
-      //   .then(form => {
-      //     tempTaskData["questionFormData"] = form
-      //   })
-
-      // fetchDocument(currentTasks[0].document_title)
-      //   .then(formattedString => {
-      //     tempTaskData["documentData"] = formattedString
-      //   })
-      // fetchQuestion(currentTasks[0].questionID, "API_KEY")
-      //   .then(question => {
-      //     tempTaskData["medicalQuestionData"] = question
-      //   })
-
-      // console.log("temptaskdata", tempTaskData)
-
-      // setStoredDocumentInfo({
-      //   ...storedDocumentInfo,
-      //   [currentDocumentTitle]: tempTaskData
-      // })
 
     }
     else if (currentTasks && storedDocumentInfo[currentTasks.document_title]) {
       retrieveStoredDocumentData(currentTasks[0].document_title)
     }
-
-    // if (currentTasks) {
-    //   parseLabels();
-    //   parseQuestionAnswers();
-    //   fetchQuestionForm(currentTasks[0].questionFormID, "API_KEY")
-    //     .then(form => {
-    //       setQuestionForms(form)
-    //     })
-    //   fetchDocument(currentTasks[0].document_title).then(formattedString => {
-    //     setDocumentText(formattedString["abstract"] + "\n\n" + formattedString["mainText"]);
-    //     setDocumentTitle(formattedString["title"])
-    //   })
-
-    //   fetchQuestion(currentTasks[0].questionID, "API_KEY")
-    //     .then(question => {
-    //       setmedicalQuestion(question)
-    //       setSemanticAgreement(JSON.parse(JSON.parse(question.semanticAgreement)))
-    //       setLabelDescriptions(JSON.parse(question.labelDescriptions))
-    //     })
-    // }
 
   }, [currentTasks])
 

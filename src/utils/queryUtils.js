@@ -1,4 +1,4 @@
-import { API, Storage, Amplify, Auth } from "aws-amplify";
+import { API, Storage, Auth } from "aws-amplify";
 import {
   listMedicalQuestions,
   getMedicalQuestion,
@@ -29,8 +29,8 @@ export async function listCurators() {
   nextToken = NextToken;
   let users = [];
   rest.Users.map(user => users.push(user.Username))
-  console.log("curators")
-  console.log(users)
+  //console.log("curators")
+  //console.log(users)
   return users;
 }
 
@@ -43,7 +43,7 @@ export async function fetchSuggestions(authMethod) {
     authMode: authMethod
 
   })
-  console.log("questions", suggestionsData.data.listQuestionSuggestions.items);
+  //console.log("questions", suggestionsData.data.listQuestionSuggestions.items);
   return suggestionsData.data.listQuestionSuggestions.items
 
 }
@@ -57,7 +57,7 @@ export async function fetchQuestions(authMethod) {
     authMode: authMethod
 
   })
-  console.log("questions", questionsData.data.listMedicalQuestions.items);
+  //console.log("questions", questionsData.data.listMedicalQuestions.items);
   return questionsData.data.listMedicalQuestions.items
 
 }
@@ -68,7 +68,7 @@ export async function fetchTasks() {
     authMode: "AMAZON_COGNITO_USER_POOLS"
 
   })
-  console.log("tasks", taskData.data.listAnnotationTasks.items);
+  //console.log("tasks", taskData.data.listAnnotationTasks.items);
   return taskData.data.listAnnotationTasks.items
 
 
@@ -89,7 +89,7 @@ export async function fetchTask(taskId) {
 export async function fetchDocument(documentTitle) {
 
   const text = await Storage.get(documentTitle, { download: true });
-  console.log("document text", text)
+  //console.log("document text", text)
   const finalString = await text.Body.text();
 
   const formattedText = parseDocumentContents(finalString)
@@ -99,13 +99,13 @@ export async function fetchDocument(documentTitle) {
 }
 
 export async function fetchQuestionForms() {
-  const formData = await API.graphql({
+  const formsData = await API.graphql({
     query: listQuestionForms,
     authMode: "AMAZON_COGNITO_USER_POOLS"
 
   })
-  console.log("question forms", formData.data.listQuestionForms.items);
-  return formData.data.listQuestionForms.items
+  //console.log("question forms", formData.data.listQuestionForms.items);
+  return formsData.data.listQuestionForms.items
 }
 
 
@@ -118,7 +118,7 @@ export async function fetchQuestion(questionId, authMethod) {
     variables: { id: questionId },
     authMode: authMethod
   })
-  console.log("fetch", questionData);
+  //console.log("fetch", questionData);
   return questionData.data.getMedicalQuestion
 }
 
@@ -126,13 +126,13 @@ export async function fetchQuestionForm(questionFormId, authMethod) {
   if (!authMethod) {
     authMethod = "AMAZON_COGNITO_USER_POOL"
   }
-  const form = await API.graphql({
+  const formData = await API.graphql({
     query: getQuestionForm,
     variables: { id: questionFormId },
     authMode: authMethod
   })
-  console.log("setQuestionForm", form.data.getQuestionForm);
-  return form.data.getQuestionForm
+  //console.log("setQuestionForm", form.data.getQuestionForm);
+  return formData.data.getQuestionForm
 }
 
 export async function getTaskDocumentTitles(tasks) {

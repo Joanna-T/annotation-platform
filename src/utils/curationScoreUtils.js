@@ -24,18 +24,18 @@ export const groupAnswers = (questions, grouped_tasks) => {
         answerObj[questions[i].question_description] = []
         for (let j = 0; j < grouped_tasks.length; j++) {
             let tempOptions = {}
-            console.log(tempOptions)
+            //console.log(tempOptions)
             questions[i].options.forEach(item => {
                 tempOptions[item] = 0;
             })
             for (let k = 0; k < grouped_tasks[j].length; k++) {
                 let taskAnswers = JSON.parse(grouped_tasks[j][k].question_answers)
-                console.log("taskAnswer", taskAnswers)
+                //console.log("taskAnswer", taskAnswers)
                 if (taskAnswers == null) {
                     continue;
                 }
                 for (const [key, value] of Object.entries(taskAnswers)) {
-                    console.log("pairs", key, value)
+                    //console.log("pairs", key, value)
                     if (value in tempOptions) {
                         tempOptions[value]++;
                     }
@@ -45,7 +45,7 @@ export const groupAnswers = (questions, grouped_tasks) => {
         }
     }
 
-    console.log("answerObj", answerObj)
+    //console.log("answerObj", answerObj)
     return answerObj
 }
 
@@ -60,7 +60,7 @@ export const calculateAllFleissKappa = (results, tasks) => {
         aggregatedBarData.push(result["aggregatedCategoryData"])
     }
 
-    console.log("calculateallFleissKappa", kappaValues, aggregatedBarData)
+    //console.log("calculateallFleissKappa", kappaValues, aggregatedBarData)
 
     return {
         "aggregatedBarData": aggregatedBarData,
@@ -138,12 +138,12 @@ const calculateFleissKappa = (category, values, tasks) => {
         P_e_mean += temp * temp;
 
     }
-    console.log("pemean", P_e_mean)
+    //console.log("pemean", P_e_mean)
 
     let tempTot = I.reduce((partialSum, a) => partialSum + a, 0);
     let Pmean = tempTot / numInstances
 
-    console.log("pmean", Pmean)
+    //console.log("pmean", Pmean)
 
     let kappa = (Pmean - P_e_mean) / (1 - P_e_mean);
 

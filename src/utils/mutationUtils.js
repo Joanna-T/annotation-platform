@@ -17,15 +17,15 @@ export async function deleteTask(taskID, authMethod) {
     let deleteObj = {
         id: taskID
     }
-    let deletedQuestion = await API.graphql({
+    let deletedTask = await API.graphql({
         query: deleteAnnotationTask,
         variables: {
             input: deleteObj
         },
         authMode: authMethod
     })
-    console.log("this is the final deleted question task", deletedQuestion)
-    //return createdTasks
+    //console.log("this is the final deleted task", deletedQuestion)
+    return deletedTask
 
 }
 
@@ -43,8 +43,8 @@ export async function deleteQuestion(questionID, authMethod) {
         },
         authMode: authMethod
     })
-    console.log("this is the final deleted question task", deletedQuestion)
-    //return createdTasks
+    //console.log("this is the final deleted question", deletedQuestion)
+    return deletedQuestion
 
 }
 
@@ -62,8 +62,8 @@ export async function deleteSuggestion(suggestionID, authMethod) {
         },
         authMode: authMethod
     })
-    console.log("this is the final submitted task", deletedSuggestion)
-    //return createdTasks
+    //console.log("this is the final submitted task", deletedSuggestion)
+    return deletedSuggestion
 
 }
 
@@ -78,8 +78,8 @@ export async function submitSuggestion(suggestion, authMethod) {
         },
         authMode: authMethod
     })
-    console.log("this is the final submitted task", submittedSuggestion)
-    //return createdTasks
+    //console.log("this is the final submitted task", submittedSuggestion)
+    return submittedSuggestion
 
 }
 
@@ -87,15 +87,15 @@ export async function submitTask(task, authMethod) {
     if (!authMethod) {
         authMethod = "AMAZON_COGNITO_USER_POOLS"
     }
-    let createdTasks = await API.graphql({
+    let createdTask = await API.graphql({
         query: createAnnotationTask,
         variables: {
             input: task
         },
         authMode: authMethod
     })
-    console.log("this is the final submitted task", createdTasks)
-    //return createdTasks
+    //console.log("this is the final submitted task", createdTasks)
+    return createdTask
 
 }
 
@@ -113,9 +113,6 @@ export async function submitQuestion(question, authMethod) {
     if (!authMethod) {
         authMethod = "AMAZON_COGNITO_USER_POOLS"
     }
-    // const questionObj = {
-    //     text: question
-    // }
 
     const createdQuestion = await API.graphql({
         query: createMedicalQuestion,
@@ -124,7 +121,7 @@ export async function submitQuestion(question, authMethod) {
         },
         authMode: authMethod
     })
-    console.log("this is the created question", createdQuestion.data.createMedicalQuestion);
+    //console.log("this is the created question", createdQuestion.data.createMedicalQuestion);
     return createdQuestion.data.createMedicalQuestion
 }
 

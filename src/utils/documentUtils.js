@@ -3,7 +3,7 @@ import { submitTask } from "./mutationUtils";
 
 //returns arrays of tasks grouped by document
 export const groupTasksByDocument = (tasks) => {
-    console.log("groupTasksByDocument", tasks);
+    //console.log("groupTasksByDocument", tasks);
     let finalGroupedTasks = [];
 
     for (let i = 0; i < tasks.length; i++) {
@@ -31,7 +31,7 @@ export const findCompletedTasks = (groupedInputTasks) => {
     var completedTasks = 0
     const curatorNum = process.env.REACT_APP_NUMBER_CURATORS
 
-    console.log("findCompletedtasks", groupedInputTasks)
+    //console.log("findCompletedtasks", groupedInputTasks)
 
     for (let i = 0; i < groupedInputTasks.length; i++) {
         let numCompletedTasks = groupedInputTasks[i].filter(item => item.completed === true).length;
@@ -45,7 +45,7 @@ export const findCompletedTasks = (groupedInputTasks) => {
 //creates and submits reassigned tasks
 export async function createReassignedTasks(groupedTasks) {
 
-    console.log("createReassignedTasks", groupedTasks)
+    //console.log("createReassignedTasks", groupedTasks)
 
     const minimumRequiredCurators = process.env.REACT_APP_NUMBER_CURATORS
     let newTasks = []
@@ -53,9 +53,9 @@ export async function createReassignedTasks(groupedTasks) {
     await listCurators()
         .then(async curatorList => {
 
-            console.log("curatorList", curatorList)
+            //console.log("curatorList", curatorList)
             for (let i = 0; i < groupedTasks.length; i++) {
-                console.log(i, groupedTasks[i])
+                //console.log(i, groupedTasks[i])
                 let numRequiredReassignments
                 let numCompletedTasks = groupedTasks[i].filter(tasks => tasks.completed === true).length;
 
@@ -67,15 +67,15 @@ export async function createReassignedTasks(groupedTasks) {
                 }
                 let currentCurators = groupedTasks[i].map(item => item.owner);
                 let possibleCurators = curatorList.filter(curator => !currentCurators.includes(curator))
-                console.log("possible curators", possibleCurators)
+                //console.log("possible curators", possibleCurators)
 
                 if (possibleCurators < numRequiredReassignments) {
                     throw "Insufficient curators to reassign tasks"
 
                 }
                 for (let j = 0; j < numRequiredReassignments; j++) {
-                    console.log(groupedTasks[i])
-                    console.log(groupedTasks[i][0])
+                    //console.log(groupedTasks[i])
+                    //console.log(groupedTasks[i][0])
                     let newTask = {
                         owner: possibleCurators[j],
                         document_title: groupedTasks[i][0].document_title,
@@ -91,7 +91,7 @@ export async function createReassignedTasks(groupedTasks) {
             }
 
             newTasks.forEach(async (task) => { await submitTask(task, "AMAZON_COGNITO_USER_POOLS") })
-            console.log("New tasks for reassigned tasks", newTasks)
+            //console.log("New tasks for reassigned tasks", newTasks)
             return newTasks
         })
         .catch(err => {
@@ -129,7 +129,7 @@ export const parseDocumentContents = (string) => {
 export const returnActiveQuestions = (result) => {
     let questionsArray = []
     result.forEach(item => {
-        console.log("activetasks for question", item, item.tasks)
+        //console.log("activetasks for question", item, item.tasks)
         let groupedTasks = groupTasksByDocument(item.tasks.items);
         let completedTasks = findCompletedTasks(groupedTasks)
         if (completedTasks < groupedTasks.length) { //length of grouped tasks is number of documents

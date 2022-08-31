@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, Segment, Label, Button, Icon, Message, Modal, Checkbox } from "semantic-ui-react";
+import { Card, Segment, Label, Button, Icon, Message, Modal } from "semantic-ui-react";
 import { groupTasksByDocument, findCompletedTasks, createReassignedTasks } from "../utils/documentUtils";
 import { fetchQuestions } from "../utils/queryUtils";
 import Layout from "../common/Layout";

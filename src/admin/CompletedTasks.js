@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Segment, Card, } from "semantic-ui-react";
-import { findCompletedTasks, groupTasksByDocument } from "../utils/documentUtils";
 import Layout from "../common/Layout";
 import { fetchQuestions } from "../utils/queryUtils";
 import { returnCompletedQuestions } from "../utils/documentUtils";
@@ -30,7 +29,7 @@ const CompletedTasks = () => {
         )
     }
 
-    const cardStyle = { "marginTop": 5, "marginBottom": 5, "textAlign": "left", "padding": "2%" }
+    const viewCardStyle = { "marginTop": 5, "marginBottom": 5, "textAlign": "left", "padding": "2%" }
 
     return (
         <div className="tasks">
@@ -48,7 +47,7 @@ const CompletedTasks = () => {
                                 <Card
                                     key={question.id}
                                     fluid color="blue"
-                                    style={cardStyle}
+                                    style={viewCardStyle}
                                     href={`/completed_tasks/${question.id}`}
                                     header={`Question title: ${question.text}`}
                                     meta={`Created: ${question.createdAt.slice(0, 10)}`}

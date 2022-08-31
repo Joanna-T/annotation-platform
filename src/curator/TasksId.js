@@ -1,13 +1,8 @@
-import { API, Storage } from "aws-amplify";
-//import ReactMarkDown from "react-markdown"
-import awsmobile from "../aws-exports";
-import { getAnnotationTask, tasksByUsername } from "../graphql/queries"
-import { createAnnotationResult, updateAnnotationTask } from "../graphql/mutations";
-import { useHistory, useParams, useLocation } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import AnnotationPage from "./AnnotationPage";
 import AnnotationQuestions from "./AnnotationQuestions";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import React from 'react';
 import {
     Button,
@@ -15,22 +10,14 @@ import {
     Grid,
     Header,
     Icon,
-    Image,
-    Menu,
     Segment,
-    Sidebar,
-    Form,
     Transition,
     Modal,
     Popup,
     Tab
 } from 'semantic-ui-react';
-import { Navigate } from "react-router-dom";
-import { updateTask, updateQuestion } from "../utils/mutationUtils";
-import { fetchTask, fetchDocument, fetchQuestion, fetchQuestionForm } from "../utils/queryUtils";
-import { calculateAllFleissKappa, groupAnswers } from "../utils/curationScoreUtils";
-import { groupTasksByDocument, parseDocumentContents } from "../utils/documentUtils";
-import { stackOffsetFromProp } from "nivo/lib/props/stack";
+import { updateTask } from "../utils/mutationUtils";
+import { fetchTask, fetchDocument } from "../utils/queryUtils";
 import useWindowSize from "../common/useWindowSize";
 
 
@@ -42,10 +29,10 @@ const TasksId = () => {
     const [task, setTask] = useState(null);
 
     const [documentText, setDocumentText] = useState("");
-    //question form
+
     const [questions, setQuestions] = useState(null);
     const [answers, setAnswers] = useState(null);
-    //medical question
+
     const [question, setQuestion] = useState(null);
     const [questionForm, setQuestionForm] = useState(null)
     const [labelDescriptions, setLabelDescriptions] = useState(null)
@@ -72,25 +59,6 @@ const TasksId = () => {
     })
 
     async function handleSubmit() {
-        //////////////////////////////////
-        // const annotationResult = {
-        //     document_title: task.document_title,
-        //     questionID: task.questionID,
-        //     owner: task.owner,
-        //     question_answers: task.question_answers,
-        //     labels: task.labels,
-        //     questionFormID: task.questionFormID
-        // }
-
-        // //remove
-        // await API.graphql({
-        //     query: createAnnotationResult,
-        //     variables: {
-        //         input: annotationResult,
-        //     },
-        //     authMode: "AMAZON_COGNITO_USER_POOLS"
-        // })
-        ////////////////////////////////////////
 
         var taskToUpdate = {
             id: task.id,
@@ -118,14 +86,14 @@ const TasksId = () => {
                 const savedAnswers = JSON.parse(result.question_answers);
                 setAnswers(savedAnswers);
 
-                console.log("ansewrs, questions length", savedAnswers, parsedQuestions.length,)
-                console.log("ansewrs, questions length", savedAnswers !== null)
+                //console.log("ansewrs, questions length", savedAnswers, parsedQuestions.length,)
+                //console.log("ansewrs, questions length", savedAnswers !== null)
                 const savedLabels = JSON.parse(result.labels);
                 setParentLabels(savedLabels);
 
                 fetchDocument(result.document_title)
                     .then(result => {
-                        console.log("taskid results", result)
+                        //console.log("taskid results", result)
                         setDocumentText(result["abstract"] + "\n\n" + result["mainText"])
                         setDocumentTitle(result["title"])
                     })
@@ -136,12 +104,12 @@ const TasksId = () => {
     }, [])
 
     useEffect(() => {
-        console.log("answer in parent", answers);
+        //console.log("answer in parent", answers);
         storeAnswers();
     }, [answers])
 
     useEffect(() => {
-        console.log("parent labels", parentLabels);
+        //console.log("parent labels", parentLabels);
         if (parentLabels) {
             storeLabels();
         }
@@ -177,11 +145,6 @@ const TasksId = () => {
         }
     }, [questionsVisible, instructionsVisible])
 
-    useEffect(() => {
-        if (questions) {
-            console.log("questions have been added", questions);
-        }
-    }, [questions])
 
     async function storeAnswers() {
         const submittedAnswers = JSON.stringify(answers);
@@ -194,14 +157,14 @@ const TasksId = () => {
 
             updateTask(finalStoredAnswer)
         }
-        console.log("answer submitted")
+        //console.log("answer submitted")
     }
 
     async function storeLabels() {
         const submittedLabels = JSON.stringify(parentLabels);
 
-        console.log("The labels being stored are:")
-        console.log(parentLabels);
+        //console.log("The labels being stored are:")
+        //console.log(parentLabels);
 
         if (task) {
             const finalStoreLabels = {
@@ -213,13 +176,17 @@ const TasksId = () => {
         }
 
 
-        console.log("answer submitted")
+        //console.log("answer submitted")
 
     }
 
     const handleLabelChange = (labels) => {
         setParentLabels(labels);
     }
+
+    const questionsContainerSegmentStyle = { maxHeight: '100vh', width: "95vh" }
+    const questionsSegmentStyle = { "paddingLeft": "10%", "paddingRight": "10%", "color": "white" }
+    const tabStyle = { maxheight: "100%", overflow: "auto" }
 
     const instructionSection = (
         <div>
@@ -271,12 +238,12 @@ const TasksId = () => {
         <div>
             {
                 (questionsVisible || size.width < 850) && (
-                    <Segment color='blue' inverted secondary style={{ maxHeight: '100vh', width: "95vh" }}>
+                    <Segment color='blue' inverted secondary style={questionsContainerSegmentStyle}>
                         <Header size="small" dividing textAlign="center">
                             <Icon name='pencil' circular size='small' />
                             <Header.Content>Please answer the following questions</Header.Content>
                         </Header>
-                        <Segment basic textAlign="left" style={{ "paddingLeft": "10%", "paddingRight": "10%", "color": "white" }}>
+                        <Segment basic textAlign="left" style={questionsSegmentStyle}>
                             <AnnotationQuestions questions={questions} handleAnswerChange={handleAnswerChange} answers={answers} ></AnnotationQuestions>
                         </Segment>
 
@@ -291,7 +258,7 @@ const TasksId = () => {
         {
             menuItem: 'Instructions',
             pane: (
-                <Tab.Pane key='instructions' style={{ maxheight: "100%", overflow: "auto" }}>
+                <Tab.Pane key='instructions' style={tabStyle}>
                     {instructionSection}
                 </Tab.Pane>
             ),
@@ -300,7 +267,7 @@ const TasksId = () => {
         {
             menuItem: 'Text labels',
             pane: (
-                <Tab.Pane key='text-labels' style={{ maxheight: "100%", overflow: "auto" }}>
+                <Tab.Pane key='text-labels' style={tabStyle}>
                     {annotationPage}
                 </Tab.Pane>
             ),
@@ -309,7 +276,7 @@ const TasksId = () => {
         {
             menuItem: 'Questions',
             pane: (
-                <Tab.Pane key='questions' style={{ maxheight: "100%", overflow: "auto" }}>
+                <Tab.Pane key='questions' style={tabStyle}>
                     {questionSection}
                 </Tab.Pane>
             ),
