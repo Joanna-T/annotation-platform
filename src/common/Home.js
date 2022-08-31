@@ -1,15 +1,14 @@
 import Layout from "./Layout";
 import { useState, useEffect } from "react";
-import { Search, Segment, Input, Card, Header, Icon, Modal, Button, Message } from "semantic-ui-react";
-//import { fetchQuestions } from "./queryUtils";
+import { Segment, Input, Card, Header, Icon, Modal, Button, Message, Popup } from "semantic-ui-react";
 import { findCompletedTasks, groupTasksByDocument } from "../utils/documentUtils";
-import { listMedicalQuestions } from "../graphql/queries";
+import { fetchQuestions } from "../utils/queryUtils";
 import { submitSuggestion } from "../utils/mutationUtils";
-import { API, graphqlOperation, Auth } from "aws-amplify"
+import { returnCompletedQuestions } from "../utils/documentUtils";
+//import { Auth } from "aws-amplify"
 const Home = () => {
     const [searchInput, setSearchInput] = useState("");
-    const [allQuestions, setAllQuestions] = useState([,
-    ])
+    const [allQuestions, setAllQuestions] = useState([])
     const [visibleQuestions, setVisibleQuestions] = useState([])
     const [admin, setAdmin] = useState(false)
     const [open, setOpen] = useState(false)
@@ -23,28 +22,18 @@ const Home = () => {
         setVisibleQuestions(newQuestions)
     }, [searchInput])
 
-    const [questions, setQuestions] = useState([]);
-    //const [questionNumber, setQuestionNumber] = useState(false);
     useEffect(() => {
-        //API.graphql(graphqlOperation(listMedicalQuestions))
-        authListener();
+
+        //authListener();
         fetchQuestions("API_KEY")
             .then(result => {
-                let questionsArray = []
-                result.forEach(item => {
-                    let groupedTasks = groupTasksByDocument(item.tasks.items);
-                    let completedTasks = findCompletedTasks(groupedTasks)
-                    if (completedTasks === groupedTasks.length) { //length is total number of documents
-                        item["total_tasks"] = groupedTasks.length;
-                        item["complete_tasks"] = completedTasks
-                        questionsArray.push(item)
-                    }
-                })
+
+                const questionsArray = returnCompletedQuestions(result)
+
                 setVisibleQuestions(questionsArray)
                 setAllQuestions(questionsArray)
 
             });
-        //fetchQuestions();
     }, [])
 
     const handleChange = (e) => {
@@ -58,31 +47,19 @@ const Home = () => {
         setSuggestionInput(e.target.value)
     }
 
-    async function fetchQuestions() {
-        const questionsData = await API.graphql({
-            query: listMedicalQuestions,
-            authMode: "API_KEY"
+    // async function authListener() {
+    //     try {
+    //         const user = await Auth.currentAuthenticatedUser();
 
-        })
-        console.log("questions", questionsData.data.listMedicalQuestions.items);
-        //setQuestions(questionsData.data.listMedicalQuestions.items);
-        return questionsData.data.listMedicalQuestions.items
+    //         const groups = user.signInUserSession.accessToken.payload["cognito:groups"];
+    //         if (groups) {
+    //             if (groups.includes("Admin")) {
+    //                 setAdmin(true);
+    //             }
+    //         }
 
-    }
-
-    async function authListener() {
-        try {
-            const user = await Auth.currentAuthenticatedUser();
-
-            const groups = user.signInUserSession.accessToken.payload["cognito:groups"];
-            if (groups) {
-                if (groups.includes("Admin")) {
-                    setAdmin(true);
-                }
-            }
-
-        } catch (err) { }
-    }
+    //     } catch (err) { }
+    // }
 
     async function handleSubmit() {
         const suggestion = {
@@ -94,32 +71,9 @@ const Home = () => {
 
     }
 
-    // const questions = [
-    //     { text: "Belgium", continent: "Europe" },
-    //     { text: "India", continent: "Asia" },
-    //     { text: "Bolivia", continent: "South America" },
-    //     { text: "Ghana", continent: "Africa" },
-    //     { text: "Japan", continent: "Asia" },
-    //     { text: "Canada", continent: "North America" },
-    //     { text: "New Zealand", continent: "Australasia" },
-    //     { text: "Italy", continent: "Europe" },
-    //     { text: "South Africa", continent: "Africa" },
-    //     { text: "China", continent: "Asia" },
-    //     { text: "Paraguay", continent: "South America" },
-    //     { text: "Usa", continent: "North America" },
-    //     { text: "France", continent: "Europe" },
-    //     { text: "Botswana", continent: "Africa" },
-    //     { text: "Spain", continent: "Europe" },
-    //     { text: "Senegal", continent: "Africa" },
-    //     { text: "Brazil", continent: "South America" },
-    //     { text: "Denmark", continent: "Europe" },
-    //     { text: "Mexico", continent: "South America" },
-    //     { text: "Australia", continent: "Australasia" },
-    //     { text: "Tanzania", continent: "Africa" },
-    //     { text: "Bangladesh", continent: "Asia" },
-    //     { text: "Portugal", continent: "Europe" },
-    //     { text: "Pakistan", continent:"Asia" },
-    //   ];
+    const inputStyle = { "borderColor": "blue", width: "100%", "borderRadius": "30px" }
+    const basicSegmentStyle = { "paddingLeft": "10%", "paddingRight": "10%" }
+    const cardStyle = { "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }
 
     return (
         <Layout>
@@ -128,11 +82,15 @@ const Home = () => {
                     <Icon color="blue" name='edit outline' circular />
                     <Header.Content>Welcome to AnnotateIt</Header.Content>
                 </Header>
-                <p>Please enter a search query below to find relevant annotation question results</p>
-
+                <p>Please enter a search query below to find relevant annotation question results {"  "}
+                    <Popup
+                        trigger={<Icon name='question' size='small' circular />}
+                        content='All documents are annotated by medical professionals within the Pansurg community'
+                        position='top left'
+                    /> </p>
             </Segment>
 
-            <Segment basic style={{ "paddingLeft": "10%", "paddingRight": "10%" }}>
+            <Segment basic style={basicSegmentStyle}>
 
                 <Input
                     icon="search"
@@ -140,9 +98,9 @@ const Home = () => {
                     placeholder="Search questions"
                     onChange={handleChange}
                     value={searchInput}
-                    style={{ "borderColor": "blue", width: "100%", "borderRadius": "30px", }} />
+                    style={inputStyle} />
                 {
-                    // admin && (
+                    //!admin && (
                     true && (
                         <div>
                             <small>Cant find what you're looking for? </small>
@@ -162,7 +120,7 @@ const Home = () => {
                                             placeholder="Query here"
                                             onChange={handleSuggestionChange}
                                             value={suggestionInput}
-                                            style={{ "borderColor": "blue", width: "100%", "borderRadius": "30px", }} />
+                                            style={inputStyle} />
                                     </Segment>
 
                                 </Modal.Description>
@@ -172,7 +130,7 @@ const Home = () => {
                                     </Button>
                                     <Button
                                         color="red"
-                                        icon="checkmark"
+                                        icon
                                         labelPosition='right'
                                         onClick={() => setOpen(false)}>
                                         Back
@@ -202,7 +160,7 @@ const Home = () => {
                             <Card
                                 key={question.id}
                                 fluid color="blue"
-                                style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
+                                style={cardStyle}
                                 href={`/completed_tasks/${question.id}`}
                                 header={`Question title: ${question.text}`}
                                 meta={`Created: ${question.createdAt.slice(0, 10)}`}

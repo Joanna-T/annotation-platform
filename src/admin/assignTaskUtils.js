@@ -3,20 +3,20 @@ import { submitTask } from "../utils/mutationUtils";
 
 export async function distributeAnnotationTasks(questionForm, documentFolder, medicalQuestion, curators) {
   let annotationTasks = []
-  console.log("distributeAT inputs", questionForm, "folder", documentFolder, "curators", curators, "queaiton", medicalQuestion)
+  //console.log("distributeAT inputs", questionForm, "folder", documentFolder, "curators", curators, "queaiton", medicalQuestion)
   let documents
   try {
     documents = await Storage.list(documentFolder)
 
 
     let filterDocuments = documents.filter(document => document.key[document.key.length - 1] !== "/")
-    console.log("filtered documents", filterDocuments)
+    //console.log("filtered documents", filterDocuments)
     let shuffledDocuments = shuffleArray(filterDocuments);
     let shuffledUsers = shuffleArray(curators.slice());
-    console.log(shuffledUsers, shuffledDocuments);
+    //console.log(shuffledUsers, shuffledDocuments);
 
     let documentCounter = 0;
-    //const minimumCuratorNumber = 20;
+
     const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
 
     if (curators.length < minimumCuratorNumber) {
@@ -28,8 +28,8 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
       for (let i = 0; i < minimumCuratorNumber; i++) {
         if (shuffledUsers.length === 0) {
           shuffledUsers = shuffleArray(curators.slice())
-          // newShuffledUsers.map(user => shuffledUsers.push(user))
-          console.log("This is shuffled us", shuffledUsers)
+
+          //console.log("This is shuffled us", shuffledUsers)
         }
         let curator = findCurator(shuffledUsers, annotationTasks, shuffledDocuments[documentCounter]);
         let newTask = {
@@ -46,7 +46,7 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
       }
       documentCounter++;
     }
-    console.log("These are the annotation tasks", annotationTasks)
+    //console.log("These are the annotation tasks", annotationTasks)
 
   } catch (err) {
     console.log(err)
@@ -81,4 +81,29 @@ function shuffleArray(array) {
     array[j] = temp;
   }
   return array
+}
+
+
+export async function fetchDocumentFolders() {
+
+  let result = await Storage.list("")
+
+  let files = []
+  let folders = []
+  result.forEach(res => {
+    if (res.size) {
+      files.push(res)
+
+      let possibleFolder = res.key.split('/').slice(0, -1).join('/')
+      if (possibleFolder) folders.push(possibleFolder)
+    } else {
+      folders.push(res.key)
+    }
+  })
+  const filteredFolders = folders.filter(folder => folder.includes("/"))
+  //console.log("filteredFolders", filteredFolders)
+
+  return filteredFolders
+
+
 }

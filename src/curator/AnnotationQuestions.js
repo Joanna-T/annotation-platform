@@ -21,10 +21,6 @@ import { memo } from "react";
 
 const AnnotationQuestions = ({ questions, handleAnswerChange, answers }) => {
 
-    useEffect(() => {
-        console.log(answers)
-    }, [answers])
-
     if (!questions) {
         return (
             <h4>Loading questions...</h4>
@@ -32,7 +28,7 @@ const AnnotationQuestions = ({ questions, handleAnswerChange, answers }) => {
     }
 
     return (
-        <Form fluid textAlign="left" inverted style={{ overflow: "auto", maxHeight: "80vh" }} >
+        <Form textalign="left" inverted style={{ overflow: "auto", maxHeight: "80vh" }} >
             {questions.map(function (question, index) {
                 return (
                     <Form.Group grouped key={index}>
@@ -48,8 +44,8 @@ const AnnotationQuestions = ({ questions, handleAnswerChange, answers }) => {
                                         name={question.question_description}
                                         value={option}
                                         onChange={handleAnswerChange}
-                                        checked={answers && answers[question.question_description] &&
-                                            answers[question.question_description] === option}>
+                                        checked={(answers && answers[question.question_description]) ?
+                                            answers[question.question_description] === option : false}>
 
                                     </Form.Field>
                                 )

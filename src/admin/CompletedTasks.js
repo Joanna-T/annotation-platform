@@ -3,6 +3,7 @@ import { Segment, Card, } from "semantic-ui-react";
 import { findCompletedTasks, groupTasksByDocument } from "../utils/documentUtils";
 import Layout from "../common/Layout";
 import { fetchQuestions } from "../utils/queryUtils";
+import { returnCompletedQuestions } from "../utils/documentUtils";
 
 const CompletedTasks = () => {
     const [questions, setQuestions] = useState([]);
@@ -10,16 +11,9 @@ const CompletedTasks = () => {
     useEffect(() => {
         fetchQuestions("AMAZON_COGNITO_USER_POOLS")
             .then(result => {
-                let questionsArray = []
-                result.forEach(item => {
-                    let groupedTasks = groupTasksByDocument(item.tasks.items);
-                    let completedTasks = findCompletedTasks(groupedTasks)
-                    if (completedTasks === groupedTasks.length) {
-                        item["total_tasks"] = groupedTasks.length;
-                        item["complete_tasks"] = completedTasks
-                        questionsArray.push(item)
-                    }
-                })
+
+                const questionsArray = returnCompletedQuestions(result)
+
                 setQuestions(questionsArray)
 
             });
@@ -35,6 +29,8 @@ const CompletedTasks = () => {
             </Layout>
         )
     }
+
+    const cardStyle = { "marginTop": 5, "marginBottom": 5, "textAlign": "left", "padding": "2%" }
 
     return (
         <div className="tasks">
@@ -52,7 +48,7 @@ const CompletedTasks = () => {
                                 <Card
                                     key={question.id}
                                     fluid color="blue"
-                                    style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
+                                    style={cardStyle}
                                     href={`/completed_tasks/${question.id}`}
                                     header={`Question title: ${question.text}`}
                                     meta={`Created: ${question.createdAt.slice(0, 10)}`}

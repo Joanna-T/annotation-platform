@@ -11,43 +11,28 @@ Amplify Params - DO NOT EDIT */
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
-// exports.handler = event => {
-//   console.log(`EVENT: ${JSON.stringify(event)}`);
-//   event.Records.forEach(record => {
-//     console.log(record.eventID);
-//     console.log(record.eventName);
-//     console.log('DynamoDB Record: %j', record.dynamodb);
-//   });
-//   return Promise.resolve('Successfully processed DynamoDB record');
-// };
+
 const region = process.env.REGION
-console.log('Loading function');
 const AWS = require("aws-sdk");
 AWS.config.update({ region: region });
 const docClient = new AWS.DynamoDB.DocumentClient();
 const dynamodb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
-//import {calculateAllFleissKappa, groupTasksByDocument, groupAnswers} from "curationMetricUtils.js"
 const endpointID = process.env.API_ANNOTATIONPLATFORM_GRAPHQLAPIIDOUTPUT
 const environment = process.env.ENV
 const annotationTaskTable = `AnnotationTask-${endpointID}-${environment}`
 const medicalQuestionTable = `MedicalQuestion-${endpointID}-${environment}`
 const questionFormTable = `QuestionForm-${endpointID}-${environment}`
+
+
+
 exports.handler = async (event) => {
-  //console.log('Received event:', JSON.stringify(event, null, 2));
 
   for (const record of event.Records) {
-    //const newImages = event.Records.map(
-    //    (record) => AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage)
-    //);
+
     const newImage = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage)
-    //console.log(newImages);
-    console.log(record.eventID);
-    console.log(record.eventName);
-    console.log('DynamoDB Record: %j', record.dynamodb);
-    //let taskID = record.dynamodb.Keys.id.S
-    //console.log('DynamoDB Record: %j', record.dynamodb.NewImage.questionID);
-    //let medicalQuestionID = record.dynamodb.NewImage.questionID.S
-    //let questionFormID = record.dynamodb.NewImage.questionFormID.S
+
+    console.log('DynamoDB Record:', record.dynamodb);
+
     let taskID = newImage.id
     console.log("taskID")
     console.log(taskID)
@@ -81,10 +66,6 @@ exports.handler = async (event) => {
 
     await getItems(queryTasks)
       .then(result => {
-        console.log("getItem executed")
-        //return {
-        //    "body": JSON.stringify(result)
-        //}
         console.log("medicalQuestion", result.Items[0].question_answers)
       })
       .catch(error => console.log(error))
@@ -92,40 +73,25 @@ exports.handler = async (event) => {
     await Promise.all([getItem(medicalQuestion), getItem(questionForm), getItems(queryTasks)])
       .then(async results => {
         console.log(results)
-        //const newResults = results.map(
-        //(result) => {
-        //    if (result.Item) {
-        //        return AWS.DynamoDB.Converter.unmarshall(result.Item)
-        //    }
-        //    else if (result.Items) {
-        //        return AWS.DynamoDB.Converter.unmarshall(result.Items)
-        //    }
-        //}
-        //);
         const newTasks = results[2].Items.map(
           (result) => AWS.DynamoDB.Converter.unmarshall(result)
         );
         console.log("New results")
-        //console.log(newResults)
         console.log(newTasks)
         const convertedTasks = AWS.DynamoDB.Converter.unmarshall(results[2].Items)
         console.log(convertedTasks)
-        //await updateQuestionCurationResults(newResults[0], newResults[1], newResults[2])
         await updateQuestionCurationResults(results[0].Item, results[1].Item, newTasks)
       })
       .then()
       .catch(error => console.log(error))
 
   }
-
-
   return `Successfully processed ${event.Records.length} records.`;
 };
 
 async function getItems(item) {
   try {
     const data = await dynamodb.query(item).promise()
-    //console.log(data)
     return data
   } catch (err) {
     console.log(err)
@@ -135,11 +101,8 @@ async function getItems(item) {
 
 
 async function getItem(item) {
-  console.log("getItem")
-  //return await docClient.get(item).promise()
   try {
     const data = await docClient.get(item).promise()
-    //console.log(data)
     return data
   } catch (err) {
     console.log(err)
@@ -148,11 +111,8 @@ async function getItem(item) {
 }
 
 async function updateItem(item) {
-  console.log("getItem")
-  //return await docClient.get(item).promise()
   try {
     const data = await docClient.update(item).promise()
-    //console.log(data)
     return data
   } catch (err) {
     console.log(err)
@@ -170,25 +130,11 @@ async function updateQuestionCurationResults(question, questionForm, tasks) {
       TableName: annotationTaskTable
     };
 
-    //await dynamodb.query(queryTasks).promise()
-    //.then(result => console.log(result))
-
-    //console.log(data)
-    //console.log()
-    //var formattedTasks = tasks.map(task => ({ 
-    //    document_title: task.document_title.S,
-    //    question_answers: task.question_answers.M 
-    //}));
-
     let groupedTasks = groupTasksByDocument(tasks)
     console.log(groupedTasks)
     let result = calculateAllFleissKappa(
       groupAnswers(questionForm.questions, groupedTasks)
     )
-    console.log("this is the final result")
-    console.log(result["aggregatedBarData"])
-    console.log(result["kappaValues"])
-
 
     const updatedQuestion = {
       TableName: medicalQuestionTable,
@@ -203,15 +149,6 @@ async function updateQuestionCurationResults(question, questionForm, tasks) {
     }
 
     await updateItem(updatedQuestion)
-    //await docClient.update(updatedQuestion, function(err, data) {
-    //    if (err){
-    //        console.log(err);
-    //    }
-    //    else {  
-    //        console.log("data submitted")
-    //        console.log(data);
-    //    }
-    //})
 
     return {
       id: question.id,
@@ -225,10 +162,10 @@ async function updateQuestionCurationResults(question, questionForm, tasks) {
   }
 
 
-  //updateQuestion(questionUpdate)
+
 }
 
-////////////PUT INTO SEPARATE FILE
+///////////
 
 const numAnnotators = 2;
 
@@ -270,15 +207,14 @@ const groupAnswers = (questions, grouped_tasks) => {
     answerObj[questions[i].question_description] = []
     for (let j = 0; j < grouped_tasks.length; j++) {// per document
       let tempOptions = {}
-      console.log(tempOptions)
       questions[i].options.forEach(item => {
-        //console.log("item", item)
         tempOptions[item] = 0;
       })
       let totalAnnotations = 0
-      //console.log("options",i, tempOptions)
+
       for (let k = 0; k < grouped_tasks[j].length; k++) { //per task
         let taskAnswers = grouped_tasks[j][k].question_answers
+
         console.log("taskAnswer", taskAnswers)
         if (totalAnnotations == numAnnotators) {
           break;
@@ -287,12 +223,12 @@ const groupAnswers = (questions, grouped_tasks) => {
           continue;
         }
         for (const [key, value] of Object.entries(taskAnswers)) {
-          console.log("pairs", key, value)
+          console.log("taskAnswers", key, value)
           if (value in tempOptions) {
             tempOptions[value]++;
             totalAnnotations++;
           }
-          //tempOptions[value]++;
+
         }
       }
       answerObj[questions[i].question_description].push(tempOptions)
@@ -300,7 +236,7 @@ const groupAnswers = (questions, grouped_tasks) => {
   }
 
   console.log("answerObj", answerObj)
-  //setGroupedAnswers(answerObj)
+
   return answerObj
 }
 
@@ -313,7 +249,7 @@ const calculateAllFleissKappa = (results, tasks) => {
     let result = calculateFleissKappa(key, value, tasks)
     kappaValues[key] = result["kappaValue"]
     aggregatedBarData.push(result["aggregatedCategoryData"])
-    //kappaValues[key] = calculateFleissKappa(key, value, tasks)
+
   }
 
   console.log("calculateallFleissKappa", kappaValues, aggregatedBarData)
@@ -322,8 +258,7 @@ const calculateAllFleissKappa = (results, tasks) => {
     "aggregatedBarData": aggregatedBarData,
     "kappaValues": kappaValues
   }
-  // setAggregatedBarData(aggregatedBarData)
-  // setFleissKappa(kappaValues)
+
 }
 
 const calculateFleissKappa = (category, values, tasks) => {
@@ -336,21 +271,8 @@ const calculateFleissKappa = (category, values, tasks) => {
   // }
 
   //tasks is annotation tasks grouped by document
-  // let values = [
-  //     {"1": 0, "2": 0, "3": 0,"4": 0, "5": 14},
-  //     {"1": 0, "2": 2, "3": 6,"4": 4, "5": 2},
-  //     {"1": 0, "2": 0, "3": 3,"4": 5, "5": 6},
-  //     {"1": 0, "2": 3, "3": 9,"4": 2, "5": 0},
-  //     {"1": 2, "2": 2, "3": 8,"4": 1, "5": 1},
-  //     {"1": 7, "2": 7, "3": 0,"4": 0, "5": 0},
-  //     {"1": 3, "2": 2, "3": 6,"4": 3, "5": 0},
-  //     {"1": 2, "2": 5, "3": 3,"4": 2, "5": 2},
-  //     {"1": 6, "2": 5, "3": 2,"4": 1, "5": 0},
-  //     {"1": 0, "2": 2, "3": 2,"4": 3, "5": 7}
 
-  // ]
-  //console.log("fliss",tasks)
-  console.log("values________", values)
+  console.log("Values", values)
   let tempBarData = [];
 
   var numInstances = values.length;
@@ -362,7 +284,7 @@ const calculateFleissKappa = (category, values, tasks) => {
   Object.keys(values[0]).map(result => {
     resultTotals[result] = 0;
   })
-  console.log("resulttsl", resultTotals)
+  console.log("results", resultTotals)
 
   for (let i = 0; i < values.length; i++) {
     let temp = 0
@@ -373,10 +295,9 @@ const calculateFleissKappa = (category, values, tasks) => {
       numAnnotationsForInstance += value;
     }
 
-    console.log("NUMANNOTATIONSFORINSTANCE", numAnnotationsForInstance)
+    console.log("numAnnotationsForInstance", numAnnotationsForInstance)
 
     if (numAnnotationsForInstance < numAnnotators) {
-      console.log("DECREMENTING INSTANCES ")
       numInstances -= 1;
       continue
     }
@@ -404,14 +325,13 @@ const calculateFleissKappa = (category, values, tasks) => {
     I.push(temp)
   }
 
-  console.log("NUMINSTANCES", numInstances)
+  console.log("numInstances", numInstances)
 
   let numAnnotations = numAnnotators * numInstances
 
   console.log("I", I)
-  console.log("results", resultTotals)
+  console.log("resultTotals", resultTotals)
 
-  //setAggregatedBarData(state => [...state, {...resultTotals, "category": category}]);
   let aggregatedCategoryData = {
     ...resultTotals,
     "category": category
@@ -440,7 +360,7 @@ const calculateFleissKappa = (category, values, tasks) => {
   console.log("pemean", P_e_mean)
 
   let tempTot = I.reduce((partialSum, a) => partialSum + a, 0);
-  //let Pmean = tempTot / tasks.length;
+
   let Pmean = tempTot / numInstances
 
   console.log("pmean", Pmean)
@@ -448,9 +368,6 @@ const calculateFleissKappa = (category, values, tasks) => {
   let kappa = (Pmean - P_e_mean) / (1 - P_e_mean);
 
 
-  // if (kappa < 0) {
-  //     return "-"
-  // }
   if (numInstances < (values.length)) {
     return {
       "kappaValue": kappa.toFixed(3) + " (Incomplete Data)",
@@ -472,7 +389,7 @@ const calculateFleissKappa = (category, values, tasks) => {
 }
 
 const groupTasksByDocument = (tasks) => {
-  console.log("these are tasks", tasks);
+  console.log("tasks to group", tasks);
   let finalGroupedTasks = [];
 
   for (let i = 0; i < tasks.length; i++) {

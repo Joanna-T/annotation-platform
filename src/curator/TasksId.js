@@ -4,7 +4,6 @@ import awsmobile from "../aws-exports";
 import { getAnnotationTask, tasksByUsername } from "../graphql/queries"
 import { createAnnotationResult, updateAnnotationTask } from "../graphql/mutations";
 import { useHistory, useParams, useLocation } from "react-router-dom";
-import { ComponentPropsToStylePropsMap, Divider } from "@aws-amplify/ui-react";
 import { useState, useEffect, useRef } from "react";
 import AnnotationPage from "./AnnotationPage";
 import AnnotationQuestions from "./AnnotationQuestions";
@@ -74,23 +73,23 @@ const TasksId = () => {
 
     async function handleSubmit() {
         //////////////////////////////////
-        const annotationResult = {
-            document_title: task.document_title,
-            questionID: task.questionID,
-            owner: task.owner,
-            question_answers: task.question_answers,
-            labels: task.labels,
-            questionFormID: task.questionFormID
-        }
+        // const annotationResult = {
+        //     document_title: task.document_title,
+        //     questionID: task.questionID,
+        //     owner: task.owner,
+        //     question_answers: task.question_answers,
+        //     labels: task.labels,
+        //     questionFormID: task.questionFormID
+        // }
 
-        //remove
-        await API.graphql({
-            query: createAnnotationResult,
-            variables: {
-                input: annotationResult,
-            },
-            authMode: "AMAZON_COGNITO_USER_POOLS"
-        })
+        // //remove
+        // await API.graphql({
+        //     query: createAnnotationResult,
+        //     variables: {
+        //         input: annotationResult,
+        //     },
+        //     authMode: "AMAZON_COGNITO_USER_POOLS"
+        // })
         ////////////////////////////////////////
 
         var taskToUpdate = {
@@ -112,6 +111,9 @@ const TasksId = () => {
                 const parsedQuestions = JSON.parse(result.questionForm.questions);
 
                 setQuestions(parsedQuestions)
+                setQuestionForm(result.questionForm)
+                setQuestion(result.question)
+                setLabelDescriptions(JSON.parse(result.question.labelDescriptions))
 
                 const savedAnswers = JSON.parse(result.question_answers);
                 setAnswers(savedAnswers);
@@ -121,17 +123,11 @@ const TasksId = () => {
                 const savedLabels = JSON.parse(result.labels);
                 setParentLabels(savedLabels);
 
-                await Promise.all([fetchDocument(result.document_title),
-                fetchQuestion(result.questionID, "AMAZON_COGNITO_USER_POOLS"),
-                fetchQuestionForm(result.questionFormID, "AMAZON_COGNITO_USER_POOLS")
-                ])
+                fetchDocument(result.document_title)
                     .then(result => {
                         console.log("taskid results", result)
-                        setDocumentText(result[0]["abstract"] + "\n\n" + result[0]["mainText"])
-                        setDocumentTitle(result[0]["title"])
-                        setQuestion(result[1])
-                        setLabelDescriptions(JSON.parse(result[1].labelDescriptions))
-                        setQuestionForm(result[2])
+                        setDocumentText(result["abstract"] + "\n\n" + result["mainText"])
+                        setDocumentTitle(result["title"])
                     })
                     .catch(err => console.log(err))
 
@@ -275,12 +271,12 @@ const TasksId = () => {
         <div>
             {
                 (questionsVisible || size.width < 850) && (
-                    <Segment fluid color='blue' inverted secondary style={{ maxHeight: '100vh', width: "95vh" }}>
+                    <Segment color='blue' inverted secondary style={{ maxHeight: '100vh', width: "95vh" }}>
                         <Header size="small" dividing textAlign="center">
                             <Icon name='pencil' circular size='small' />
                             <Header.Content>Please answer the following questions</Header.Content>
                         </Header>
-                        <Segment basic textAlign="left" style={{ "padding-left": "10%", "padding-right": "10%", "color": "white" }}>
+                        <Segment basic textAlign="left" style={{ "paddingLeft": "10%", "paddingRight": "10%", "color": "white" }}>
                             <AnnotationQuestions questions={questions} handleAnswerChange={handleAnswerChange} answers={answers} ></AnnotationQuestions>
                         </Segment>
 
@@ -399,7 +395,7 @@ const TasksId = () => {
                                     </Button>
                                     <Button
                                         color="red"
-                                        icon="checkmark"
+                                        icon
                                         labelPosition='right'
                                         onClick={() => setOpen(false)}>
                                         Back to annotation

@@ -20,21 +20,21 @@ const DeleteTasks = () => {
   }, [])
 
   async function deleteChosenQuestion() {
-    console.log("chosen question", chosenQuestion.tasks.items)
+
     const tasksToBeDeleted = chosenQuestion.tasks.items
     for (let i = 0; i < tasksToBeDeleted.length; i++) {
       await deleteTask(tasksToBeDeleted[i].id)
     }
-    // for (const item in chosenQuestion.tasks.items) {
-    //   console.log("itemid", item.id)
-    //   await deleteTask(item.id)
-    // }
+
     await deleteQuestion(chosenQuestion.id)
 
     setOpen(false)
     setQuestions(questions.filter(question => question.id !== chosenQuestion.id))
     setChosenQuestion(null)
   }
+
+  const segmentStyle = { "overflow": "auto", "maxHeight": "30%" }
+  const cardStyle = { "marginTop": 2, "marginBottom": 2, "textalign": "left", "padding": "2%" }
 
   return (
     <Layout>
@@ -48,7 +48,7 @@ const DeleteTasks = () => {
         )
       }
       <Segment basic>
-        <h4>The following are all currently active annotation questions.
+        <h4>The following are all active and completed annotation questions.
         </h4>
       </Segment>
       <Segment style={{ textAlign: "left" }}>
@@ -57,19 +57,17 @@ const DeleteTasks = () => {
           Please choose a annotation question to delete
         </p>
 
-        <Segment style={{ "overflow": "auto", "max-height": "30%" }}>
+        <Segment style={segmentStyle}>
           <Card.Group>
             {questions ?
               questions.map((question, index) => (
 
                 <Card
                   key={question.id}
-                  fluid color={(chosenQuestion === question) ? "blue" : ""}
-                  style={{ "margin-top": 2, "margin-bottom": 2, "text-align": "left", "padding": "2%" }}
+                  fluid color={(chosenQuestion === question) ? "blue" : undefined}
+                  style={cardStyle}
                   onClick={() => setChosenQuestion(question)}
-                  //href={`/annotation_tasks/${task.id}`}
                   header={`Question title: ${question.text}`}
-                  //   meta={`Item ${index + 1}`}
                   description={`Completed: ${question.tasks.items.filter(item => item.completed === true).length} / ${question.tasks.items.length}`}
                 />
 

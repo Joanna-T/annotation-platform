@@ -1,19 +1,14 @@
 import { useState, useEffect } from "react";
-import { listMedicalQuestions, getMedicalQuestion } from "../graphql/queries";
-import { createAnnotationTask } from "../graphql/mutations";
-import { Card, Grid, Segment, Label, Button, Icon, Message, Modal, Checkbox } from "semantic-ui-react";
-import { API, Storage, Amplify, Auth } from "aws-amplify";
+import { Card, Segment, Label, Button, Icon, Message, Modal, Checkbox } from "semantic-ui-react";
 import { groupTasksByDocument, findCompletedTasks, createReassignedTasks } from "../utils/documentUtils";
-import { listCurators, fetchQuestions, fetchSuggestions } from "../utils/queryUtils";
-import { submitTask, deleteSuggestion } from "../utils/mutationUtils";
+import { fetchQuestions } from "../utils/queryUtils";
 import Layout from "../common/Layout";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 
 const ReassignTasks = () => {
     const [incompleteQuestions, setIncompleteQuestions] = useState(null)
-    const [groupedTasks, setGroupedTasks] = useState(null);
     const [chosenQuestion, setChosenQuestion] = useState(null);
     const [allQuestionTasks, setAllQuestionTasks] = useState(null);
     const [warningMessage, setWarningMessage] = useState(false)
@@ -48,7 +43,7 @@ const ReassignTasks = () => {
                 }
             }
         }
-        console.log("find incomplete tasks", questionItems)
+
         setIncompleteQuestions(tempIncompleteQuestions)
         setAllQuestionTasks(questionItems)
     }
@@ -56,6 +51,11 @@ const ReassignTasks = () => {
     const findTotalTasks = (questionID) => {
         return allQuestionTasks[questionID].length;
     }
+
+    const segmentStyle = { "overflow": "auto", "maxHeight": "30%" }
+    const cardStyle = { "marginTop": 2, "marginBottom": 2, "textalign": "left", "padding": "2%" }
+
+
     return (
 
         <Layout>
@@ -82,19 +82,17 @@ const ReassignTasks = () => {
                 <p><b>NOTE:</b> "Completed" denotes the number of document annotated by the required number of curators,
                     which is currently set at {process.env.REACT_APP_NUMBER_CURATORS}
                 </p>
-                <Segment style={{ "overflow": "auto", "max-height": "30%" }}>
+                <Segment style={segmentStyle}>
                     <Card.Group>
                         {incompleteQuestions && allQuestionTasks ?
                             incompleteQuestions.map((question, index) => (
 
                                 <Card
                                     key={question.id}
-                                    fluid color={(chosenQuestion === question) ? "blue" : ""}
-                                    style={{ "margin-top": 2, "margin-bottom": 2, "text-align": "left", "padding": "2%" }}
+                                    fluid color={(chosenQuestion === question) ? "blue" : undefined}
+                                    style={cardStyle}
                                     onClick={() => setChosenQuestion(question)}
-                                    //href={`/annotation_tasks/${task.id}`}
                                     header={`Question title: ${question.text}`}
-                                    //   meta={`Item ${index + 1}`}
                                     description={`Completed: ${findCompletedTasks(allQuestionTasks[question.id], minimumRequiredCurators)} / ${findTotalTasks(question.id)}`}
                                 />
 
@@ -112,10 +110,11 @@ const ReassignTasks = () => {
 
 
                 </Segment>
-                <p> Chosen question:  <Label color='grey' horizontal>
+                <p style={{ display: "inline" }}> Chosen question:</p>
+                <Label color='grey' horizontal>
                     {chosenQuestion ? chosenQuestion.text : "Please pick a question above"}
-                </Label></p>
-                <Segment style={{ "overflow": "auto", "max-height": "30%" }}>
+                </Label>
+                <Segment style={segmentStyle}>
                     <Card.Group>
                         {chosenQuestion ?
                             allQuestionTasks[chosenQuestion.id].map((tasks, index) => (
@@ -123,9 +122,8 @@ const ReassignTasks = () => {
                                 <Card
                                     key={tasks[0].id}
                                     fluid
-                                    style={{ "margin-top": 2, "margin-bottom": 2, "text-align": "left", "padding": "2%" }}
+                                    style={cardStyle}
                                     header={`Document title: ${tasks[0].document_title}`}
-                                    //   meta={`Item ${index + 1}`}
                                     description={`${tasks.filter(task => task.completed === true).length} documents annotated out of ${tasks.length}`}
                                 />
                             ))
@@ -165,13 +163,6 @@ const ReassignTasks = () => {
                         <Modal.Content> Incompleted tasks for this question will be redistributed to new curators.</Modal.Content>
                         <Modal.Actions>
                             <Button color="green" onClick={async () => {
-                                // try {
-                                //     await createReassignedTasks(allQuestionTasks[chosenQuestion.id])
-                                //     navigate("/")
-                                // } catch (err) {
-                                //     setWarningMessage(true)
-                                //     setWarningText("Insufficient curators to assign tasks")
-                                // }
 
                                 let result = await createReassignedTasks(allQuestionTasks[chosenQuestion.id])
                                 if (result != "") {
@@ -183,15 +174,13 @@ const ReassignTasks = () => {
                                     navigate("/")
                                 }
 
-                                //.forEach(result => submitTask(result, "API_KEY"))
-
                             }}>
                                 Submit
                             </Button>
                             <Button
                                 color="red"
                                 labelPosition='right'
-                                icon='checkmark'
+                                icon
                                 onClick={() => setOpen(false)}>
                                 Back to form
                             </Button>

@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { Segment, Icon } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 import { memo } from "react";
 
 const QuestionStats = ({ questionAnswers, questionForm }) => {
   const [formQuestions, setFormQuestions] = useState([]);
   const [barData, setBarData] = useState([])
-  const [cohenKappaValues, setCohenKappaValues] = useState([])
 
   useEffect(() => {
     console.log("BAR DATA", barData)
@@ -57,34 +56,9 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
     "#F0E442",
     "#56B4E9",
     "#E69F00",
-
     "#CC79A7",
     "#D55E00"
   ]
-
-  const colours2 = [
-    "#AA4499",
-    "#DDCC77",
-    "#CC6677",
-    "#88CCEE",
-    "#147334",
-    "#882255"
-  ]
-  const colours1 = [
-    "hsl(142, 0%, 50%)",
-    "hsl(127, 70%, 50%)",
-    "hsl(247, 70%, 50%)",
-    "hsl(274, 70%, 50%)",
-    "hsl(331, 70%, 50%)",
-    "hsl(62, 70%, 50%)"
-  ]
-  // const colours1 = {
-  //   "option1": "hsl(142, 0%, 50%)",
-  //   "option2": "hsl(127, 70%, 50%)",
-  //   "option3": "hsl(247, 70%, 50%)",
-  //   "option5": "hsl(331, 70%, 50%)",
-  //   "option6": "hsl(62, 70%, 50%)"
-  // }
 
   const orderColours = (item, option) => {
     let index = 0
@@ -112,41 +86,7 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
   }
 
   return (<div style={{ height: "45vh", overflow: "auto" }}>
-    {/* {barData.length && formQuestions.length &&
-      <ResponsiveBar
-          data={[barData[0]]}
-          keys={formQuestions[0].options}
-          layout="horizontal"
-          indexBy="category"
-          margin={{ top: 50, right: 50, bottom: 50, left: 60 }}
-          padding={0.3}
-          height={20}
-          legends={[
-              {
-                  dataFrom: 'keys',
-                  anchor: 'bottom-right',
-                  direction: 'column',
-                  justify: false,
-                  translateX: 120,
-                  translateY: 0,
-                  itemsSpacing: 2,
-                  itemWidth: 100,
-                  itemHeight: 20,
-                  itemDirection: 'left-to-right',
-                  itemOpacity: 0.85,
-                  symbolSize: 20,
-                  effects: [
-                      {
-                          on: 'hover',
-                          style: {
-                              itemOpacity: 1
-                          }
-                      }
-                  ]
-              }
-          ]}
-  
-      />} */}
+
     {barData.map((item, index) => {
       return (
         <div key={index} style={{ "height": "100px" }}>
@@ -170,73 +110,7 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
             height={20}
             colors={colours}
 
-            // valueScale={{ type: 'linear' }}
-            // indexScale={{ type: 'band', round: true }}
-            // colors={{ scheme: 'nivo' }}
-            // defs={[
-            //     {
-            //         id: 'dots',
-            //         type: 'patternDots',
-            //         background: 'inherit',
-            //         color: '#38bcb2',
-            //         size: 4,
-            //         padding: 1,
-            //         stagger: true
-            //     },
-            //     {
-            //         id: 'lines',
-            //         type: 'patternLines',
-            //         background: 'inherit',
-            //         color: '#eed312',
-            //         rotation: -45,
-            //         lineWidth: 6,
-            //         spacing: 10
-            //     }
-            // ]}
-            // fill={[
-            //     {
-            //         match: {
-            //             id: 'fries'
-            //         },
-            //         id: 'dots'
-            //     },
-            //     {
-            //         match: {
-            //             id: 'sandwich'
-            //         },
-            //         id: 'lines'
-            //     }
-            // ]}
-            // borderColor="black"
-            // axisTop={null}
-            // axisRight={null}
-            // axisBottom={{
-            //     tickSize: 5,
-            //     tickPadding: 5,
-            //     tickRotation: 0,
-            //     legend: 'country',
-            //     legendPosition: 'middle',
-            //     legendOffset: 32
-            // }}
-            // axisLeft={{
-            //     tickSize: 5,
-            //     tickPadding: 5,
-            //     tickRotation: 0,
-            //     legend: 'food',
-            //     legendPosition: 'middle',
-            //     legendOffset: -40
-            // }}
-            // labelSkipWidth={12}
-            // labelSkipHeight={12}
-            // // labelTextColor={{
-            // //     from: 'color',
-            // //     modifiers: [
-            // //         [
-            // //             'darker',
-            // //             1.6
-            // //         ]
-            // //     ]
-            // // }}
+
             legends={[
               {
                 dataFrom: 'keys',
@@ -261,9 +135,6 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
                 ]
               }
             ]}
-          // role="application"
-          // ariaLabel="Nivo bar chart demo"
-          // barAriaLabel={function(e){return e.id+": "+e.formattedValue+" in country: "+e.indexValue}}
           />
         </div>
       )

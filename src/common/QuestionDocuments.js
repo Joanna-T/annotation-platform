@@ -46,6 +46,8 @@ const QuestionDocuments = () => {
 
     }
 
+    const cardStyle = { "marginTop": 5, "marginBottom": 5, "textAlign": "left", "padding": "2%" }
+
     return (
         <Layout>
             <Segment tertiary color="blue" inverted>
@@ -58,7 +60,7 @@ const QuestionDocuments = () => {
                         <Card
                             key={tasks[0].id}
                             fluid color="blue"
-                            style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
+                            style={cardStyle}
                             onClick={() => handleNavigate(tasks)}
                             header={`Document title: ${documentTitles[tasks[0].id]}`}
                             meta={`Question created: ${question.createdAt.substring(0, 10)}`}

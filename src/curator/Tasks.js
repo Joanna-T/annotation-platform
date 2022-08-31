@@ -42,6 +42,7 @@ const Tasks = () => {
         )
     }
 
+    const cardStyle = { "marginTop": 5, "marginBottom": 5, "textAlign": "left", "padding": "2%" }
     return (
         <div className="tasks">
 
@@ -68,7 +69,7 @@ const Tasks = () => {
                             <Card
                                 key={task.id}
                                 fluid color="blue"
-                                style={{ "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }}
+                                style={cardStyle}
                                 href={`/annotation_tasks/${task.id}`}
                                 header={`Document title: ${documentTitles[task.id]}`}
                                 meta={`Created ${task.createdAt.substring(0, 10)}`}

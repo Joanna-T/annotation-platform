@@ -15,11 +15,7 @@ const Navbar = () => {
     const [currentItem, setCurrentItem] = useState("Home")
 
     useEffect(() => {
-        console.log('handle route change here', location)
 
-        if (!signedUser && !admin) {
-            console.log("user not signed in")
-        }
         if (signedUser) {
             setCurrentItem(findCorrectTab(location.pathname, signedUser, admin))
         }
@@ -45,10 +41,8 @@ const Navbar = () => {
         Hub.listen("auth", (data) => {
             switch (data.payload.event) {
                 case "signin":
-                    console.log("signed in");
                     return setSignedUser(true);
                 case "signout":
-                    console.log("signed out");
                     setAdmin(false);
                     return setSignedUser(false);
 
@@ -56,10 +50,8 @@ const Navbar = () => {
         })
         try {
             const user = await Auth.currentAuthenticatedUser();
-            console.log("user signed in");
-            console.log("signed in user", user);
             const groups = user.signInUserSession.accessToken.payload["cognito:groups"];
-            console.log("groups", groups);
+
             setUserEmail(user.attributes.email)
             if (groups) {
                 if (groups.includes("Admin")) {
@@ -68,7 +60,7 @@ const Navbar = () => {
             }
 
             setSignedUser(true);
-            console.log("signeduser", signedUser);
+
         } catch (err) { }
     }
 
@@ -195,8 +187,7 @@ const Navbar = () => {
                 ((size.width > 1150 && signedUser && admin) ||
                     (size.width > 650 && signedUser && !admin)) &&
                 <Menu.Item
-                    position="right"
-                    style={{ top: "0.2em", color: "white", "padding-right": 0 }}>
+                    position="right">
                     <h5>{userEmail}</h5>
                 </Menu.Item>
             }
@@ -206,7 +197,7 @@ const Navbar = () => {
                 signedUser && (
                     <Menu.Item
                         position={((size.width < 1150 && signedUser && admin) ||
-                            (size.width < 650 && signedUser && !admin)) ? "right" : ""}
+                            (size.width < 650 && signedUser && !admin)) ? "right" : undefined}
                         name='SignOut'
                         active={currentItem === 'SignOut'}
                         onClick={() => {
@@ -225,7 +216,7 @@ const Navbar = () => {
 export default Navbar;
 
 const findCorrectTab = (pathname, signedUser, admin) => {
-    console.log("findCorrecttab", signedUser, admin, pathname.includes("completed_tasks"))
+
     if (pathname.includes("annotation_tasks")) {
         return "Tasks"
     }

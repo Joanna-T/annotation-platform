@@ -32,7 +32,6 @@ function App() {
     // console.warn = () => { };
     // console.error = () => { };
 
-    console.error('Something bad happened.');
   }, []);
   return (
     <Router>
