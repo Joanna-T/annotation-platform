@@ -136,8 +136,8 @@ describe("task creation test", () => {
 })
 
 
-describe("task creation test", () => {
-    it("should correctly distribute tasks amongs users", async () => {
+describe("string parse test", () => {
+    it("should correctly extract information from formatted files", async () => {
         const teststring = `# URL to online version
 
 https://www.ncbi.nlm.nih.gov/pubmed/32426653/
@@ -157,16 +157,18 @@ INTRODUCTION: Coronavirus disease 2019 (COVID-19) is caused by the virus known a
 # Main text
 
 Point-of-care ultrasound (POCUS) examinations of patients with acute respiratory distress have been demonstrated to be useful for patients with acute unexplained dyspnea in the emergency department (ED).1 Multiple previous ED studies have demonstrated the ability of clinicians to rapidly and accurately differentiate a cardiac etiology (specifically acute decompensated congestive heart failure) versus other causes of acute dyspnea.1,2 In our early experience during the severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) outbreak, with multiple patients presenting with acute dyspnea of suspected parenchymal pulmonary pathology, we found that the prompt differentiation between an underlying cardiac versus pulmonary source can be instrumental in both triage and early resuscitation.
-
 `
         let parsedDocument = parseDocumentContents(teststring)
 
 
-        expect(parsedDocument.title).toBe(
+        expect(parsedDocument.title).toContain(
             "Early Multi-organ Point-of-Care Ultrasound Evaluation of Respiratory Distress During SARS-CoV-2 Outbreak: Case Report"
         )
-        expect(parsedDocument.abstract).toBe(
+        expect(parsedDocument.abstract).toContain(
             "INTRODUCTION: Coronavirus disease 2019 (COVID-19) is caused by the virus known as severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2). Several case series from Italy and China have highlighted the lung ultrasound findings of this disease process and may demonstrate its clinical utility during the current pandemic. CASE REPORT: We present a case of a COVID-19 patient who presented to the emergency department twice within a 24-hour period with rapidly progressing illness. A multi-organ point-of-care ultrasound (POCUS) evaluation was used on the return visit and assisted clinical decision-making. DISCUSSION: A multi-organ POCUS exam allows for quick assessment of acute dyspnea in the emergency department. As the lung involvement of COVID-19 is primarily a peripheral process it is readily identifiable via lung ultrasound. We believe that when applied efficiently and safely a POCUS exam can reduce clinical uncertainty and potentially limit the use of other imaging modalities when treating patients with COVID-19. CONCLUSION: This case highlights the utility of an early multiorgan point-of-care assessment for patients presenting with moderate respiratory distress during the severe SARS-CoV-2 pandemic."
+        )
+        expect(parsedDocument.mainText).toContain(
+            `Point-of-care ultrasound (POCUS) examinations of patients with acute respiratory distress have been demonstrated to be useful for patients with acute unexplained dyspnea in the emergency department (ED).1 Multiple previous ED studies have demonstrated the ability of clinicians to rapidly and accurately differentiate a cardiac etiology (specifically acute decompensated congestive heart failure) versus other causes of acute dyspnea.1,2 In our early experience during the severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) outbreak, with multiple patients presenting with acute dyspnea of suspected parenchymal pulmonary pathology, we found that the prompt differentiation between an underlying cardiac versus pulmonary source can be instrumental in both triage and early resuscitation.`
         )
 
     })

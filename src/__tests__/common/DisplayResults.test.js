@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import DisplayResults from "../../common/DisplayResults";
 import * as queryUtils from "../../utils/queryUtils";
 import { act } from "react-dom/test-utils";
@@ -200,18 +200,17 @@ describe("display results tests", () => {
     })
 
     // it("displays the annotation question", async () => {
-
+    //     let container;
     //     await act(() => {
     //         render(
     //             <MemoryRouter initialEntries={[mockUseLocationValue]}>
     //                 <DisplayResults />
-    //             </MemoryRouter>)
+    //             </MemoryRouter>, container)
     //     })
 
-    //     //const documentTitle = screen.getAllByText(/This is the title/)
-
-
-    //     expect(await screen.getByText("Test question")).toBeInTheDocument();
+    //     await waitFor(() => {
+    //         expect(screen.queryByText('Test question')).toBeInTheDocument();
+    //     });
 
     // })
 
