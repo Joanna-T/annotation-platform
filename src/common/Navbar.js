@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Auth, Hub } from "aws-amplify";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { Menu, Icon } from "semantic-ui-react";
+import { Menu, Icon, Dropdown } from "semantic-ui-react";
 import useWindowSize from "./useWindowSize";
 
 
@@ -179,7 +179,8 @@ const Navbar = () => {
                         name='SignIn'
                         active={currentItem === 'SignIn'}
                         onClick={() => handleItemClick('SignIn')}
-                    />
+                    >Sign In</Menu.Item>
+                    // ><Icon name="sign-in"></Icon>{size.width > 940 ? "  Sign in" : ""}</Menu.Item> //changes here to icon and text 
                 )
             }
 
@@ -198,13 +199,14 @@ const Navbar = () => {
                     <Menu.Item
                         position={((size.width < 1150 && signedUser && admin) ||
                             (size.width < 650 && signedUser && !admin)) ? "right" : undefined}
-                        name='SignOut'
+                        // name='SignOut'
                         active={currentItem === 'SignOut'}
                         onClick={() => {
                             handleItemClick('SignOut');
                             signOut();
                         }}
-                    />
+                    >Sign out</Menu.Item>
+                    // ><Icon name="sign-out"></Icon>{size.width > 940 ? "  Sign out" : ""}</Menu.Item> //changes here to icon and text
                 )
             }
 
@@ -239,7 +241,7 @@ const findCorrectTab = (pathname, signedUser, admin) => {
     else if (pathname.includes("completed_curator_tasks") && (admin === false) && signedUser) {
         return "CompletedTasks"
     }
-    else if (pathname.includes("completed_tasks" && admin)) {
+    else if (pathname.includes("completed_tasks") && admin) {
         return "CompletedTasks"
     }
     else {

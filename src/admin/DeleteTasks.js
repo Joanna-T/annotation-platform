@@ -11,6 +11,7 @@ const DeleteTasks = () => {
   const [open, setOpen] = useState(null)
   const [warningMessage, setWarningMessage] = useState(false)
   const [warningText, setWarningText] = useState("")
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     fetchQuestions()
@@ -20,6 +21,7 @@ const DeleteTasks = () => {
   }, [])
 
   async function deleteChosenQuestion() {
+    setLoading(true)
 
     const tasksToBeDeleted = chosenQuestion.tasks.items
     for (let i = 0; i < tasksToBeDeleted.length; i++) {
@@ -31,6 +33,7 @@ const DeleteTasks = () => {
     setOpen(false)
     setQuestions(questions.filter(question => question.id !== chosenQuestion.id))
     setChosenQuestion(null)
+    setLoading(false)
   }
 
   const segmentStyle = { "overflow": "auto", "maxHeight": "30%" }
@@ -73,9 +76,7 @@ const DeleteTasks = () => {
 
               ))
               :
-              <Segment>
-                No questions to show currently
-              </Segment>
+              <p></p>
             }
 
           </Card.Group>
@@ -106,9 +107,15 @@ const DeleteTasks = () => {
             <Modal.Header> Are you sure you want to delete this annotation question?</Modal.Header>
             <Modal.Content>All annotation tasks associated with this question will be deleted</Modal.Content>
             <Modal.Actions>
-              <Button color="purple" onClick={deleteChosenQuestion}>
-                Delete
-              </Button>
+              {
+                loading ?
+                  <Button color="purple" loading> Delete</Button>
+                  :
+                  <Button color="purple" onClick={deleteChosenQuestion}>
+                    Delete
+                  </Button>
+              }
+
               <Button
                 color="red"
                 labelPosition='right'

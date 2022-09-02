@@ -24,31 +24,31 @@ import { fetchDocumentFolders } from "./assignTaskUtils";
 const labelColours = [
   {
     buttonColour: "red",
-    labelColour: "#ff6e63"
+    labelColour: "#ff928a"
   },
   {
     buttonColour: "purple",
-    labelColour: "#c07dff"
+    labelColour: "#d5b3ff"
   },
   {
     buttonColour: "yellow",
-    labelColour: "#fff980"
+    labelColour: "#fcf29f"
   },
   {
     buttonColour: "green",
-    labelColour: "#a7ff78"
+    labelColour: "#aff7ab"
   },
   {
     buttonColour: "blue",
-    labelColour: "#69c5ff"
+    labelColour: "#abd1f7"
   },
   {
     buttonColour: "brown",
-    labelColour: "#c7853e"
+    labelColour: "#e3b186"
   },
   {
     buttonColour: "black",
-    labelColour: "#c4c4c4"
+    labelColour: "#cccccc"
   }
 ]
 
@@ -63,6 +63,7 @@ const AssignTasks = () => {
   const [chosenFolder, setChosenFolder] = useState(null)
   const [labels, setLabels] = useState([])
   const [currentLabel, setCurrentLabel] = useState("")
+  const [loading, setLoading] = useState(false)
 
 
   const [activeIndex, setActiveIndex] = useState(null);
@@ -157,12 +158,14 @@ const AssignTasks = () => {
     }
   }
   async function handleSubmit() {
+    setLoading(true)
 
     let curators = await listCurators();
     if (curators.length < process.env.REACT_APP_NUMBER_CURATORS) {
       setWarningText("Insufficient number of curators to assign tasks")
       setWarningMessage(true)
       setOpen(false)
+      setLoading(false)
       return
     }
     let questionToSubmit = {
@@ -182,6 +185,7 @@ const AssignTasks = () => {
 
           distributeAnnotationTasks(chosenQuestionForm, chosenFolder, result, curators, JSONLabels)
             .then(() => {
+              setLoading(false)
               navigate("/")
             })
 
@@ -406,7 +410,7 @@ const AssignTasks = () => {
               setWarningText("Please fill in all fields")
             }}
           >
-            Submit
+            Create tasks
           </Button>
           :
           <Modal
@@ -419,10 +423,17 @@ const AssignTasks = () => {
             </Button>}
           >
             <Modal.Header> Are you sure you want to create new tasks?</Modal.Header>
+            <Modal.Content>Documents from {chosenFolder} will be distributed to curators.</Modal.Content>
             <Modal.Actions>
-              <Button color="green" onClick={handleSubmit}>
-                Create tasks
-              </Button>
+              {
+                loading ?
+                  <Button loading color="green">Create tasks</Button>
+                  :
+                  <Button color="green" onClick={handleSubmit}>
+                    Create tasks
+                  </Button>
+              }
+
               <Button
                 color="red"
                 labelPosition='right'

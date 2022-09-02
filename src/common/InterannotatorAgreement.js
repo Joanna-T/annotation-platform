@@ -22,6 +22,9 @@ const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
   }, [medicalQuestion])
 
   const likelihoodToText = (score) => {
+    if (typeof score !== "number") {
+      return ""
+    }
     if (score <= 0) {
       return "No agreement"
       //return "(Poor agreement)"

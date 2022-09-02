@@ -367,8 +367,14 @@ const calculateFleissKappa = (category, values, tasks) => {
 
   let kappa = (Pmean - P_e_mean) / (1 - P_e_mean);
 
+  if ((numInstances < (values.length)) && !kappa) {
+    return {
+      "kappaValue": "-1 (Incomplete Data)",
+      "aggregatedCategoryData": aggregatedCategoryData
+    }
+  }
 
-  if (numInstances < (values.length)) {
+  if (numInstances < (values.length) && kappa) {
     return {
       "kappaValue": kappa.toFixed(3) + " (Incomplete Data)",
       "aggregatedCategoryData": aggregatedCategoryData

@@ -14,6 +14,7 @@ const ReassignTasks = () => {
     const [warningMessage, setWarningMessage] = useState(false)
     const [open, setOpen] = useState(false)
     const [warningText, setWarningText] = useState("Please choose a question to reassign")
+    const [loading, setLoading] = useState(false)
 
 
     const navigate = useNavigate();
@@ -101,9 +102,7 @@ const ReassignTasks = () => {
 
                             ))
                             :
-                            <Segment>
-                                No questions to show currently
-                            </Segment>
+                            <p></p>
                         }
 
                     </Card.Group>
@@ -162,21 +161,30 @@ const ReassignTasks = () => {
                         <Modal.Header> Are you sure you want to reassign these tasks?</Modal.Header>
                         <Modal.Content> Incompleted tasks for this question will be redistributed to new curators.</Modal.Content>
                         <Modal.Actions>
-                            <Button color="green" onClick={async () => {
+                            {
+                                loading ?
+                                    <Button color="green" loading> Submit</Button>
+                                    :
+                                    <Button color="green" onClick={async () => {
+                                        setLoading(true)
+                                        let result = await createReassignedTasks(allQuestionTasks[chosenQuestion.id])
+                                        if (result != "") {
+                                            setWarningMessage(true)
+                                            setWarningText(result)
+                                            setOpen(false)
+                                            setLoading(false)
+                                            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                                        }
+                                        else {
+                                            setLoading(false)
+                                            navigate("/")
+                                        }
 
-                                let result = await createReassignedTasks(allQuestionTasks[chosenQuestion.id])
-                                if (result != "") {
-                                    setWarningMessage(true)
-                                    setWarningText(result)
-                                    setOpen(false)
-                                }
-                                else {
-                                    navigate("/")
-                                }
+                                    }}>
+                                        Submit
+                                    </Button>
+                            }
 
-                            }}>
-                                Submit
-                            </Button>
                             <Button
                                 color="red"
                                 labelPosition='right'
