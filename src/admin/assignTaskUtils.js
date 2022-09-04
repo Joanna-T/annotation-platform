@@ -1,19 +1,23 @@
 import { Storage } from "aws-amplify";
 import { submitTask } from "../utils/mutationUtils";
 
-export async function distributeAnnotationTasks(questionForm, documentFolder, medicalQuestion, curators) {
+export async function distributeAnnotationTasks(questionForm, documentFolder, medicalQuestion, curators, chosenDocuments) {
+  console.log("distributetasks")
+  console.log(chosenDocuments)
   let annotationTasks = []
   //console.log("distributeAT inputs", questionForm, "folder", documentFolder, "curators", curators, "queaiton", medicalQuestion)
-  let documents
   try {
-    documents = await Storage.list(documentFolder)
+
+    //change filter documents to chosen files
+    // documents = await Storage.list(documentFolder)
+    // let filterDocuments = documents.filter(document => document.key[document.key.length - 1] !== "/")
+    // let shuffledDocuments = shuffleArray(filterDocuments);
+
+    let shuffledDocuments = shuffleArray(chosenDocuments)
 
 
-    let filterDocuments = documents.filter(document => document.key[document.key.length - 1] !== "/")
-    //console.log("filtered documents", filterDocuments)
-    let shuffledDocuments = shuffleArray(filterDocuments);
     let shuffledUsers = shuffleArray(curators.slice());
-    //console.log(shuffledUsers, shuffledDocuments);
+    console.log("distribute tasks", shuffledUsers, shuffledDocuments);
 
     let documentCounter = 0;
 
@@ -28,12 +32,12 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
       for (let i = 0; i < minimumCuratorNumber; i++) {
         if (shuffledUsers.length === 0) {
           shuffledUsers = shuffleArray(curators.slice())
-
           //console.log("This is shuffled us", shuffledUsers)
         }
         let curator = findCurator(shuffledUsers, annotationTasks, shuffledDocuments[documentCounter]);
         let newTask = {
-          document_title: shuffledDocuments[documentCounter].key,
+          //document_title: shuffledDocuments[documentCounter].key,
+          document_title: shuffledDocuments[documentCounter],
           questionID: medicalQuestion.id,
           owner: curator,
           questionFormID: questionForm.id,
@@ -46,7 +50,7 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
       }
       documentCounter++;
     }
-    //console.log("These are the annotation tasks", annotationTasks)
+    console.log("These are the annotation tasks", annotationTasks)
 
   } catch (err) {
     console.log(err)
@@ -87,12 +91,19 @@ function shuffleArray(array) {
 export async function fetchDocumentFolders() {
 
   let result = await Storage.list("")
+  console.log("fetchDocumentFolders", result)
 
   let files = []
   let folders = []
+
   result.forEach(res => {
     if (res.size) {
-      files.push(res)
+      //files.push(res)
+      let possibleFile = res.key.split('/')
+      if (possibleFile.length === 2) {
+        files.push(res.key)
+      }
+
 
       let possibleFolder = res.key.split('/').slice(0, -1).join('/')
       if (possibleFolder) folders.push(possibleFolder)
@@ -100,10 +111,17 @@ export async function fetchDocumentFolders() {
       folders.push(res.key)
     }
   })
+  console.log("possiblefiles", files)
+  console.log("fetcDocumentFolders", folders)
   const filteredFolders = folders.filter(folder => folder.includes("/"))
-  //console.log("filteredFolders", filteredFolders)
+  console.log("filteredFolders", filteredFolders)
 
-  return filteredFolders
+  return [filteredFolders, files]
 
 
 }
+
+export function isValidURL(string) {
+  var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+  return (res !== null)
+};

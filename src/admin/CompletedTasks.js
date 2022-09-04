@@ -3,6 +3,7 @@ import { Segment, Card, } from "semantic-ui-react";
 import Layout from "../common/Layout";
 import { fetchQuestions } from "../utils/queryUtils";
 import { returnCompletedQuestions } from "../utils/documentUtils";
+import ListQuestions from "./ListQuestions";
 
 const CompletedTasks = () => {
     const [questions, setQuestions] = useState([]);
@@ -39,26 +40,11 @@ const CompletedTasks = () => {
                     <p>The following are all completed annotation tasks.</p>
 
                 </Segment>
-                <Card.Group>
-                    {
-                        questions && questions.map((question, index) => {
-                            return (
 
-                                <Card
-                                    key={question.id}
-                                    fluid color="blue"
-                                    style={viewCardStyle}
-                                    href={`/completed_tasks/${question.id}`}
-                                    header={`Question title: ${question.text}`}
-                                    meta={`Created: ${question.createdAt.slice(0, 10)}`}
-                                    description={`No. documents: ${question["total_tasks"]}`}
-                                />
+                <ListQuestions
+                    questions={questions}>
 
-                            )
-                        })
-                    }
-
-                </Card.Group>
+                </ListQuestions>
 
 
             </Layout>

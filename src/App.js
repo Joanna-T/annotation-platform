@@ -1,4 +1,3 @@
-import './App.css';
 import React, { useLayoutEffect } from "react";
 import Navbar from './common/Navbar.js';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";

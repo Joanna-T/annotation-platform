@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { Segment, Card } from "semantic-ui-react";
 import Layout from "../common/Layout";
 import { fetchTasks, getTaskDocumentTitles } from "../utils/queryUtils";
+import ListTasks from "./ListTasks";
 
 const CuratorListResults = () => {
     const [tasks, setTasks] = useState([]);
-    const [documentTitle, setDocumentTitle] = useState({})
+    const [documentTitles, setDocumentTitles] = useState({})
 
     useEffect(() => {
         fetchTasks()
@@ -13,7 +14,7 @@ const CuratorListResults = () => {
                 setTasks(result.filter(task => task.completed === true));
                 return getTaskDocumentTitles(result)
             })
-            .then(result => setDocumentTitle(result))
+            .then(result => setDocumentTitles(result))
 
     }, [])
 
@@ -26,33 +27,13 @@ const CuratorListResults = () => {
                 <Segment inverted color="blue" tertiary>
                     The following are previously completed tasks.
                 </Segment>
-                {
-                    tasks.length == 0 &&
-                    <Segment>
-                        <p>No tasks yet completed</p>
-                    </Segment>
-                }
-                <Card.Group>
-                    {
-                        tasks.map((task, index) => (
+                <ListTasks
+                    tasks={tasks}
+                    documentTitles={documentTitles}
+                >
 
-                            <Card
-                                key={task.id}
-                                fluid color="blue"
-                                style={cardStyle}
-                                href={`/completed_curator_tasks/${task.id}`}
-                                header={`Document title: ${documentTitle[task.id]}`}
-                                meta={`Created ${task.createdAt.substring(0, 10)}`}
-                                description={`Question: ${task.question.text}`}
-                            />
+                </ListTasks>
 
-
-
-
-                        ))
-                    }
-
-                </Card.Group>
 
             </Layout>
         </div>

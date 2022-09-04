@@ -18,39 +18,10 @@ import { fetchQuestionForms, listCurators, fetchSuggestions } from "../utils/que
 import { submitQuestion, deleteSuggestion } from "../utils/mutationUtils";
 import { distributeAnnotationTasks } from "./assignTaskUtils";
 import { fetchDocumentFolders } from "./assignTaskUtils";
+import DocumentSelection from "./DocumentSelection";
+import { labelColours } from "./adminConstants";
+import { isValidURL } from "./assignTaskUtils";
 
-
-
-const labelColours = [
-  {
-    buttonColour: "red",
-    labelColour: "#ff928a"
-  },
-  {
-    buttonColour: "purple",
-    labelColour: "#d5b3ff"
-  },
-  {
-    buttonColour: "yellow",
-    labelColour: "#fcf29f"
-  },
-  {
-    buttonColour: "green",
-    labelColour: "#aff7ab"
-  },
-  {
-    buttonColour: "blue",
-    labelColour: "#abd1f7"
-  },
-  {
-    buttonColour: "brown",
-    labelColour: "#e3b186"
-  },
-  {
-    buttonColour: "black",
-    labelColour: "#cccccc"
-  }
-]
 
 const AssignTasks = () => {
   const [questionForms, setQuestionForms] = useState(null);
@@ -61,9 +32,9 @@ const AssignTasks = () => {
   const [linkIsValid, setLinkIsValid] = useState(true)
   const [folders, setFolders] = useState(null)
   const [chosenFolder, setChosenFolder] = useState(null)
+
   const [labels, setLabels] = useState([])
   const [currentLabel, setCurrentLabel] = useState("")
-  const [loading, setLoading] = useState(false)
 
 
   const [activeIndex, setActiveIndex] = useState(null);
@@ -75,10 +46,23 @@ const AssignTasks = () => {
   const [selectedSuggestion, setSelectedSuggestion] = useState()
   const [suggestionOpen, setSuggestionOpen] = useState(false)
 
+  const [loading, setLoading] = useState(false)
+
+
+  //document selection
+  const [documents, setDocuments] = useState([])
+  const [chosenDocuments, setChosenDocuments] = useState([])
+  const [chosenFolders, setChosenFolders] = useState([])
+
+
   const navigate = useNavigate();
   useEffect(() => {
     fetchDocumentFolders()
-      .then(result => setFolders(result))
+      .then(result => {
+        setFolders(result[0])
+        setDocuments(result[1])
+      }
+      )
 
     fetchSuggestions().then(results => {
       setSuggestions(results)
@@ -94,13 +78,6 @@ const AssignTasks = () => {
 
   useEffect(() => {
   }, [medicalQuestion])
-
-
-  function isValidURL(string) {
-    var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
-    return (res !== null)
-  };
-
 
   const handleAccordionClick = (index) => {
     //console.log(index);
@@ -118,12 +95,40 @@ const AssignTasks = () => {
       setChosenQuestionForm(null)
     }
   }
-  const handleFolderCheckbox = (folder, data) => {
+
+  const handleFoldersCheckbox = (folder, data) => {
+    const folderFiles = documents.filter(document => {
+      return document.slice(0, folder.length) === folder
+    })
+    //console.log("folderfiles", folderFiles)
     if (data.checked) {
-      setChosenFolder(folder);
+      //console.log("handlefolderscheckbox entered if")
+      setChosenFolders([...chosenFolders, folder]);
+      let filesToAdd = []
+      folderFiles.forEach(file => {
+        if (!chosenDocuments.includes(file)) {
+          filesToAdd.push(file)
+        }
+      })
+      setChosenDocuments([...chosenDocuments, ...filesToAdd])
     } else {
-      setChosenFolder(null);
+      setChosenFolders(chosenFolders.filter(folder => folder !== folder));
+      setChosenDocuments(chosenDocuments.filter(document => !folderFiles.includes(document)))
+
     }
+
+  }
+
+  const handleFileCheckbox = (file, data) => {
+    const fileFolderName = file.slice(0, file.indexOf("/") + 1)
+
+    if (data.checked) {
+      setChosenDocuments([...chosenDocuments, file])
+    } else {
+      setChosenDocuments(chosenDocuments.filter(document => document !== file))
+      setChosenFolders(chosenFolders.filter(folder => folder !== fileFolderName))
+    }
+
   }
 
   const handleInstructionLinkChange = (string) => {
@@ -139,11 +144,17 @@ const AssignTasks = () => {
     }
   }
 
+  const removeFile = (file) => {
+    const fileFolderName = file.slice(0, file.indexOf("/") + 1)
+    setChosenDocuments(chosenDocuments.filter(document => document !== file))
+    setChosenFolders(chosenFolders.filter(folder => folder !== fileFolderName))
+  }
+
   const addLabel = () => {
     var newLabel = {};
     if (labels.length < 7 && currentLabel !== "") {
       for (let i = 0; i < labelColours.length; i++) {
-        console.log(labelColours[i])
+
         let labelColourAlreadyUsed = labels.filter(result => result.buttonColour === labelColours[i].buttonColour)
         if (labelColourAlreadyUsed.length === 0) {
           newLabel.tagName = currentLabel
@@ -152,15 +163,16 @@ const AssignTasks = () => {
           break
         }
       }
-      console.log(newLabel)
+
       setLabels([...labels, newLabel])
       setCurrentLabel("")
     }
   }
   async function handleSubmit() {
-    setLoading(true)
 
-    let curators = await listCurators();
+    setLoading(true)
+    let curators = await listCurators()
+
     if (curators.length < process.env.REACT_APP_NUMBER_CURATORS) {
       setWarningText("Insufficient number of curators to assign tasks")
       setWarningMessage(true)
@@ -181,9 +193,8 @@ const AssignTasks = () => {
       .then(result => {
 
         try {
-          let JSONLabels = JSON.stringify(labels)
 
-          distributeAnnotationTasks(chosenQuestionForm, chosenFolder, result, curators, JSONLabels)
+          distributeAnnotationTasks(chosenQuestionForm, chosenFolder, result, curators, chosenDocuments)
             .then(() => {
               setLoading(false)
               navigate("/")
@@ -200,8 +211,8 @@ const AssignTasks = () => {
 
   }
 
+
   const formCardStyle = { "marginBottom": 5, "textalign": "left", "padding": "2%" }
-  const folderCardStyle = { "marginTop": 5, "marginBottom": 5, "textalign": "left", "padding": "3%" }
   const containerSegmentStyle = { overflow: 'auto', "textAlign": "left" }
 
   return (
@@ -226,6 +237,8 @@ const AssignTasks = () => {
           <Icon name='hand point right' />
           Please enter the new medical question below
         </p>
+
+
         <Modal
           open={suggestionOpen}
           onClose={() => setSuggestionOpen(false)}
@@ -239,7 +252,7 @@ const AssignTasks = () => {
           <Modal.Content>
             <Segment maxHeight="50vh">
               <List divided>
-                {suggestions &&
+                {suggestions.length > 0 ?
                   suggestions.map(suggestion => {
                     return (
                       <List.Item
@@ -269,6 +282,8 @@ const AssignTasks = () => {
                   }
 
                   )
+                  :
+                  <p>No suggestions submitted</p>
                 }
               </List>
             </Segment>
@@ -285,11 +300,15 @@ const AssignTasks = () => {
             </Button>
           </Modal.Actions>
 
+
+
         </Modal>
         <br></br>
         <br></br>
         <Input value={medicalQuestion} fluid icon='pencil' placeholder='Question here...' onChange={event => setMedicalQuestion(event.target.value)} />
         <br></br>
+
+
         <p>
           <Icon name='hand point right' />
           Please select the questions form to be asked to the annotators.
@@ -332,46 +351,26 @@ const AssignTasks = () => {
               </Card>
             )
           }))
-            : "Loading forms..."
+            : "No forms available"
 
           }
 
         </Segment>
 
         <br></br>
-        <p>
-          <Icon name='hand point right' />
-          Please choose the S3 folder containing the relevant documents to be annotated.
-        </p>
-        <p style={{ display: "inline" }}>Chosen folder:</p>
-        <Label color='grey' horizontal>
-          {chosenFolder ? chosenFolder : "Please pick a document folder from below"}
-        </Label>
+        <DocumentSelection
+          documents={documents}
+          chosenDocuments={chosenDocuments}
+          chosenFolders={chosenFolders}
+          handleFoldersCheckbox={handleFoldersCheckbox}
+          handleFileCheckbox={handleFileCheckbox}
+          removeFile={removeFile}
+          folders={folders}
+        >
 
-        <Segment style={{ overflow: "auto", maxHeight: '30vh' }}>
-          {
-            folders ? (folders.map((folder, index) => {
-              return (
-                <Card
-                  key={index}
-                  style={folderCardStyle} fluid>
+        </DocumentSelection>
+        <br></br>
 
-                  <Checkbox
-                    label={folder}
-                    display="inline"
-                    checked={chosenFolder === folder}
-                    style={{ "float": "right" }}
-                    onChange={(event, data) => handleFolderCheckbox(folder, data)} />
-
-                </Card>
-              )
-            }))
-              : "Loading folders..."
-
-
-          }
-
-        </Segment>
 
         <p>
           <Icon name='hand point right' />
@@ -402,7 +401,7 @@ const AssignTasks = () => {
           <Input value={instructionLink} fluid icon='linkify' placeholder='Link here...' onChange={event => handleInstructionLinkChange(event.target.value)} />
         </Segment>
 
-        {!chosenFolder || !chosenQuestionForm || !medicalQuestion || !linkIsValid || labels.length === 0 ?
+        {chosenDocuments.length === 0 || !chosenQuestionForm || !medicalQuestion || !linkIsValid || labels.length === 0 ? //{!chosenFolder || 
           <Button
             color='grey'
             onClick={() => {

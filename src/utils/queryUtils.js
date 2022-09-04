@@ -57,7 +57,7 @@ export async function fetchQuestions(authMethod) {
     authMode: authMethod
 
   })
-  //console.log("questions", questionsData.data.listMedicalQuestions.items);
+  console.log("questions", questionsData);
   return questionsData.data.listMedicalQuestions.items
 
 }
@@ -129,7 +129,7 @@ export async function fetchQuestionForm(questionFormId, authMethod) {
   const formData = await API.graphql({
     query: getQuestionForm,
     variables: { id: questionFormId },
-    authMode: authMethod
+    authMode: authMethod,
   })
   //console.log("setQuestionForm", form.data.getQuestionForm);
   return formData.data.getQuestionForm

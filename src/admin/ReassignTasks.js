@@ -53,7 +53,7 @@ const ReassignTasks = () => {
         return allQuestionTasks[questionID].length;
     }
 
-    const segmentStyle = { "overflow": "auto", "maxHeight": "30%" }
+    const segmentStyle = { "overflow": "auto", "maxHeight": "50vh" }
     const cardStyle = { "marginTop": 2, "marginBottom": 2, "textalign": "left", "padding": "2%" }
 
 
@@ -85,7 +85,7 @@ const ReassignTasks = () => {
                 </p>
                 <Segment style={segmentStyle}>
                     <Card.Group>
-                        {incompleteQuestions && allQuestionTasks ?
+                        {incompleteQuestions && incompleteQuestions.length > 0 && allQuestionTasks ?
                             incompleteQuestions.map((question, index) => (
 
                                 <Card
@@ -102,7 +102,7 @@ const ReassignTasks = () => {
 
                             ))
                             :
-                            <p></p>
+                            <Segment basic>No tasks to show</Segment>
                         }
 
                     </Card.Group>

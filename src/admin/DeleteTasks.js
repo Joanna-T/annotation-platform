@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Layout from "../common/Layout";
 import { fetchQuestions } from "../utils/queryUtils";
 import { deleteTask, deleteQuestion } from "../utils/mutationUtils";
-import { Card, Segment, Button, Icon, Message, Modal } from "semantic-ui-react";
+import { Card, Segment, Button, Icon, Message, Modal, Label } from "semantic-ui-react";
 
 const DeleteTasks = () => {
 
@@ -36,7 +36,7 @@ const DeleteTasks = () => {
     setLoading(false)
   }
 
-  const segmentStyle = { "overflow": "auto", "maxHeight": "30%" }
+  const segmentStyle = { "overflow": "auto", "maxHeight": "50vh" }
   const cardStyle = { "marginTop": 2, "marginBottom": 2, "textalign": "left", "padding": "2%" }
 
   return (
@@ -62,7 +62,7 @@ const DeleteTasks = () => {
 
         <Segment style={segmentStyle}>
           <Card.Group>
-            {questions ?
+            {questions && questions.length > 0 ?
               questions.map((question, index) => (
 
                 <Card
@@ -76,14 +76,21 @@ const DeleteTasks = () => {
 
               ))
               :
-              <p></p>
+              <Segment basic>No tasks to show</Segment>
             }
 
           </Card.Group>
 
 
-
         </Segment>
+        <Segment basic>
+
+          <p style={{ display: "inline" }}> Chosen question:</p>
+          <Label color='grey' horizontal>
+            {chosenQuestion ? chosenQuestion.text : "Please pick a question above"}
+          </Label>
+        </Segment>
+
         {!chosenQuestion ?
           <Button
             color='grey'

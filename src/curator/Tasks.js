@@ -3,6 +3,7 @@ import { Segment, Card } from "semantic-ui-react";
 import Layout from "../common/Layout";
 import { fetchTasks } from "../utils/queryUtils"
 import { getTaskDocumentTitles } from "../utils/queryUtils";
+import ListTasks from "./ListTasks";
 
 const Tasks = () => {
     const [tasks, setTasks] = useState([]);
@@ -57,25 +58,12 @@ const Tasks = () => {
                         <p>No tasks currently available</p>
                     </Segment>
                 }
-                <Card.Group>
 
-                    {
-                        tasks.map((task, index) => (
+                <ListTasks
+                    tasks={tasks}
+                    documentTitles={documentTitles}>
 
-                            <Card
-                                key={task.id}
-                                fluid color="blue"
-                                style={cardStyle}
-                                href={`/annotation_tasks/${task.id}`}
-                                header={`Document title: ${documentTitles[task.id]}`}
-                                meta={`Created ${task.createdAt.substring(0, 10)}`}
-                                description={`Question: ${task.question.text}`}
-                            />
-
-                        ))
-                    }
-
-                </Card.Group>
+                </ListTasks>
 
 
             </Layout>
