@@ -5,7 +5,7 @@ import { fetchQuestions } from "../utils/queryUtils";
 import { returnActiveQuestions } from "../utils/documentUtils";
 import { itemsPerPage } from "./adminConstants";
 
-const ListQuestions = ({ questions }) => {
+const ListQuestions = ({ questions, path }) => {
     const [allQuestions, setAllQuestions] = useState([])
 
     //pagination
@@ -89,7 +89,7 @@ const ListQuestions = ({ questions }) => {
                                         key={question.id}
                                         fluid color="blue"
                                         style={viewCardStyle}
-                                        href={`/active_tasks/${question.id}`}
+                                        href={`${path}${question.id}`}
                                         header={`Question title: ${question.text}`}
                                         meta={`Created: ${question.createdAt.slice(0, 10)}`}
                                         description={`${question.complete_tasks}/${question.total_tasks} documents annotated completely`}

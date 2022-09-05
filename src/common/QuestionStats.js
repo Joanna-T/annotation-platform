@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Icon } from "semantic-ui-react";
+import { Icon, Segment } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 import { memo } from "react";
 
@@ -82,7 +82,9 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
     return indexZeroItem + index
   }
 
-  return (<div style={{ height: "45vh", overflow: "auto" }}>
+  const containerStyle = { textAlign: "center", height: "45vh", overflow: "auto" }
+
+  return (<Segment basic style={containerStyle}>
 
     {barData.map((item, index) => {
       return (
@@ -91,7 +93,7 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
           {formQuestions[index].options.map((option, innerIndex) => {
             let coloursIndex = orderColours(item, option)
             let keyColor = colours[coloursIndex - 1];
-            console.log("KEY COLORRRRRRRR", keyColor)
+            //console.log("KEY COLOR", keyColor)
             return (
               <p key={option} style={{ display: "inline" }}>{option}<Icon style={{ color: keyColor }} name="circle"></Icon></p>
 
@@ -137,7 +139,7 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
       )
 
     })}
-  </div>);
+  </Segment>);
 
 }
 

@@ -147,7 +147,7 @@ const DisplayResults = () => {
 
   }
 
-  const resultPaneStyle = { maxheight: "45vh", overflow: "auto" }
+  const resultPaneStyle = { maxheight: "45vh", overflow: "auto", textAlign: "center" }
   const labelSegmentStyle = { "marginBottom": "0%", "textAlign": "left" }
   const heatMapSectionStyle = { "overflow": "auto", "textAlign": "left", "whiteSpace": "pre-wrap", height: "90vh", "marginTop": "0%" }
   const smallScreenPaneStyle = { maxheight: "100%", overflow: "auto" }
@@ -222,7 +222,7 @@ const DisplayResults = () => {
   )
 
   const resultSection = (
-    <Segment color="blue" inverted tertiary style={{ height: "90vh" }}>
+    <Segment textAlign="center" color="blue" inverted tertiary style={{ height: "90vh" }}>
       <Label size="huge" color="blue">
         Results
       </Label>

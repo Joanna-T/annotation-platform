@@ -43,7 +43,7 @@ const CuratorViewResults = () => {
 
   const basicSegmentStyle = { "marginBottom": "0%", "textAlign": "left" }
   const formSegmentStyle = { "overflow": "auto", "textAlign": "left", "whiteSpace": "pre-wrap", height: "90vh", "marginTop": "0%" }
-  const formStyle = { overflow: "auto", maxHeight: "90vh" }
+  const formStyle = { overflow: "auto", maxHeight: "70vh" }
   const tabStyle = { maxheight: "100%", overflow: "auto" }
   const gridStyle = { maxheight: '100vh' }
 
@@ -74,7 +74,7 @@ const CuratorViewResults = () => {
   )
 
   const resultSection = (
-    <Segment color="blue" tertiary inverted>
+    <Segment color="blue" tertiary inverted textAlign="center">
       <Label size="huge" color="blue">
         Results
       </Label>
@@ -113,6 +113,7 @@ const CuratorViewResults = () => {
         })}
 
       </Form>
+
     </Segment>
   )
 

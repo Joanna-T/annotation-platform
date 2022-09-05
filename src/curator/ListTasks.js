@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Segment, Card, Input, Pagination, Button } from "semantic-ui-react";
 
-const ListTasks = ({ tasks, documentTitles }) => {
+const ListTasks = ({ tasks, documentTitles, path }) => {
     const [allTasks, setAllTasks] = useState([])
 
     //pagination
@@ -88,7 +88,7 @@ const ListTasks = ({ tasks, documentTitles }) => {
                                         key={task.id}
                                         fluid color="blue"
                                         style={viewCardStyle}
-                                        href={`/completed_curator_tasks/${task.id}`}
+                                        href={`${path}${task.id}`}
                                         header={`Document title: ${documentTitles[task.id]}`}
                                         meta={`Created ${task.createdAt.substring(0, 10)}`}
                                         description={`Question: ${task.question.text}`}

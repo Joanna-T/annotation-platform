@@ -52,16 +52,17 @@ const Tasks = () => {
 
                     </p>
                 </Segment>
-                {
+                {/* {
                     tasks.length == 0 &&
                     <Segment style={{ width: "100%" }}>
                         <p>No tasks currently available</p>
                     </Segment>
-                }
+                } */}
 
                 <ListTasks
                     tasks={tasks}
-                    documentTitles={documentTitles}>
+                    documentTitles={documentTitles}
+                    path={"/annotation_tasks/"}>
 
                 </ListTasks>
 

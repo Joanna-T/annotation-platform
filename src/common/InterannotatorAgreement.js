@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Icon, Button, Modal } from "semantic-ui-react";
+import { Icon, Button, Modal, Segment } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 import { memo } from "react";
 
@@ -22,9 +22,7 @@ const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
   }, [medicalQuestion])
 
   const likelihoodToText = (score) => {
-    if (typeof score !== "number") {
-      return ""
-    }
+
     if (score <= 0) {
       return "No agreement"
       //return "(Poor agreement)"
@@ -65,10 +63,10 @@ const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
 
 
   const marginProperties = { top: 50, right: 50, bottom: 50, left: 100 }
-  const containerDivStyle = { "maxHeight": "50vh", "overflow": "auto" }
+  const containerDivStyle = { textAlign: "center", "maxHeight": "50vh", "overflow": "auto" }
 
 
-  return (<div style={containerDivStyle}>
+  return (<Segment basic style={containerDivStyle}>
 
 
     <br />
@@ -117,7 +115,7 @@ const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
       )
 
     })}
-  </div>);
+  </Segment>);
 }
 
 export default memo(InterannotatorAgreement);

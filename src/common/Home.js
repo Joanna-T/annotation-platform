@@ -204,7 +204,9 @@ const Home = () => {
                                 />
                             )
                         }) :
-                        <p> No results found</p>}
+                        <Segment basic textAlign="center">
+                            No results found
+                        </Segment>}
 
             </Segment>
             <Segment basic textAlign="center">

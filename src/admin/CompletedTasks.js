@@ -42,9 +42,31 @@ const CompletedTasks = () => {
                 </Segment>
 
                 <ListQuestions
-                    questions={questions}>
+                    questions={questions}
+                    path={"/completed_tasks/"}>
 
                 </ListQuestions>
+
+                {/* <Card.Group>
+                    {
+                        questions && questions.map((question, index) => {
+                            return (
+
+                                <Card
+                                    key={question.id}
+                                    fluid color="blue"
+                                    style={viewCardStyle}
+                                    href={`/completed_tasks/${question.id}`}
+                                    header={`Question title: ${question.text}`}
+                                    meta={`Created: ${question.createdAt.slice(0, 10)}`}
+                                    description={`No. documents: ${question["total_tasks"]}`}
+                                />
+
+                            )
+                        })
+                    }
+
+                </Card.Group> */}
 
 
             </Layout>

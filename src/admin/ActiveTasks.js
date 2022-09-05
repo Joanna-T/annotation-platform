@@ -40,7 +40,8 @@ const ActiveTasks = () => {
                 </Segment>
 
                 <ListQuestions
-                    questions={questions}>
+                    questions={questions}
+                    path={"/active_tasks/"}>
 
                 </ListQuestions>
 

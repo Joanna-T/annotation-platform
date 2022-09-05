@@ -30,10 +30,10 @@ const CuratorListResults = () => {
                 <ListTasks
                     tasks={tasks}
                     documentTitles={documentTitles}
+                    path={"/completed_curator_tasks/"}
                 >
 
                 </ListTasks>
-
 
             </Layout>
         </div>
