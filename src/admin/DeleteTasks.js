@@ -82,6 +82,12 @@ const DeleteTasks = () => {
           </Card.Group>
         </Segment>
 
+        <Segment basic>
+          <p style={{ display: "inline" }}> Chosen question:</p>
+          <Label color='grey' horizontal>
+            {chosenQuestion ? chosenQuestion.text : "Please pick a question above"}
+          </Label>
+        </Segment>
 
         {!chosenQuestion ?
           <Button
