@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Layout from "../common/Layout";
 import { fetchQuestions } from "../utils/queryUtils";
 import { deleteTask, deleteQuestion } from "../utils/mutationUtils";
-import { Card, Segment, Button, Icon, Message, Modal } from "semantic-ui-react";
+import { Card, Segment, Button, Icon, Message, Modal, Label } from "semantic-ui-react";
 
 const DeleteTasks = () => {
 
@@ -82,8 +82,14 @@ const DeleteTasks = () => {
           </Card.Group>
 
 
-
         </Segment>
+        <Segment basic>
+          <p style={{ display: "inline" }}> Chosen question:</p>
+          <Label color='grey' horizontal>
+            {chosenQuestion ? chosenQuestion.text : "Please pick a question above"}
+          </Label>
+        </Segment>
+
         {!chosenQuestion ?
           <Button
             color='grey'
