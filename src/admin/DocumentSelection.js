@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { fetchDocument } from "../utils/queryUtils";
 import {
     Segment,
     Button,
@@ -12,6 +13,9 @@ import {
 const DocumentSelection = ({ documents, folders, chosenDocuments, chosenFolders, handleFoldersCheckbox, handleFileCheckbox, removeFile }) => {
     const [folderOpen, setFolderOpen] = useState(null)
     const [documentsOpen, setDocumentsOpen] = useState(false)
+    const [documentTextOpen, setDocumentTextOpen] = useState(false)
+    const [documentText, setDocumentText] = useState("")
+    const [documentTextFile, setDocumentTextFile] = useState("")
 
     const findFilesForFolder = (folderName) => {
         //console.log("findFilesForFolder", documents)
@@ -25,7 +29,16 @@ const DocumentSelection = ({ documents, folders, chosenDocuments, chosenFolders,
         //console.log("document selection", folders, chosenDocuments, documents)
     }, [folders])
 
+    async function displayDocumentText(file) {
+        let formattedText = await fetchDocument(file)
+        let textToDisplay = formattedText["title"] + "\n\n" + formattedText["abstract"] + "\n" + formattedText["mainText"]
+        setDocumentText(textToDisplay)
+        setDocumentTextOpen(true)
+        setDocumentTextFile(file)
+    }
+
     const folderCardStyle = { "marginTop": 5, "marginBottom": 5, "textalign": "left", "padding": "3%" }
+    const modalSegmentStyle = { overflow: "auto", maxHeight: '50vh', "whiteSpace": "pre-wrap" }
 
     return (
         <div>
@@ -119,7 +132,7 @@ const DocumentSelection = ({ documents, folders, chosenDocuments, chosenFolders,
                                             onChange={(event, data) => handleFoldersCheckbox(folder, data)} />
 
                                     </Segment>
-                                    <Segment style={{ overflow: "auto", maxHeight: '40vh' }}>
+                                    <Segment style={modalSegmentStyle}>
                                         {findFilesForFolder(folder).map((file, index) => {
                                             return (
                                                 <Segment key={index} style={folderCardStyle}>
@@ -127,6 +140,10 @@ const DocumentSelection = ({ documents, folders, chosenDocuments, chosenFolders,
                                                         label={file}
                                                         checked={chosenDocuments.includes(file)}
                                                         onChange={(event, data) => handleFileCheckbox(file, data)} />
+                                                    {"  "}
+                                                    <Button onClick={() => displayDocumentText(file)}>
+                                                        View document text
+                                                    </Button>
 
                                                 </Segment>
                                             )
@@ -157,6 +174,35 @@ const DocumentSelection = ({ documents, folders, chosenDocuments, chosenFolders,
 
 
                 }
+
+                {/* {"modal for showing document text"} */}
+
+                <Modal
+                    open={documentTextOpen === true}
+                    onClose={() => setDocumentTextOpen(false)}
+                    onOpen={() => setDocumentTextOpen(true)}
+                >
+                    <Modal.Header> {documentTextFile}</Modal.Header>
+
+                    <Modal.Content >
+                        <Segment basic style={modalSegmentStyle}>
+                            {documentText}
+
+                        </Segment>
+
+                    </Modal.Content>
+                    <Modal.Actions>
+
+                        <Button
+                            color="red"
+                            labelPosition='right'
+                            icon='checkmark'
+                            onClick={() => setDocumentTextOpen(false)}>
+                            Close text window
+                        </Button>
+                    </Modal.Actions>
+
+                </Modal>
 
             </Segment>
         </div>

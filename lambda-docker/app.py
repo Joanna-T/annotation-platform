@@ -20,8 +20,7 @@ def lambda_handler(event, context):
         task_document_title = ""
     
         if (record.get("eventName") == "REMOVE"):
-            task_question_id = record.get("dynamodb").get("OldImage").get("questionID").get("S")
-            task_document_title = record.get("dynamodb").get("OldImage").get("document_title").get("S")
+            continue
         else:
             task_question_id = record.get("dynamodb").get("NewImage").get("questionID").get("S")
             task_document_title = record.get("dynamodb").get("NewImage").get("document_title").get("S")
@@ -113,12 +112,22 @@ def lambda_handler(event, context):
 
         similarity_scores = []
         model = spacy.load("en_core_web_md")
+
         for i in range(len(concatonated_text)):
             string1 = model(concatonated_text[i])
+            #remove stop words
+            string1_no_stop = model(' '.join([str(t) for t in string1 if not t.is_stop]))
             for j in range(i + 1, len(concatonated_text) ):
                 string2 = model(concatonated_text[j])
-                similarity_score = string1.similarity(string2)
-                similarity_scores.append(string1.similarity(string2))
+                #remove stop words
+                string2_no_stop = model(' '.join([str(t) for t in string2 if not t.is_stop]))
+
+                # similarity_score = string1.similarity(string2)
+                # similarity_scores.append(string1.similarity(string2))
+
+                similarity_score = string1_no_stop.similarity(string2_no_stop)
+                similarity_scores.append(string1_no_stop.similarity(string2_no_stop))
+
                 print(similarity_score)
                 
         average_similarity = 0
