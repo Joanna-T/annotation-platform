@@ -91,7 +91,7 @@ const TasksId = () => {
                 const savedLabels = JSON.parse(result.labels);
                 setParentLabels(savedLabels);
 
-                fetchDocument(result.document_title)
+                fetchDocument(result.documentFileName)
                     .then(result => {
                         //console.log("taskid results", result)
                         setDocumentText(result["abstract"] + "\n\n" + result["mainText"])
@@ -268,7 +268,7 @@ const TasksId = () => {
             menuItem: 'Text labels',
             pane: (
                 <Tab.Pane key='text-labels' style={tabStyle}>
-                    {annotationPage}
+                    {labelDescriptions && annotationPage}
                 </Tab.Pane>
             ),
 

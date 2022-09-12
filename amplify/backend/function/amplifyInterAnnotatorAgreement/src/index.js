@@ -165,7 +165,7 @@ async function updateQuestionCurationResults(question, questionForm, tasks) {
 
 }
 
-///////////
+///////////Inter annotator calculation functions
 
 const numAnnotators = 2;
 

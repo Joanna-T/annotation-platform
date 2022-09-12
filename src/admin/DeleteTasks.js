@@ -126,7 +126,7 @@ const DeleteTasks = () => {
               <Button
                 color="red"
                 labelPosition='right'
-                icon='checkmark'
+                icon
                 onClick={() => setOpen(false)}>
                 Back to form
               </Button>

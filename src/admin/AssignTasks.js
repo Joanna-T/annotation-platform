@@ -10,41 +10,45 @@ import {
   Checkbox,
   Message,
   Modal,
-  List
+  List,
+  Tab
 } from "semantic-ui-react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../common/Layout";
 import { fetchQuestionForms, listCurators, fetchSuggestions } from "../utils/queryUtils";
 import { submitQuestion, deleteSuggestion } from "../utils/mutationUtils";
-import { distributeAnnotationTasks } from "./assignTaskUtils";
-import { fetchDocumentFolders } from "./assignTaskUtils";
+import { distributeAnnotationTasks } from "../utils/assignTaskUtils";
+import { fetchDocumentFolders } from "../utils/assignTaskUtils";
 import DocumentSelection from "./DocumentSelection";
 import { labelColours } from "./adminConstants";
-import { isValidURL } from "./assignTaskUtils";
-
+import { isValidURL } from "../utils/assignTaskUtils";
+import QuestionFormCreation from "./QuestionFormCreation";
+import SuggestionSelection from "./SuggestionSelection";
+import FormSelection from "./FormSelection";
 
 const AssignTasks = () => {
-  const [questionForms, setQuestionForms] = useState(null);
-  const [chosenQuestionForm, setChosenQuestionForm] = useState(null);
 
   const [medicalQuestion, setMedicalQuestion] = useState("");
   const [instructionLink, setInstructionLink] = useState("")
   const [linkIsValid, setLinkIsValid] = useState(true)
-  const [folders, setFolders] = useState(null)
-  const [chosenFolder, setChosenFolder] = useState(null)
 
   const [labels, setLabels] = useState([])
   const [currentLabel, setCurrentLabel] = useState("")
 
+  const [folders, setFolders] = useState(null)
+  const [chosenFolder, setChosenFolder] = useState(null)
 
+  const [questionForms, setQuestionForms] = useState(null);
+  const [chosenQuestionForm, setChosenQuestionForm] = useState(null);
   const [activeIndex, setActiveIndex] = useState(null);
-  const [open, setOpen] = useState(false)
+
+  const [submitOpen, setSubmitOpen] = useState(false)
+
   const [warningMessage, setWarningMessage] = useState(false);
   const [warningText, setWarningText] = useState("Please fill in all fields")
 
+  //suggestiona
   const [suggestions, setSuggestions] = useState([])
-  const [selectedSuggestion, setSelectedSuggestion] = useState()
-  const [suggestionOpen, setSuggestionOpen] = useState(false)
 
   const [loading, setLoading] = useState(false)
 
@@ -78,23 +82,6 @@ const AssignTasks = () => {
 
   useEffect(() => {
   }, [medicalQuestion])
-
-  const handleAccordionClick = (index) => {
-    //console.log(index);
-    if (index === activeIndex) {
-      setActiveIndex(-1);
-      return
-    }
-    setActiveIndex(index);
-  }
-
-  const handleQuestionCheckbox = (form, data) => {
-    if (data.checked) {
-      setChosenQuestionForm(form)
-    } else {
-      setChosenQuestionForm(null)
-    }
-  }
 
   const handleFoldersCheckbox = (folder, data) => {
     const folderFiles = documents.filter(document => {
@@ -176,7 +163,7 @@ const AssignTasks = () => {
     if (curators.length < process.env.REACT_APP_NUMBER_CURATORS) {
       setWarningText("Insufficient number of curators to assign tasks")
       setWarningMessage(true)
-      setOpen(false)
+      setSubmitOpen(false)
       setLoading(false)
       return
     }
@@ -211,9 +198,160 @@ const AssignTasks = () => {
 
   }
 
-
-  const formCardStyle = { "marginBottom": 5, "textalign": "left", "padding": "2%" }
   const containerSegmentStyle = { overflow: 'auto', "textAlign": "left" }
+
+  const taskCreationPage = (
+    <Segment style={containerSegmentStyle}>
+      <p><b>NOTE:</b> current number of curators per document is set to {process.env.REACT_APP_NUMBER_CURATORS}</p>
+      <p>
+        <Icon name='hand point right' />
+        Please enter the new medical question below
+      </p>
+
+      <SuggestionSelection
+        suggestions={suggestions}
+        setMedicalQuestion={setMedicalQuestion}
+        setSuggestions={setSuggestions}>
+
+      </SuggestionSelection>
+
+
+
+      <br></br>
+      <br></br>
+      <Input value={medicalQuestion} fluid icon='pencil' placeholder='Question here...' onChange={event => setMedicalQuestion(event.target.value)} />
+      <br></br>
+
+
+      <FormSelection
+        questionForms={questionForms}
+        chosenQuestionForm={chosenQuestionForm}
+        setChosenQuestionForm={setChosenQuestionForm}
+      >
+      </FormSelection>
+
+
+      <br></br>
+      <DocumentSelection
+        documents={documents}
+        chosenDocuments={chosenDocuments}
+        chosenFolders={chosenFolders}
+        handleFoldersCheckbox={handleFoldersCheckbox}
+        handleFileCheckbox={handleFileCheckbox}
+        removeFile={removeFile}
+        folders={folders}
+      >
+
+      </DocumentSelection>
+      <br></br>
+
+
+      <p>
+        <Icon name='hand point right' />
+        Please add the annotation labels
+      </p>
+      <Segment basic>
+        {labels && labels.map((label, index) => {
+          return (
+            <Label
+              key={label.buttonColour}
+              color={label.buttonColour}
+              onClick={() => { setLabels(labels.filter(result => result.buttonColour !== label.buttonColour)) }} >
+              {label.tagName}
+              <Icon name='delete' />
+            </Label>
+          )
+        })}
+      </Segment>
+      <Button onClick={addLabel}>Add Label</Button>
+      <Input value={currentLabel} placeholder='Enter label name here...' onChange={event => setCurrentLabel(event.target.value)} />
+      <Segment>
+
+
+        <p>
+          <Icon name='hand point right' />
+          OPTIONAL: If you have a link to detailed instructions regarding your annotation task, please paste it here:
+        </p>
+        {
+          !linkIsValid &&
+          <Label color="red">Please enter a valid URL</Label>
+        }
+        <Input value={instructionLink} fluid icon='linkify' placeholder='Link here...' onChange={event => handleInstructionLinkChange(event.target.value)} />
+      </Segment>
+
+      {chosenDocuments.length === 0 || !chosenQuestionForm || !medicalQuestion || !linkIsValid || labels.length === 0 ? //{!chosenFolder || 
+        <Button
+          color='grey'
+          onClick={() => {
+            setWarningMessage(true);
+            setWarningText("Please fill in all fields")
+          }}
+        >
+          Create tasks
+        </Button>
+        :
+        <Modal
+          submitOpen={submitOpen}
+          onClose={() => setSubmitOpen(false)}
+          onOpen={() => setSubmitOpen(true)}
+          trigger={<Button
+            color='blue' >
+            Create tasks
+          </Button>}
+        >
+          <Modal.Header> Are you sure you want to create new tasks?</Modal.Header>
+          <Modal.Content>Documents from {chosenFolder} will be distributed to curators.</Modal.Content>
+          <Modal.Actions>
+            {
+              loading ?
+                <Button loading color="green">Create tasks</Button>
+                :
+                <Button color="green" onClick={handleSubmit}>
+                  Create tasks
+                </Button>
+            }
+
+            <Button
+              color="red"
+              labelPosition='right'
+              icon='checkmark'
+              onClick={() => setSubmitOpen(false)}>
+              Back to form
+            </Button>
+          </Modal.Actions>
+
+        </Modal>
+      }
+    </Segment>
+  )
+
+  const resultPaneStyle = {}
+
+  const creationPanes = [
+    {
+      menuItem: 'Task creation',
+      pane: (
+        <Tab.Pane key='document-results' style={resultPaneStyle}>
+          {taskCreationPage}
+        </Tab.Pane>
+      ),
+
+    },
+    {
+      menuItem: 'Question form creation',
+      pane: (
+        <Tab.Pane key='question-results' style={resultPaneStyle}>
+
+          <QuestionFormCreation setWarningMessage={setWarningMessage} setWarningText={setWarningText}>
+
+          </QuestionFormCreation>
+        </Tab.Pane>
+      ),
+
+    },
+  ]
+
+
 
   return (
     <Layout>
@@ -228,223 +366,11 @@ const AssignTasks = () => {
       }
       <Segment basic>
         <h4>Please fill in the details below to create a new annotation task.
-          Click "Create tasks" to submit details.
+          Click "Create tasks" to submit details. Select the "Question form creation"
+          tab to create a new question form
         </h4>
       </Segment>
-      <Segment style={containerSegmentStyle}>
-        <p><b>NOTE:</b> current number of curators per document is set to {process.env.REACT_APP_NUMBER_CURATORS}</p>
-        <p>
-          <Icon name='hand point right' />
-          Please enter the new medical question below
-        </p>
-
-
-        <Modal
-          open={suggestionOpen}
-          onClose={() => setSuggestionOpen(false)}
-          onOpen={() => setSuggestionOpen(true)}
-          trigger={<Button
-            color='blue' >
-            View question suggestions
-          </Button>}
-        >
-          <Modal.Header> Select a suggestion to use as the new question heading</Modal.Header>
-          <Modal.Content>
-            <Segment maxHeight="50vh">
-              <List divided>
-                {suggestions.length > 0 ?
-                  suggestions.map(suggestion => {
-                    return (
-                      <List.Item
-                        key={suggestion.id}>
-                        <p style={{ display: "inline" }}>{suggestion.text}</p>
-                        <List.Content floated='right'>
-
-                          <Button
-                            size="small"
-                            color={selectedSuggestion === suggestion.id ? "blue" : "grey"}
-                            onClick={() => {
-                              setSelectedSuggestion(suggestion.id)
-                              setMedicalQuestion(suggestion.text)
-                            }
-                            }>
-                            Set question</Button>
-                          <Button
-                            size="small"
-                            color="red"
-                            onClick={() => {
-                              deleteSuggestion(suggestion.id)
-                              setSuggestions(suggestions.filter(result => result.id !== suggestion.id))
-                            }}>Delete</Button>
-                        </List.Content>
-                      </List.Item>
-                    )
-                  }
-
-                  )
-                  :
-                  <p>No suggestions submitted</p>
-                }
-              </List>
-            </Segment>
-
-          </Modal.Content>
-          <Modal.Actions>
-
-            <Button
-              color="red"
-              labelPosition='right'
-              icon
-              onClick={() => setSuggestionOpen(false)}>
-              Back to form
-            </Button>
-          </Modal.Actions>
-
-
-
-        </Modal>
-        <br></br>
-        <br></br>
-        <Input value={medicalQuestion} fluid icon='pencil' placeholder='Question here...' onChange={event => setMedicalQuestion(event.target.value)} />
-        <br></br>
-
-
-        <p>
-          <Icon name='hand point right' />
-          Please select the questions form to be asked to the annotators.
-        </p>
-        <p style={{ display: "inline" }}> Chosen form:  </p><Label color='grey' horizontal>
-          {chosenQuestionForm ? chosenQuestionForm.form_description : "Please pick a question form from below"}
-        </Label>
-        <Segment style={{ overflow: "auto", maxHeight: '30vh' }}>
-          {questionForms ? (questionForms.map((form, index) => {
-            return (
-              <Card
-                key={form.id}
-                style={formCardStyle} fluid >
-                <Accordion>
-                  <Accordion.Title
-                    active={activeIndex === index}
-                    index={index}
-                  >
-                    <Checkbox
-                      checked={chosenQuestionForm === form}
-                      onChange={(event, data) => handleQuestionCheckbox(form, data)}
-                      label={form.form_description} />
-                    <Icon
-                      size="large"
-                      onClick={() => handleAccordionClick(index)}
-                      name='dropdown'
-                      style={{ "float": "right" }} />
-
-
-                  </Accordion.Title>
-                  <Accordion.Content active={activeIndex === index}>
-                    <p style={{ "whiteSpace": "pre-wrap" }}>
-                      {JSON.stringify(JSON.parse(form.questions), null, 4)}
-                    </p>
-
-
-                  </Accordion.Content>
-
-                </Accordion>
-              </Card>
-            )
-          }))
-            : "No forms available"
-
-          }
-
-        </Segment>
-
-        <br></br>
-        <DocumentSelection
-          documents={documents}
-          chosenDocuments={chosenDocuments}
-          chosenFolders={chosenFolders}
-          handleFoldersCheckbox={handleFoldersCheckbox}
-          handleFileCheckbox={handleFileCheckbox}
-          removeFile={removeFile}
-          folders={folders}
-        >
-
-        </DocumentSelection>
-        <br></br>
-
-
-        <p>
-          <Icon name='hand point right' />
-          Please add the annotation labels
-        </p>
-        <Segment basic>
-          {labels && labels.map(label => {
-            return (
-              <Label color={label.buttonColour}
-                onClick={() => { setLabels(labels.filter(result => result.buttonColour !== label.buttonColour)) }} >
-                {label.tagName}
-                <Icon name='delete' />
-              </Label>
-            )
-          })}
-        </Segment>
-        <Button onClick={addLabel}>Add Label</Button>
-        <Input value={currentLabel} placeholder='Enter label name here...' onChange={event => setCurrentLabel(event.target.value)} />
-        <Segment>
-          <p>
-            <Icon name='hand point right' />
-            OPTIONAL: If you have a link to detailed instructions regarding your annotation task, please paste it here:
-          </p>
-          {
-            !linkIsValid &&
-            <Label color="red">Please enter a valid URL</Label>
-          }
-          <Input value={instructionLink} fluid icon='linkify' placeholder='Link here...' onChange={event => handleInstructionLinkChange(event.target.value)} />
-        </Segment>
-
-        {chosenDocuments.length === 0 || !chosenQuestionForm || !medicalQuestion || !linkIsValid || labels.length === 0 ? //{!chosenFolder || 
-          <Button
-            color='grey'
-            onClick={() => {
-              setWarningMessage(true);
-              setWarningText("Please fill in all fields")
-            }}
-          >
-            Create tasks
-          </Button>
-          :
-          <Modal
-            open={open}
-            onClose={() => setOpen(false)}
-            onOpen={() => setOpen(true)}
-            trigger={<Button
-              color='blue' >
-              Create tasks
-            </Button>}
-          >
-            <Modal.Header> Are you sure you want to create new tasks?</Modal.Header>
-            <Modal.Content>Documents from {chosenFolder} will be distributed to curators.</Modal.Content>
-            <Modal.Actions>
-              {
-                loading ?
-                  <Button loading color="green">Create tasks</Button>
-                  :
-                  <Button color="green" onClick={handleSubmit}>
-                    Create tasks
-                  </Button>
-              }
-
-              <Button
-                color="red"
-                labelPosition='right'
-                icon='checkmark'
-                onClick={() => setOpen(false)}>
-                Back to form
-              </Button>
-            </Modal.Actions>
-
-          </Modal>
-        }
-      </Segment>
+      <Tab menu={{ color: "blue", attached: true, tabular: true }} panes={creationPanes} renderActiveOnly={false} />
     </Layout>
 
   );

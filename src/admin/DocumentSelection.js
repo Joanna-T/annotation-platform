@@ -196,7 +196,7 @@ const DocumentSelection = ({ documents, folders, chosenDocuments, chosenFolders,
                         <Button
                             color="red"
                             labelPosition='right'
-                            icon='checkmark'
+                            icon
                             onClick={() => setDocumentTextOpen(false)}>
                             Close text window
                         </Button>

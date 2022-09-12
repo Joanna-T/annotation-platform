@@ -5,14 +5,6 @@ import { fetchQuestions } from "../utils/queryUtils";
 import { submitSuggestion } from "../utils/mutationUtils";
 import { returnCompletedQuestions } from "../utils/documentUtils";
 
-const testQuestions = [
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f"
-]
 
 const Home = () => {
 

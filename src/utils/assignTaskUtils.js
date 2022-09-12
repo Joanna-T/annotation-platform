@@ -1,5 +1,6 @@
 import { Storage } from "aws-amplify";
-import { submitTask } from "../utils/mutationUtils";
+import { submitTask } from "./mutationUtils";
+import { fetchDocument } from "./queryUtils";
 
 export async function distributeAnnotationTasks(questionForm, documentFolder, medicalQuestion, curators, chosenDocuments) {
   console.log("distributetasks")
@@ -32,12 +33,14 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
       for (let i = 0; i < minimumCuratorNumber; i++) {
         if (shuffledUsers.length === 0) {
           shuffledUsers = shuffleArray(curators.slice())
-          //console.log("This is shuffled us", shuffledUsers)
         }
-        let curator = findCurator(shuffledUsers, annotationTasks, shuffledDocuments[documentCounter]);
+
+        let pickedDocument = shuffledDocuments[documentCounter]
+        let curator = findCurator(shuffledUsers, annotationTasks, pickedDocument);
         let newTask = {
-          //document_title: shuffledDocuments[documentCounter].key,
-          document_title: shuffledDocuments[documentCounter],
+          // document_title: pickedDocument,
+          documentFileName: pickedDocument,
+          documentTitle: (await fetchDocument(pickedDocument)).title,
           questionID: medicalQuestion.id,
           owner: curator,
           questionFormID: questionForm.id,

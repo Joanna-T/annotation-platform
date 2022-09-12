@@ -5,7 +5,8 @@ export const onCreateAnnotationTask = /* GraphQL */ `
   subscription OnCreateAnnotationTask($owner: String) {
     onCreateAnnotationTask(owner: $owner) {
       id
-      document_title
+      documentFileName
+      documentTitle
       questionID
       question {
         id
@@ -13,7 +14,8 @@ export const onCreateAnnotationTask = /* GraphQL */ `
         tasks {
           items {
             id
-            document_title
+            documentFileName
+            documentTitle
             questionID
             question {
               id
@@ -75,7 +77,8 @@ export const onUpdateAnnotationTask = /* GraphQL */ `
   subscription OnUpdateAnnotationTask($owner: String) {
     onUpdateAnnotationTask(owner: $owner) {
       id
-      document_title
+      documentFileName
+      documentTitle
       questionID
       question {
         id
@@ -83,7 +86,8 @@ export const onUpdateAnnotationTask = /* GraphQL */ `
         tasks {
           items {
             id
-            document_title
+            documentFileName
+            documentTitle
             questionID
             question {
               id
@@ -145,7 +149,8 @@ export const onDeleteAnnotationTask = /* GraphQL */ `
   subscription OnDeleteAnnotationTask($owner: String) {
     onDeleteAnnotationTask(owner: $owner) {
       id
-      document_title
+      documentFileName
+      documentTitle
       questionID
       question {
         id
@@ -153,7 +158,8 @@ export const onDeleteAnnotationTask = /* GraphQL */ `
         tasks {
           items {
             id
-            document_title
+            documentFileName
+            documentTitle
             questionID
             question {
               id
@@ -211,213 +217,6 @@ export const onDeleteAnnotationTask = /* GraphQL */ `
     }
   }
 `;
-export const onCreateAnnotationResult = /* GraphQL */ `
-  subscription OnCreateAnnotationResult($owner: String) {
-    onCreateAnnotationResult(owner: $owner) {
-      id
-      owner
-      document_title
-      questionID
-      question {
-        id
-        text
-        tasks {
-          items {
-            id
-            document_title
-            questionID
-            question {
-              id
-              text
-              tasks {
-                nextToken
-              }
-              interannotatorAgreement
-              semanticAgreement
-              aggregatedAnswers
-              instructionLink
-              labelDescriptions
-              createdAt
-              updatedAt
-            }
-            owner
-            question_answers
-            labels
-            questionFormID
-            questionForm {
-              id
-              form_description
-              questions
-              createdAt
-              updatedAt
-            }
-            completed
-            createdAt
-            updatedAt
-          }
-          nextToken
-        }
-        interannotatorAgreement
-        semanticAgreement
-        aggregatedAnswers
-        instructionLink
-        labelDescriptions
-        createdAt
-        updatedAt
-      }
-      question_answers
-      labels
-      questionFormID
-      questionForm {
-        id
-        form_description
-        questions
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateAnnotationResult = /* GraphQL */ `
-  subscription OnUpdateAnnotationResult($owner: String) {
-    onUpdateAnnotationResult(owner: $owner) {
-      id
-      owner
-      document_title
-      questionID
-      question {
-        id
-        text
-        tasks {
-          items {
-            id
-            document_title
-            questionID
-            question {
-              id
-              text
-              tasks {
-                nextToken
-              }
-              interannotatorAgreement
-              semanticAgreement
-              aggregatedAnswers
-              instructionLink
-              labelDescriptions
-              createdAt
-              updatedAt
-            }
-            owner
-            question_answers
-            labels
-            questionFormID
-            questionForm {
-              id
-              form_description
-              questions
-              createdAt
-              updatedAt
-            }
-            completed
-            createdAt
-            updatedAt
-          }
-          nextToken
-        }
-        interannotatorAgreement
-        semanticAgreement
-        aggregatedAnswers
-        instructionLink
-        labelDescriptions
-        createdAt
-        updatedAt
-      }
-      question_answers
-      labels
-      questionFormID
-      questionForm {
-        id
-        form_description
-        questions
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteAnnotationResult = /* GraphQL */ `
-  subscription OnDeleteAnnotationResult($owner: String) {
-    onDeleteAnnotationResult(owner: $owner) {
-      id
-      owner
-      document_title
-      questionID
-      question {
-        id
-        text
-        tasks {
-          items {
-            id
-            document_title
-            questionID
-            question {
-              id
-              text
-              tasks {
-                nextToken
-              }
-              interannotatorAgreement
-              semanticAgreement
-              aggregatedAnswers
-              instructionLink
-              labelDescriptions
-              createdAt
-              updatedAt
-            }
-            owner
-            question_answers
-            labels
-            questionFormID
-            questionForm {
-              id
-              form_description
-              questions
-              createdAt
-              updatedAt
-            }
-            completed
-            createdAt
-            updatedAt
-          }
-          nextToken
-        }
-        interannotatorAgreement
-        semanticAgreement
-        aggregatedAnswers
-        instructionLink
-        labelDescriptions
-        createdAt
-        updatedAt
-      }
-      question_answers
-      labels
-      questionFormID
-      questionForm {
-        id
-        form_description
-        questions
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const onCreateQuestionForm = /* GraphQL */ `
   subscription OnCreateQuestionForm {
     onCreateQuestionForm {
@@ -459,7 +258,8 @@ export const onCreateMedicalQuestion = /* GraphQL */ `
       tasks {
         items {
           id
-          document_title
+          documentFileName
+          documentTitle
           questionID
           question {
             id
@@ -467,7 +267,8 @@ export const onCreateMedicalQuestion = /* GraphQL */ `
             tasks {
               items {
                 id
-                document_title
+                documentFileName
+                documentTitle
                 questionID
                 owner
                 question_answers
@@ -522,7 +323,8 @@ export const onUpdateMedicalQuestion = /* GraphQL */ `
       tasks {
         items {
           id
-          document_title
+          documentFileName
+          documentTitle
           questionID
           question {
             id
@@ -530,7 +332,8 @@ export const onUpdateMedicalQuestion = /* GraphQL */ `
             tasks {
               items {
                 id
-                document_title
+                documentFileName
+                documentTitle
                 questionID
                 owner
                 question_answers
@@ -585,7 +388,8 @@ export const onDeleteMedicalQuestion = /* GraphQL */ `
       tasks {
         items {
           id
-          document_title
+          documentFileName
+          documentTitle
           questionID
           question {
             id
@@ -593,7 +397,8 @@ export const onDeleteMedicalQuestion = /* GraphQL */ `
             tasks {
               items {
                 id
-                document_title
+                documentFileName
+                documentTitle
                 questionID
                 owner
                 question_answers

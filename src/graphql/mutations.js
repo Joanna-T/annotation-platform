@@ -8,7 +8,8 @@ export const createAnnotationTask = /* GraphQL */ `
   ) {
     createAnnotationTask(input: $input, condition: $condition) {
       id
-      document_title
+      documentFileName
+      documentTitle
       questionID
       question {
         id
@@ -16,7 +17,8 @@ export const createAnnotationTask = /* GraphQL */ `
         tasks {
           items {
             id
-            document_title
+            documentFileName
+            documentTitle
             questionID
             question {
               id
@@ -81,7 +83,8 @@ export const updateAnnotationTask = /* GraphQL */ `
   ) {
     updateAnnotationTask(input: $input, condition: $condition) {
       id
-      document_title
+      documentFileName
+      documentTitle
       questionID
       question {
         id
@@ -89,7 +92,8 @@ export const updateAnnotationTask = /* GraphQL */ `
         tasks {
           items {
             id
-            document_title
+            documentFileName
+            documentTitle
             questionID
             question {
               id
@@ -154,7 +158,8 @@ export const deleteAnnotationTask = /* GraphQL */ `
   ) {
     deleteAnnotationTask(input: $input, condition: $condition) {
       id
-      document_title
+      documentFileName
+      documentTitle
       questionID
       question {
         id
@@ -162,7 +167,8 @@ export const deleteAnnotationTask = /* GraphQL */ `
         tasks {
           items {
             id
-            document_title
+            documentFileName
+            documentTitle
             questionID
             question {
               id
@@ -215,222 +221,6 @@ export const deleteAnnotationTask = /* GraphQL */ `
         updatedAt
       }
       completed
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const createAnnotationResult = /* GraphQL */ `
-  mutation CreateAnnotationResult(
-    $input: CreateAnnotationResultInput!
-    $condition: ModelAnnotationResultConditionInput
-  ) {
-    createAnnotationResult(input: $input, condition: $condition) {
-      id
-      owner
-      document_title
-      questionID
-      question {
-        id
-        text
-        tasks {
-          items {
-            id
-            document_title
-            questionID
-            question {
-              id
-              text
-              tasks {
-                nextToken
-              }
-              interannotatorAgreement
-              semanticAgreement
-              aggregatedAnswers
-              instructionLink
-              labelDescriptions
-              createdAt
-              updatedAt
-            }
-            owner
-            question_answers
-            labels
-            questionFormID
-            questionForm {
-              id
-              form_description
-              questions
-              createdAt
-              updatedAt
-            }
-            completed
-            createdAt
-            updatedAt
-          }
-          nextToken
-        }
-        interannotatorAgreement
-        semanticAgreement
-        aggregatedAnswers
-        instructionLink
-        labelDescriptions
-        createdAt
-        updatedAt
-      }
-      question_answers
-      labels
-      questionFormID
-      questionForm {
-        id
-        form_description
-        questions
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const updateAnnotationResult = /* GraphQL */ `
-  mutation UpdateAnnotationResult(
-    $input: UpdateAnnotationResultInput!
-    $condition: ModelAnnotationResultConditionInput
-  ) {
-    updateAnnotationResult(input: $input, condition: $condition) {
-      id
-      owner
-      document_title
-      questionID
-      question {
-        id
-        text
-        tasks {
-          items {
-            id
-            document_title
-            questionID
-            question {
-              id
-              text
-              tasks {
-                nextToken
-              }
-              interannotatorAgreement
-              semanticAgreement
-              aggregatedAnswers
-              instructionLink
-              labelDescriptions
-              createdAt
-              updatedAt
-            }
-            owner
-            question_answers
-            labels
-            questionFormID
-            questionForm {
-              id
-              form_description
-              questions
-              createdAt
-              updatedAt
-            }
-            completed
-            createdAt
-            updatedAt
-          }
-          nextToken
-        }
-        interannotatorAgreement
-        semanticAgreement
-        aggregatedAnswers
-        instructionLink
-        labelDescriptions
-        createdAt
-        updatedAt
-      }
-      question_answers
-      labels
-      questionFormID
-      questionForm {
-        id
-        form_description
-        questions
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const deleteAnnotationResult = /* GraphQL */ `
-  mutation DeleteAnnotationResult(
-    $input: DeleteAnnotationResultInput!
-    $condition: ModelAnnotationResultConditionInput
-  ) {
-    deleteAnnotationResult(input: $input, condition: $condition) {
-      id
-      owner
-      document_title
-      questionID
-      question {
-        id
-        text
-        tasks {
-          items {
-            id
-            document_title
-            questionID
-            question {
-              id
-              text
-              tasks {
-                nextToken
-              }
-              interannotatorAgreement
-              semanticAgreement
-              aggregatedAnswers
-              instructionLink
-              labelDescriptions
-              createdAt
-              updatedAt
-            }
-            owner
-            question_answers
-            labels
-            questionFormID
-            questionForm {
-              id
-              form_description
-              questions
-              createdAt
-              updatedAt
-            }
-            completed
-            createdAt
-            updatedAt
-          }
-          nextToken
-        }
-        interannotatorAgreement
-        semanticAgreement
-        aggregatedAnswers
-        instructionLink
-        labelDescriptions
-        createdAt
-        updatedAt
-      }
-      question_answers
-      labels
-      questionFormID
-      questionForm {
-        id
-        form_description
-        questions
-        createdAt
-        updatedAt
-      }
       createdAt
       updatedAt
     }
@@ -489,7 +279,8 @@ export const createMedicalQuestion = /* GraphQL */ `
       tasks {
         items {
           id
-          document_title
+          documentFileName
+          documentTitle
           questionID
           question {
             id
@@ -497,7 +288,8 @@ export const createMedicalQuestion = /* GraphQL */ `
             tasks {
               items {
                 id
-                document_title
+                documentFileName
+                documentTitle
                 questionID
                 owner
                 question_answers
@@ -555,7 +347,8 @@ export const updateMedicalQuestion = /* GraphQL */ `
       tasks {
         items {
           id
-          document_title
+          documentFileName
+          documentTitle
           questionID
           question {
             id
@@ -563,7 +356,8 @@ export const updateMedicalQuestion = /* GraphQL */ `
             tasks {
               items {
                 id
-                document_title
+                documentFileName
+                documentTitle
                 questionID
                 owner
                 question_answers
@@ -621,7 +415,8 @@ export const deleteMedicalQuestion = /* GraphQL */ `
       tasks {
         items {
           id
-          document_title
+          documentFileName
+          documentTitle
           questionID
           question {
             id
@@ -629,7 +424,8 @@ export const deleteMedicalQuestion = /* GraphQL */ `
             tasks {
               items {
                 id
-                document_title
+                documentFileName
+                documentTitle
                 questionID
                 owner
                 question_answers

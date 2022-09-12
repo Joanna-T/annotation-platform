@@ -138,7 +138,7 @@ export async function fetchQuestionForm(questionFormId, authMethod) {
 export async function getTaskDocumentTitles(tasks) {
   let taskDocumentTitles = {}
   await Promise.all(tasks.map(async task => {
-    let formattedString = await fetchDocument(task.document_title)
+    let formattedString = await fetchDocument(task.documentFileName)
     taskDocumentTitles[task.id] = formattedString["title"]
   }))
   return taskDocumentTitles

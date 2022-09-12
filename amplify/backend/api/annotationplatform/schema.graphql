@@ -6,12 +6,13 @@ type AnnotationTask @model
   @auth(
     rules: [
       {allow: groups, groups: ["Admin"], operations: [create,read,update,delete]},
-      {allow: owner, ownerField: "owner", operations: [read,update,delete]},
-      {allow: public, operations:[create,read,update,delete]}
+      {allow: owner, ownerField: "owner", operations: [read,update]},
+      {allow: public, operations:[read]}
     ]
   ){
   id: ID!
-  document_title: String!
+  documentFileName: String!
+  documentTitle: String
   questionID: ID! @index(name: "byQuestion")
   question: MedicalQuestion @hasOne(fields: ["questionID"])
   owner: String
@@ -23,30 +24,12 @@ type AnnotationTask @model
   completed: Boolean!
 }
 
-type AnnotationResult @model 
-  @auth(
-    rules: [
-      {allow: public, operations:[read]},
-      {allow: owner, ownerField: "owner", operations: [create,read]},
-      {allow: groups, groups: ["Admin"]}
-    ]
-  ){
-  id: ID!
-  owner: String!
-  document_title: String!
-  questionID: ID! @index(name: "byQuestion")
-  question: MedicalQuestion @hasOne(fields: ["questionID"])
-  question_answers: AWSJSON
-  labels: AWSJSON
-  questionFormID: ID!
-  questionForm: QuestionForm @hasOne(fields: ["questionFormID"])
-}
-
 type QuestionForm @model 
   @auth(
     rules: [
-      {allow: public, operations: [create,read,update,delete]},
-      {allow: groups, groups: ["Admin","Curators"], operations: [create,read,update,delete]}
+      {allow: public, operations: [read]},
+      {allow: groups, groups: ["Admin"], operations: [create,read,update,delete]},
+      {allow: groups, groups: ["Curators"], operations: [read]}
     ]
   ){
   id: ID!
@@ -58,7 +41,8 @@ type MedicalQuestion @model
   @auth(
     rules: [
       {allow: public, operations: [create,read,update,delete]},
-      {allow: groups, groups: ["Admin","Curators"], operations: [create,read,update,delete]}
+      {allow: groups, groups: ["Admin"], operations: [create,read,update,delete]},
+      {allow: groups, groups: ["Curators"], operations: [read]}
     ]
   ){
   id: ID!

@@ -26,22 +26,21 @@ const QuestionDocuments = () => {
                 setQuestion(question)
                 let tasks = groupTasksByDocument(question.tasks.items)
                 setGroupedTasks(tasks)
-                return getTaskDocumentTitles(
-                    tasks.map(taskGroup => taskGroup[0])
-                )
+                let titles = {}
+                tasks.map(groupedTasks => { titles[groupedTasks[0].id] = groupedTasks[0].documentTitle })
+                setDocumentTitles(titles)
+
             })
-            .then(result => {
-                setDocumentTitles(result)
-            })
+
 
     }, [])
 
 
     const handleNavigate = (tasks) => {
-        var s = tasks[0].document_title;
+        var s = tasks[0].documentFileName;
         s = s.substring(s.indexOf("/") + 1);
         if (groupedTasks) {
-            navigate(`results`, { state: { annotation_tasks: tasks, grouped_tasks: groupedTasks } })
+            navigate(`results`, { state: { annotationTasks: tasks, chosenTasks: groupedTasks } })
         }
 
     }

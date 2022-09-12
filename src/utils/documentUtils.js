@@ -9,13 +9,13 @@ export const groupTasksByDocument = (tasks) => {
     for (let i = 0; i < tasks.length; i++) {
         let duplicateDocument = false;
         for (let j = 0; j < finalGroupedTasks.length; j++) {
-            if (finalGroupedTasks[j][0].document_title == tasks[i].document_title) {
+            if (finalGroupedTasks[j][0].documentFileName == tasks[i].documentFileName) {
                 duplicateDocument = true
             }
         }
 
         if (!duplicateDocument) {
-            let groupedTasks = tasks.filter(task => task.document_title == tasks[i].document_title)
+            let groupedTasks = tasks.filter(task => task.documentFileName == tasks[i].documentFileName)
             finalGroupedTasks.push(groupedTasks)
         }
 
@@ -40,66 +40,6 @@ export const findCompletedTasks = (groupedInputTasks) => {
         }
     }
     return completedTasks;
-}
-
-//creates and submits reassigned tasks
-export async function createReassignedTasks(groupedTasks) {
-
-    //console.log("createReassignedTasks", groupedTasks)
-
-    const minimumRequiredCurators = process.env.REACT_APP_NUMBER_CURATORS
-    let newTasks = []
-    let errorMessage = ""
-    await listCurators()
-        .then(async curatorList => {
-
-            //console.log("curatorList", curatorList)
-            for (let i = 0; i < groupedTasks.length; i++) {
-                //console.log(i, groupedTasks[i])
-                let numRequiredReassignments
-                let numCompletedTasks = groupedTasks[i].filter(tasks => tasks.completed === true).length;
-
-                if (numCompletedTasks < minimumRequiredCurators) {
-                    numRequiredReassignments = minimumRequiredCurators - numCompletedTasks;
-                }
-                else {
-                    continue;
-                }
-                let currentCurators = groupedTasks[i].map(item => item.owner);
-                let possibleCurators = curatorList.filter(curator => !currentCurators.includes(curator))
-                //console.log("possible curators", possibleCurators)
-
-                if (possibleCurators < numRequiredReassignments) {
-                    throw "Insufficient curators to reassign tasks"
-
-                }
-                for (let j = 0; j < numRequiredReassignments; j++) {
-                    //console.log(groupedTasks[i])
-                    //console.log(groupedTasks[i][0])
-                    let newTask = {
-                        owner: possibleCurators[j],
-                        document_title: groupedTasks[i][0].document_title,
-                        questionID: groupedTasks[i][0].questionID,
-                        questionFormID: groupedTasks[i][0].questionFormID,
-                        completed: false,
-                        labels: "[]"
-
-                    }
-                    newTasks.push(newTask)
-
-                }
-            }
-
-            newTasks.forEach(async (task) => { await submitTask(task, "AMAZON_COGNITO_USER_POOLS") })
-            //console.log("New tasks for reassigned tasks", newTasks)
-            return newTasks
-        })
-        .catch(err => {
-            errorMessage = err
-        })
-
-    return errorMessage
-
 }
 
 export const parseDocumentContents = (string) => {

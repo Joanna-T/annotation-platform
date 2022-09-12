@@ -14,7 +14,7 @@ const DisplayResults = () => {
   const size = useWindowSize();
 
   const { state } = useLocation();
-  const { annotation_tasks, grouped_tasks } = state;
+  const { annotationTasks, chosenTasks } = state;
 
   const [allTasks, setAllTasks] = useState(null)
   const [currentTasks, setCurrentTasks] = useState(null)
@@ -34,21 +34,34 @@ const DisplayResults = () => {
 
   useEffect(() => {
 
-    setAllTasks(findGroupedDocuments(grouped_tasks));
-    setCurrentTasks(annotation_tasks);
-    getTaskDocumentTitles(
-      grouped_tasks.map(tasks => tasks[0])
-    )
-      .then(result => {
+    setAllTasks(findGroupedDocuments(chosenTasks));
+    setCurrentTasks(annotationTasks);
+    console.log(chosenTasks)
+    let taskDocumentTitles = {}
+    chosenTasks.map(tasks => {
+      return (
+        taskDocumentTitles[tasks[0].id] = tasks[0].documentTitle
+      )
+    })
 
-        setDocumentTitles(result)
-      })
+    console.log(taskDocumentTitles)
+    setDocumentTitles(taskDocumentTitles)
+
+    // getTaskDocumentTitles(
+    //   chosenTasks.map(tasks => tasks[0])
+    // )
+    //   .then(result => {
+    //     console.log("results", result)
+    //     setDocumentTitles(taskDocumentTitles)
+
+    //     //setDocumentTitles(result)
+    //   })
   }, [])
 
   useEffect(() => {
 
-    if (currentTasks && storedDocumentInfo[currentTasks[0].document_title]) {
-      retrieveStoredDocumentData(currentTasks[0].document_title)
+    if (currentTasks && storedDocumentInfo[currentTasks[0].documentFileName]) {
+      retrieveStoredDocumentData(currentTasks[0].documentFileName)
     }
 
   }, [storedDocumentInfo])
@@ -56,12 +69,12 @@ const DisplayResults = () => {
 
   useEffect(() => {
     //if data is not currently stored
-    if (currentTasks && !storedDocumentInfo[currentTasks.document_title]) {
-      const currentDocumentTitle = currentTasks[0].document_title
+    if (currentTasks && !storedDocumentInfo[currentTasks.documentFileName]) {
+      const currentDocumentTitle = currentTasks[0].documentFileName
       let tempTaskData = {}
       Promise.all([
         fetchQuestionForm(currentTasks[0].questionFormID, "API_KEY"),
-        fetchDocument(currentTasks[0].document_title),
+        fetchDocument(currentTasks[0].documentFileName),
         fetchQuestion(currentTasks[0].questionID, "API_KEY")
       ])
         .then(results => {
@@ -77,8 +90,8 @@ const DisplayResults = () => {
         })
 
     }
-    else if (currentTasks && storedDocumentInfo[currentTasks.document_title]) {
-      retrieveStoredDocumentData(currentTasks[0].document_title)
+    else if (currentTasks && storedDocumentInfo[currentTasks.documentFileName]) {
+      retrieveStoredDocumentData(currentTasks[0].documentFileName)
     }
 
   }, [currentTasks])
@@ -101,7 +114,7 @@ const DisplayResults = () => {
     let groupedDoc = {}
     for (let i = 0; i < groupedTasks.length; i++) {
 
-      groupedDoc[groupedTasks[i][0].document_title] = groupedTasks[i]
+      groupedDoc[groupedTasks[i][0].documentFileName] = groupedTasks[i]
     }
 
     return groupedDoc
@@ -158,8 +171,8 @@ const DisplayResults = () => {
       pane: (
         <Tab.Pane key='document-results' style={resultPaneStyle}>
           <p style={{ display: "inline" }}>The semantic similarity for the document labels is:  {" "}
-            {semanticAgreement && semanticAgreement.hasOwnProperty(currentTasks[0].document_title) ?
-              <b>{semanticAgreement[currentTasks[0].document_title].toFixed(3)}</b> : 0}
+            {semanticAgreement && semanticAgreement.hasOwnProperty(currentTasks[0].documentFileName) ?
+              <b>{semanticAgreement[currentTasks[0].documentFileName].toFixed(3)}</b> : 0}
           </p>
           {"  "}
           <Modal
@@ -184,8 +197,8 @@ const DisplayResults = () => {
       menuItem: 'Question results',
       pane: (
         <Tab.Pane key='question-results' style={resultPaneStyle}>
-          {grouped_tasks && medicalQuestion &&
-            <InterannotatorAgreement grouped_tasks={grouped_tasks} medicalQuestion={medicalQuestion}></InterannotatorAgreement>
+          {chosenTasks && medicalQuestion &&
+            <InterannotatorAgreement chosenTasks={chosenTasks} medicalQuestion={medicalQuestion}></InterannotatorAgreement>
 
           }
 
@@ -232,7 +245,7 @@ const DisplayResults = () => {
       <p><b>Document title: </b>{documentTitle && documentTitle}</p>
       <label>You are currently viewing document:</label>
       {allTasks && documentTitles ? <Dropdown
-        defaultValue={annotation_tasks.length ? annotation_tasks[0].document_title : "Loading documents"}
+        defaultValue={annotationTasks.length ? annotationTasks[0].documentFileName : "Loading documents"}
         fluid selection options={getDocumentOptions()}
         onChange={handleDocumentChange}
       /> : "Loading documents..."}

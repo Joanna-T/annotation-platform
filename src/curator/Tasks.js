@@ -12,17 +12,17 @@ const Tasks = () => {
     useEffect(() => {
         fetchTasks()
             .then(results => {
+                console.log("tasks", results)
                 const incompleteTasks = results.filter(result => result.completed === false)
                 setTasks(incompleteTasks);
+                let titles = {}
+                incompleteTasks.map(task => {
+                    titles[task.id] = task.documentTitle
+                })
+                setDocumentTitles(titles)
                 return incompleteTasks
             })
-            .then(tasks => {
-                return getTaskDocumentTitles(tasks)
-            })
-            .then(result => {
-                console.log("getDocumentTitle", result)
-                setDocumentTitles(result)
-            })
+
     }, [])
 
 

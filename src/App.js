@@ -31,6 +31,21 @@ function App() {
     // console.warn = () => { };
     // console.error = () => { };
 
+    // try {
+    //   const user = await Auth.currentAuthenticatedUser();
+    //   const groups = user.signInUserSession.accessToken.payload["cognito:groups"];
+
+    //   setUserEmail(user.attributes.email)
+    //   if (groups) {
+    //     if (groups.includes("Admin")) {
+    //       setAdmin(true);
+    //     }
+    //   }
+
+    //   setSignedUser(true);
+
+    // } catch (err) { }
+
   }, []);
   return (
     <Router>

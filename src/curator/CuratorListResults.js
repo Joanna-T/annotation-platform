@@ -11,10 +11,15 @@ const CuratorListResults = () => {
     useEffect(() => {
         fetchTasks()
             .then(result => {
-                setTasks(result.filter(task => task.completed === true));
-                return getTaskDocumentTitles(result)
+                let completeTasks = result.filter(task => task.completed === true)
+                setTasks(completeTasks);
+                let titles = {}
+                completeTasks.map(task => {
+                    titles[task.id] = task.documentTitle
+                })
+                setDocumentTitles(titles)
+
             })
-            .then(result => setDocumentTitles(result))
 
     }, [])
 

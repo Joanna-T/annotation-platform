@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, Segment, Label, Button, Icon, Message, Modal } from "semantic-ui-react";
-import { groupTasksByDocument, findCompletedTasks, createReassignedTasks } from "../utils/documentUtils";
+import { groupTasksByDocument, findCompletedTasks } from "../utils/documentUtils";
+import { createReassignedTasks } from "../utils/reassignTaskUtils";
 import { fetchQuestions } from "../utils/queryUtils";
 import Layout from "../common/Layout";
 import { useNavigate } from "react-router-dom";
@@ -122,7 +123,7 @@ const ReassignTasks = () => {
                                     key={tasks[0].id}
                                     fluid
                                     style={cardStyle}
-                                    header={`Document title: ${tasks[0].document_title}`}
+                                    header={`Document title: ${tasks[0].documentTitle}`}
                                     description={`${tasks.filter(task => task.completed === true).length} documents annotated out of ${tasks.length}`}
                                 />
                             ))

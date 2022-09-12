@@ -7,7 +7,8 @@ import {
     createQuestionSuggestions,
     deleteQuestionSuggestions,
     deleteMedicalQuestion,
-    deleteAnnotationTask
+    deleteAnnotationTask,
+    createQuestionForm
 } from "../graphql/mutations";
 
 export async function deleteTask(taskID, authMethod) {
@@ -96,6 +97,22 @@ export async function submitTask(task, authMethod) {
     })
     //console.log("this is the final submitted task", createdTasks)
     return createdTask
+
+}
+
+export async function submitForm(form, authMethod) {
+    if (!authMethod) {
+        authMethod = "AMAZON_COGNITO_USER_POOLS"
+    }
+    let createdForm = await API.graphql({
+        query: createQuestionForm,
+        variables: {
+            input: form
+        },
+        authMode: authMethod
+    })
+    //console.log("this is the final submitted task", createdTasks)
+    return createdForm
 
 }
 
