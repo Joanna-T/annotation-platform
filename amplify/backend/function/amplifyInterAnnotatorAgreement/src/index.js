@@ -60,7 +60,7 @@ exports.handler = async (event) => {
       ExpressionAttributeValues: {
         ':questionID': { 'S': medicalQuestionID }
       },
-      ProjectionExpression: "question_answers, document_title",
+      ProjectionExpression: "question_answers, documentFileName",
       TableName: annotationTaskTable
     };
 
@@ -401,13 +401,13 @@ const groupTasksByDocument = (tasks) => {
   for (let i = 0; i < tasks.length; i++) {
     let duplicateDocument = false;
     for (let j = 0; j < finalGroupedTasks.length; j++) {
-      if (finalGroupedTasks[j][0].document_title == tasks[i].document_title) {
+      if (finalGroupedTasks[j][0].documentFileName == tasks[i].documentFileName) {
         duplicateDocument = true
       }
     }
 
     if (!duplicateDocument) {
-      let groupedTasks = tasks.filter(task => task.document_title == tasks[i].document_title)
+      let groupedTasks = tasks.filter(task => task.documentFileName == tasks[i].documentFileName)
       finalGroupedTasks.push(groupedTasks)
     }
 

@@ -46,7 +46,7 @@ The home page is available to all users and displays annotation results for comp
 
 The outline of the platform architecture can be seen below:
 
-- image here
+![System architecture](./readme_iimages/system_architecture.png)
 
 ## Lambda functions
 
@@ -100,9 +100,13 @@ An AWS account is also required to be configured, details of which is shown here
 [https://docs.amplify.aws/start/getting-started/installation/q/integration/react/#option-2-follow-the-instructions](https://docs.amplify.aws/start/getting-started/installation/q/integration/react/#option-2-follow-the-instructions)
 
 The lambda function for the semantic agreement makes use of Docker:
-
 ```sh
-amplify init –app <github-url>
+npm install -g docker
+```
+
+The project can then cloned with the command whilst in an empty directory:
+```sh
+amplify init –app <project-github-url>
 ```
 
 Accept all existing configurations. You will then be issued with a series of prompts. Enter the new name for the Amplify environment which will host the resources for the platform. Choose the default editor of your choice, and use the AWS profile that was set up previously. 
@@ -149,7 +153,7 @@ Simply copy and paste these instructions in order while within the lambda-docker
 
 ## Creating the Lambda function
 
-Navigate to the lambda management console, and select “Create function” as shown here:
+Navigate to the Lambda management console within the AWS user interface, and select “Create function” as shown here:
 
 - image here
 

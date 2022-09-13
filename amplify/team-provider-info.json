@@ -81,7 +81,7 @@
         },
         "amplifyInterAnnotatorAgreement": {
           "deploymentBucketName": "amplify-annotationplatform-final-215941-deployment",
-          "s3Key": "amplify-builds/amplifyInterAnnotatorAgreement-354149547a7637416250-build.zip"
+          "s3Key": "amplify-builds/amplifyInterAnnotatorAgreement-6b755875307645425742-build.zip"
         }
       }
     }
