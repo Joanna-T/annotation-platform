@@ -32,17 +32,17 @@ afterAll(() => {
 describe("document functions tests", () => {
     it("should group task array according to document", () => {
         const testTasks = [
-            { document_title: "ex1" },
-            { document_title: "ex1" },
-            { document_title: "ex2" },
-            { document_title: "ex2" }
+            { documentFileName: "ex1" },
+            { documentFileName: "ex1" },
+            { documentFileName: "ex2" },
+            { documentFileName: "ex2" }
         ]
 
         const groupedTasks = [
-            [{ document_title: "ex1" },
-            { document_title: "ex1" }],
-            [{ document_title: "ex2" },
-            { document_title: "ex2" }]
+            [{ documentFileName: "ex1" },
+            { documentFileName: "ex1" }],
+            [{ documentFileName: "ex2" },
+            { documentFileName: "ex2" }]
         ]
 
         expect(groupTasksByDocument(testTasks)).toEqual(groupedTasks)
@@ -52,19 +52,19 @@ describe("document functions tests", () => {
 
         const groupedTasks = [
             [{
-                document_title: "ex1",
+                documentFileName: "ex1",
                 completed: false
             },
             {
-                document_title: "ex1",
+                documentFileName: "ex1",
                 completed: true
             }],
             [{
-                document_title: "ex2",
+                documentFileName: "ex2",
                 completed: true
             },
             {
-                document_title: "ex2",
+                documentFileName: "ex2",
                 completed: true
             }]
         ]
@@ -72,69 +72,6 @@ describe("document functions tests", () => {
         expect(findCompletedTasks(groupedTasks, 2)).toBe(1)
     })
 })
-
-describe("task creation test", () => {
-    it("should correctly distribute tasks amongs users", async () => {
-        //jest.mock("./queryUtils")
-        console.log(" ")
-        jest.spyOn(queryUtils, "listCurators").mockReturnValue(
-            Promise.resolve(
-                [
-                    "user1",
-                    "user2",
-                    "user3",
-                    "user4"
-                ]
-            )
-
-        )
-        var groupedTasks = [
-            [{
-                document_title: "title1",
-                owner: "user1",
-                completed: false,
-                questionFormID: "123",
-                questionID: "321"
-            },
-            {
-                document_title: "title1",
-                owner: "user2",
-                completed: true,
-                questionFormID: "123",
-                questionID: "321"
-            }],
-            [{
-                document_title: "title2",
-                owner: "user1",
-                completed: true,
-                questionFormID: "123",
-                questionID: "321"
-            },
-            {
-                document_title: "title2",
-                owner: "user2",
-                completed: true,
-                questionFormID: "123",
-                questionID: "321"
-            },
-            {
-                document_title: "title2",
-                owner: "user3",
-                completed: false,
-                questionFormID: "123",
-                questionID: "321"
-            }]
-
-        ]
-
-        const result = await createReassignedTasks(groupedTasks)
-
-        expect(result).toEqual(
-            ""
-        )
-    })
-})
-
 
 describe("string parse test", () => {
     it("should correctly extract information from formatted files", async () => {

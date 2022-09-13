@@ -40,7 +40,7 @@ type QuestionForm @model
 type MedicalQuestion @model 
   @auth(
     rules: [
-      {allow: public, operations: [create,read,update,delete]},
+      {allow: public, operations: [read]},
       {allow: groups, groups: ["Admin"], operations: [create,read,update,delete]},
       {allow: groups, groups: ["Curators"], operations: [read]}
     ]

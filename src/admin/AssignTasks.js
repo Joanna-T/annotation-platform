@@ -18,15 +18,20 @@ import Layout from "../common/Layout";
 import { fetchQuestionForms, listCurators, fetchSuggestions } from "../utils/queryUtils";
 import { submitQuestion, deleteSuggestion } from "../utils/mutationUtils";
 import { distributeAnnotationTasks } from "../utils/assignTaskUtils";
-import { fetchDocumentFolders } from "../utils/assignTaskUtils";
+import { fetchDocumentsAndFolders } from "../utils/assignTaskUtils";
 import DocumentSelection from "./DocumentSelection";
 import { labelColours } from "./adminConstants";
 import { isValidURL } from "../utils/assignTaskUtils";
 import QuestionFormCreation from "./QuestionFormCreation";
 import SuggestionSelection from "./SuggestionSelection";
 import FormSelection from "./FormSelection";
+//import Cookies from 'universal-cookie';
+import { checkIfAdmin } from "../utils/authUtils";
+import UnauthorisedAccess from "../common/UnauthorisedAccess";
+
 
 const AssignTasks = () => {
+  //const cookies = new Cookies();
 
   const [medicalQuestion, setMedicalQuestion] = useState("");
   const [instructionLink, setInstructionLink] = useState("")
@@ -61,7 +66,8 @@ const AssignTasks = () => {
 
   const navigate = useNavigate();
   useEffect(() => {
-    fetchDocumentFolders()
+    //console.log("cookie", cookies.get("groups"))
+    fetchDocumentsAndFolders()
       .then(result => {
         setFolders(result[0])
         setDocuments(result[1])
@@ -80,8 +86,6 @@ const AssignTasks = () => {
 
   }, [])
 
-  useEffect(() => {
-  }, [medicalQuestion])
 
   const handleFoldersCheckbox = (folder, data) => {
     const folderFiles = documents.filter(document => {
@@ -197,6 +201,13 @@ const AssignTasks = () => {
       .catch(err => console.log(err))
 
   }
+
+  if (!checkIfAdmin()) {
+    return (
+      <UnauthorisedAccess></UnauthorisedAccess>
+    )
+  }
+
 
   const containerSegmentStyle = { overflow: 'auto', "textAlign": "left" }
 

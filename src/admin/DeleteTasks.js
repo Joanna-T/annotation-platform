@@ -3,6 +3,8 @@ import Layout from "../common/Layout";
 import { fetchQuestions } from "../utils/queryUtils";
 import { deleteTask, deleteQuestion } from "../utils/mutationUtils";
 import { Card, Segment, Button, Icon, Message, Modal, Label } from "semantic-ui-react";
+import { checkIfAdmin } from "../utils/authUtils";
+import UnauthorisedAccess from "../common/UnauthorisedAccess";
 
 const DeleteTasks = () => {
 
@@ -34,6 +36,12 @@ const DeleteTasks = () => {
     setQuestions(questions.filter(question => question.id !== chosenQuestion.id))
     setChosenQuestion(null)
     setLoading(false)
+  }
+
+  if (!checkIfAdmin()) {
+    return (
+      <UnauthorisedAccess></UnauthorisedAccess>
+    )
   }
 
   const segmentStyle = { "overflow": "auto", "maxHeight": "50vh" }

@@ -91,7 +91,7 @@ function shuffleArray(array) {
 }
 
 
-export async function fetchDocumentFolders() {
+export async function fetchDocumentsAndFolders() {
 
   let result = await Storage.list("")
   console.log("fetchDocumentFolders", result)

@@ -1,10 +1,13 @@
 import Layout from "./Layout";
+import { Segment } from "semantic-ui-react";
 
 
 const PageNotFound = () => {
     return (
         <Layout>
-            <h2> Page not found</h2>
+            <Segment>
+                <h2> Page not found</h2>
+            </Segment>
         </Layout>
     );
 }

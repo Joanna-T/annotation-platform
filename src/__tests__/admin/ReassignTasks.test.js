@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { queryByText, render, screen, waitFor } from "@testing-library/react";
 import ReassignTasks from "../../admin/ReassignTasks";
 import * as queryUtils from "../../utils/queryUtils";
 import { act } from "react-dom/test-utils";
 import * as mutationUtils from "../../utils/mutationUtils";
-import * as documentUtils from "../../utils/documentUtils"
+import * as reassignTaskUtils from "../../utils/reassignTaskUtils"
+import * as authUtils from "../../utils/authUtils"
 import { BrowserRouter as Router } from 'react-router-dom';
 
 const OLD_ENV = process.env;
@@ -11,49 +12,58 @@ const OLD_ENV = process.env;
 beforeEach(() => {
     var tasksQuestionOne = [
         {
-            document_title: "title1",
+            documentTitle: "title1",
+            documentFileName: "title1",
             owner: "user1",
             completed: false
         },
         {
-            document_title: "title1",
+            documentTitle: "title1",
+            documentFileName: "title1",
             owner: "user2",
             completed: true
         },
         {
-            document_title: "title2",
+            documentTitle: "title2",
+            documentFileName: "title2",
             owner: "user1",
             completed: true
         },
         {
-            document_title: "title2",
+            documentTitle: "title2",
+            documentFileName: "title2",
             owner: "user2",
             completed: true
         },
         {
-            document_title: "title2",
+            documentTitle: "title2",
+            documentFileName: "title2",
             owner: "user3",
             completed: false
         }
     ]
     var tasksQuestionTwo = [
         {
-            document_title: "title3",
+            documentTitle: "title3",
+            documentFileName: "title3",
             owner: "user1",
             completed: true
         },
         {
-            document_title: "title3",
+            documentTitle: "title3",
+            documentFileName: "title3",
             owner: "user2",
             completed: true
         },
         {
-            document_title: "title4",
+            documentTitle: "title4",
+            documentFileName: "title4",
             owner: "user1",
             completed: true
         },
         {
-            document_title: "title4",
+            documentTitle: "title4",
+            documentFileName: "title4",
             owner: "user2",
             completed: true
         }
@@ -82,8 +92,11 @@ beforeEach(() => {
     //     documentUtils.createReassignedTasks(input);
     // }     
     // )
+    jest.spyOn(authUtils, "checkIfAdmin").mockReturnValue(
+        true
+    )
 
-    jest.spyOn(documentUtils, "createReassignedTasks").mockReturnValue(
+    jest.spyOn(reassignTaskUtils, "createReassignedTasks").mockReturnValue(
         [{}]
     )
 
@@ -167,6 +180,7 @@ describe("document functions tests", () => {
     })
 
     it("lists incomplete questions", async () => {
+
         await act(() => {
             render(
                 <Router>

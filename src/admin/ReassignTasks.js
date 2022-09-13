@@ -5,6 +5,8 @@ import { createReassignedTasks } from "../utils/reassignTaskUtils";
 import { fetchQuestions } from "../utils/queryUtils";
 import Layout from "../common/Layout";
 import { useNavigate } from "react-router-dom";
+import { checkIfAdmin } from "../utils/authUtils";
+import UnauthorisedAccess from "../common/UnauthorisedAccess";
 
 
 
@@ -31,11 +33,13 @@ const ReassignTasks = () => {
     const findIncompleteQuestions = (questions) => {
         let questionItems = {};
         let tempIncompleteQuestions = []
+        console.log(questions)
 
 
 
         for (const question of questions) {
             let questionTasks = groupTasksByDocument(question.tasks.items)
+            console.log(questionTasks)
             for (const tasks of questionTasks) {
                 let numCompletedTasks = tasks.filter(task => task.completed === true).length;
                 if (numCompletedTasks < minimumRequiredCurators) {
@@ -46,12 +50,20 @@ const ReassignTasks = () => {
             }
         }
 
+        console.log(tempIncompleteQuestions)
         setIncompleteQuestions(tempIncompleteQuestions)
         setAllQuestionTasks(questionItems)
+        console.log("function finished")
     }
 
     const findTotalTasks = (questionID) => {
         return allQuestionTasks[questionID].length;
+    }
+
+    if (!checkIfAdmin()) {
+        return (
+            <UnauthorisedAccess></UnauthorisedAccess>
+        )
     }
 
     const segmentStyle = { "overflow": "auto", "maxHeight": "50vh" }
@@ -85,7 +97,7 @@ const ReassignTasks = () => {
                     which is currently set at {process.env.REACT_APP_NUMBER_CURATORS}
                 </p>
                 <Segment style={segmentStyle}>
-                    <Card.Group>
+                    <Card.Group data-testid="list">
                         {incompleteQuestions && incompleteQuestions.length > 0 && allQuestionTasks ?
                             incompleteQuestions.map((question, index) => (
 

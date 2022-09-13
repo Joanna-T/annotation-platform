@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Segment,
     Button,
@@ -13,17 +13,7 @@ import {
     List,
     Tab
 } from "semantic-ui-react";
-import { useNavigate } from "react-router-dom";
-import Layout from "../common/Layout";
-import { fetchQuestionForms, listCurators, fetchSuggestions } from "../utils/queryUtils";
-import { submitQuestion, deleteSuggestion } from "../utils/mutationUtils";
-import { distributeAnnotationTasks } from "../utils/assignTaskUtils";
-import { fetchDocumentFolders } from "../utils/assignTaskUtils";
-import DocumentSelection from "./DocumentSelection";
-import { labelColours } from "./adminConstants";
-import { isValidURL } from "../utils/assignTaskUtils";
-import QuestionFormCreation from "./QuestionFormCreation";
-import SuggestionSelection from "./SuggestionSelection";
+
 
 const FormSelection = ({ questionForms, chosenQuestionForm, setChosenQuestionForm }) => {
     //const [questionForms, setQuestionForms] = useState(null);

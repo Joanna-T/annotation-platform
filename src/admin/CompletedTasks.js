@@ -4,6 +4,8 @@ import Layout from "../common/Layout";
 import { fetchQuestions } from "../utils/queryUtils";
 import { returnCompletedQuestions } from "../utils/documentUtils";
 import ListQuestions from "./ListQuestions";
+import { checkIfAdmin } from "../utils/authUtils";
+import UnauthorisedAccess from "../common/UnauthorisedAccess";
 
 const CompletedTasks = () => {
     const [questions, setQuestions] = useState([]);
@@ -27,6 +29,12 @@ const CompletedTasks = () => {
                 </Segment>
 
             </Layout>
+        )
+    }
+
+    if (!checkIfAdmin()) {
+        return (
+            <UnauthorisedAccess></UnauthorisedAccess>
         )
     }
 

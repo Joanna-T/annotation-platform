@@ -4,6 +4,8 @@ import { Segment, Grid, Button, Tab, Form, Label } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
 import { fetchTask, fetchDocument, fetchQuestionForm, fetchQuestion } from "../utils/queryUtils";
 import useWindowSize from "../common/useWindowSize";
+import { checkIfCurator } from "../utils/authUtils";
+import UnauthorisedAccess from "../common/UnauthorisedAccess";
 
 const CuratorViewResults = () => {
   const size = useWindowSize();
@@ -26,7 +28,7 @@ const CuratorViewResults = () => {
         setDocumentLabels(JSON.parse(result.labels))
         setQuestionAnswers(JSON.parse(result.question_answers))
 
-        await Promise.all([fetchDocument(result.document_title),
+        await Promise.all([fetchDocument(result.documentFileName),
         fetchQuestionForm(result.questionFormID, "API_KEY"),
         fetchQuestion(result.questionID, "API_KEY")])
           .then(result => {
@@ -46,6 +48,12 @@ const CuratorViewResults = () => {
   const formStyle = { overflow: "auto", maxHeight: "70vh" }
   const tabStyle = { maxheight: "100%", overflow: "auto" }
   const gridStyle = { maxheight: '100vh' }
+
+  if (!checkIfCurator()) {
+    return (
+      <UnauthorisedAccess></UnauthorisedAccess>
+    )
+  }
 
   const heatMapSection = (
     <div>

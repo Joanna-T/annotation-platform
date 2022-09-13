@@ -104,7 +104,7 @@ const DocumentSelection = ({ documents, folders, chosenDocuments, chosenFolders,
 
 
                 {
-                    folders ? (folders.map((folder, index) => {
+                    Array.isArray(folders) ? (folders.map((folder, index) => {
                         return (
 
 

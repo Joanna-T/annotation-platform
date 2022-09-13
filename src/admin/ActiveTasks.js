@@ -4,6 +4,8 @@ import Layout from "../common/Layout";
 import { fetchQuestions } from "../utils/queryUtils";
 import { returnActiveQuestions } from "../utils/documentUtils";
 import ListQuestions from "./ListQuestions";
+import { checkIfAdmin } from "../utils/authUtils";
+import UnauthorisedAccess from "../common/UnauthorisedAccess";
 
 const ActiveTasks = () => {
     const [questions, setQuestions] = useState([]);
@@ -29,6 +31,12 @@ const ActiveTasks = () => {
     }
 
     const viewCardStyle = { "marginTop": 5, "marginBottom": 5, "textAlign": "left", "padding": "2%" }
+
+    if (!checkIfAdmin()) {
+        return (
+            <UnauthorisedAccess></UnauthorisedAccess>
+        )
+    }
 
     return (
         <div className="tasks">

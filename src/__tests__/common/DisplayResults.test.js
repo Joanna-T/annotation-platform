@@ -12,7 +12,7 @@ beforeEach(() => {
             annotation_tasks:
                 [{
                     id: "1",
-                    document_title: "title1",
+                    documentTitle: "title1",
                     labels: JSON.stringify([]),
                     question_answers: JSON.stringify({}),
                     questionID: "1234",
@@ -20,7 +20,7 @@ beforeEach(() => {
                 },
                 {
                     id: "2",
-                    document_title: "title2",
+                    documentTitle: "title2",
                     labels: JSON.stringify([]),
                     question_answers: JSON.stringify({}),
                     questionID: "1234",
@@ -29,7 +29,7 @@ beforeEach(() => {
             grouped_tasks: [
                 [{
                     id: "1",
-                    document_title: "title1",
+                    documentTitle: "title1",
                     labels: JSON.stringify([]),
                     question_answers: JSON.stringify({}),
                     questionID: "1234",
@@ -37,7 +37,7 @@ beforeEach(() => {
                 },
                 {
                     id: "2",
-                    document_title: "title2",
+                    documentTitle: "title2",
                     labels: JSON.stringify([]),
                     question_answers: JSON.stringify({}),
                     questionID: "1234",
@@ -98,12 +98,6 @@ beforeEach(() => {
 
     )
 
-    jest.spyOn(queryUtils, "getTaskDocumentTitles").mockReturnValue(
-        Promise.resolve(
-            { "1": "This is the title" }
-        )
-    )
-
     jest.spyOn(queryUtils, "fetchDocument").mockReturnValue(
         Promise.resolve(
             {
@@ -131,10 +125,10 @@ afterAll(() => {
 describe("display results tests", () => {
     const mockUseLocationValue = {
         state: {
-            annotation_tasks:
+            annotationTasks:
                 [{
                     id: "1",
-                    document_title: "title1",
+                    documentTitle: "title1",
                     labels: JSON.stringify([]),
                     question_answers: JSON.stringify({}),
                     questionID: "1234",
@@ -142,16 +136,16 @@ describe("display results tests", () => {
                 },
                 {
                     id: "2",
-                    document_title: "title2",
+                    documentTitle: "title2",
                     labels: JSON.stringify([]),
                     question_answers: JSON.stringify({}),
                     questionID: "1234",
                     questionFormID: "2345"
                 },],
-            grouped_tasks: [
+            chosenTasks: [
                 [{
                     id: "1",
-                    document_title: "title1",
+                    documentTitle: "title1",
                     labels: JSON.stringify([]),
                     question_answers: JSON.stringify({}),
                     questionID: "1234",
@@ -159,7 +153,7 @@ describe("display results tests", () => {
                 },
                 {
                     id: "2",
-                    document_title: "title2",
+                    documentTitle: "title2",
                     labels: JSON.stringify([]),
                     question_answers: JSON.stringify({}),
                     questionID: "1234",
@@ -183,7 +177,7 @@ describe("display results tests", () => {
 
     })
 
-    it("displays the annotation document", async () => {
+    it("displays the chosen annotation document", async () => {
 
         await act(() => {
             render(
@@ -192,8 +186,7 @@ describe("display results tests", () => {
                 </MemoryRouter>)
         })
 
-        const documentTitle = screen.getAllByText(/This is the title/)
-
+        const documentTitle = screen.getAllByText(/title1/)
 
         expect(documentTitle[0]).toBeInTheDocument();
 

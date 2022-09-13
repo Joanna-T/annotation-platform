@@ -3,28 +3,12 @@ import { render, screen } from "@testing-library/react";
 import AnnotationQuestions from "../../curator/AnnotationQuestions";
 import * as queryUtils from "../../utils/queryUtils";
 import { act } from "react-dom/test-utils";
-import * as assignTaskutils from "../../admin/assignTaskUtils"
+import * as assignTaskutils from "../../utils/assignTaskUtils"
 import { BrowserRouter as Router } from 'react-router-dom';
 
 const OLD_ENV = process.env;
 
 beforeEach(() => {
-
-
-
-    jest.spyOn(assignTaskutils, "fetchDocumentFolders").mockReturnValue(
-        Promise.resolve(
-            ["/folder1", "/folder2"]
-        )
-
-
-    )
-
-    jest.spyOn(queryUtils, "fetchSuggestions").mockReturnValue(
-        Promise.resolve(
-            []
-        )
-    )
 
     jest.spyOn(queryUtils, "fetchQuestionForms").mockReturnValue(
         Promise.resolve(

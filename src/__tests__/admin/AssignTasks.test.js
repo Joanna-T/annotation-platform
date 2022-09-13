@@ -1,17 +1,23 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import AssignTasks from "../../admin/AssignTasks";
 import * as queryUtils from "../../utils/queryUtils";
 import { act } from "react-dom/test-utils";
-import * as assignTaskutils from "../../admin/assignTaskUtils"
+import * as assignTaskutils from "../../utils/assignTaskUtils"
 import { BrowserRouter as Router } from 'react-router-dom';
+import * as authUtils from "../../utils/authUtils"
+import * as mutationUtils from "../../utils/mutationUtils"
 
 const OLD_ENV = process.env;
 
 beforeEach(() => {
+    jest.spyOn(authUtils, "checkIfAdmin").mockReturnValue(
+        true
+    )
 
-    jest.spyOn(assignTaskutils, "fetchDocumentFolders").mockReturnValue(
+    jest.spyOn(assignTaskutils, "fetchDocumentsAndFolders").mockReturnValue(
         Promise.resolve(
-            ["/folder1", "/folder2"]
+            [["folder1/", "folder2/"],
+            ["folder1/text1.txt", "folder2/text2.txt"]]
         )
 
 
@@ -32,6 +38,49 @@ beforeEach(() => {
 
             }
             ]
+        )
+
+
+    )
+    jest.spyOn(queryUtils, "fetchDocument").mockReturnValue(
+        Promise.resolve(
+            [{
+                title: "This is the title",
+                abstract: "This is the abstract",
+                mainText: "This is the main text"
+
+            }
+            ]
+        )
+
+
+    )
+    jest.spyOn(queryUtils, "listCurators").mockReturnValue(
+        Promise.resolve(
+            [
+                "user1",
+                "user2",
+                "user3",
+                "user4",
+                "user5"
+            ]
+        )
+
+
+    )
+
+
+    jest.spyOn(mutationUtils, "submitQuestion").mockReturnValue(
+        Promise.resolve(
+            true
+        )
+
+
+    )
+
+    jest.spyOn(mutationUtils, "submitForm").mockReturnValue(
+        Promise.resolve(
+            true
         )
 
 
@@ -84,6 +133,7 @@ describe("document functions tests", () => {
                     <AssignTasks />
                 </Router>)
         })
+
 
 
         const folderOne = screen.queryByText(/folder1/)

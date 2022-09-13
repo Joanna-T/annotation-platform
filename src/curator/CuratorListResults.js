@@ -3,6 +3,9 @@ import { Segment, Card } from "semantic-ui-react";
 import Layout from "../common/Layout";
 import { fetchTasks, getTaskDocumentTitles } from "../utils/queryUtils";
 import ListTasks from "./ListTasks";
+import { checkIfCurator } from "../utils/authUtils";
+import UnauthorisedAccess from "../common/UnauthorisedAccess";
+
 
 const CuratorListResults = () => {
     const [tasks, setTasks] = useState([]);
@@ -22,6 +25,12 @@ const CuratorListResults = () => {
             })
 
     }, [])
+
+    if (!checkIfCurator()) {
+        return (
+            <UnauthorisedAccess></UnauthorisedAccess>
+        )
+    }
 
     const cardStyle = { "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }
 

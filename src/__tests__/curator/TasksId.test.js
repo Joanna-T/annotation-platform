@@ -4,11 +4,16 @@ import * as queryUtils from "../../utils/queryUtils";
 import { act } from "react-dom/test-utils";
 import * as mutationUtils from "../../utils/mutationUtils";
 import { BrowserRouter as Router } from 'react-router-dom';
+import * as authUtils from "../../utils/authUtils"
+
 
 const OLD_ENV = process.env;
 
 
 beforeEach(() => {
+    jest.spyOn(authUtils, "checkIfCurator").mockReturnValue(
+        true
+    )
 
     const testQuestionsForm = [
         {
@@ -43,7 +48,7 @@ beforeEach(() => {
             {
                 owner: "testid",
                 id: "123",
-                document_title: "document title",
+                documentTitle: "document title",
                 completed: false,
                 questionID: "234",
                 questionFormID: "345",
@@ -191,7 +196,7 @@ describe("document functions tests", () => {
                 {
                     owner: "testid",
                     id: "123",
-                    document_title: "document title",
+                    documentTitle: "document title",
                     completed: true,
                     questionID: "234",
                     questionFormID: "345",

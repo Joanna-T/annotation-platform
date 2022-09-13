@@ -10,49 +10,58 @@ const OLD_ENV = process.env;
 beforeEach(() => {
     var tasksQuestionOne = [
         {
-            document_title: "title1",
+            documentTitle: "title1",
+            documentFileName: "title1",
             owner: "user1",
             completed: false
         },
         {
-            document_title: "title1",
+            documentTitle: "title1",
+            documentFileName: "title1",
             owner: "user2",
             completed: true
         },
         {
-            document_title: "title2",
+            documentTitle: "title2",
+            documentFileName: "title2",
             owner: "user1",
             completed: true
         },
         {
-            document_title: "title2",
+            documentTitle: "title2",
+            documentFileName: "title2",
             owner: "user2",
             completed: true
         },
         {
-            document_title: "title2",
+            documentTitle: "title2",
+            documentFileName: "title2",
             owner: "user3",
             completed: false
         }
     ]
     var tasksQuestionTwo = [
         {
-            document_title: "title3",
+            documentTitle: "title3",
+            documentFileName: "title3",
             owner: "user1",
             completed: true
         },
         {
-            document_title: "title3",
+            documentTitle: "title3",
+            documentFileName: "title3",
             owner: "user2",
             completed: true
         },
         {
-            document_title: "title4",
+            documentTitle: "title4",
+            documentFileName: "title4",
             owner: "user1",
             completed: true
         },
         {
-            document_title: "title4",
+            documentTitle: "title4",
+            documentFileName: "title4",
             owner: "user2",
             completed: true
         }

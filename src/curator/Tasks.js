@@ -4,6 +4,9 @@ import Layout from "../common/Layout";
 import { fetchTasks } from "../utils/queryUtils"
 import { getTaskDocumentTitles } from "../utils/queryUtils";
 import ListTasks from "./ListTasks";
+import { checkIfCurator } from "../utils/authUtils";
+import UnauthorisedAccess from "../common/UnauthorisedAccess";
+
 
 const Tasks = () => {
     const [tasks, setTasks] = useState([]);
@@ -27,7 +30,11 @@ const Tasks = () => {
 
 
 
-    const sampleText = ["hello", "there"]
+    if (!checkIfCurator()) {
+        return (
+            <UnauthorisedAccess></UnauthorisedAccess>
+        )
+    }
 
     if (!tasks) {
         return (

@@ -4,6 +4,7 @@ import { Auth, Hub } from "aws-amplify";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Menu, Icon, Dropdown } from "semantic-ui-react";
 import useWindowSize from "./useWindowSize";
+import Cookies from 'universal-cookie';
 
 
 const Navbar = () => {
@@ -13,6 +14,8 @@ const Navbar = () => {
     const size = useWindowSize();
     const location = useLocation()
     const [currentItem, setCurrentItem] = useState("Home")
+
+    const cookies = new Cookies();
 
     useEffect(() => {
 
@@ -28,6 +31,7 @@ const Navbar = () => {
 
     const navigate = useNavigate();
     const signOut = () => {
+        cookies.remove('groups')
         Auth.signOut();
         setSignedUser(false);
         navigate("/");
@@ -57,6 +61,7 @@ const Navbar = () => {
                 if (groups.includes("Admin")) {
                     setAdmin(true);
                 }
+                cookies.set('groups', groups, { path: '/' });
             }
 
             setSignedUser(true);

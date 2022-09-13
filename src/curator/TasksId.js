@@ -19,6 +19,8 @@ import {
 import { updateTask } from "../utils/mutationUtils";
 import { fetchTask, fetchDocument } from "../utils/queryUtils";
 import useWindowSize from "../common/useWindowSize";
+import { checkIfCurator } from "../utils/authUtils";
+import UnauthorisedAccess from "../common/UnauthorisedAccess";
 
 
 
@@ -182,6 +184,12 @@ const TasksId = () => {
 
     const handleLabelChange = (labels) => {
         setParentLabels(labels);
+    }
+
+    if (!checkIfCurator()) {
+        return (
+            <UnauthorisedAccess></UnauthorisedAccess>
+        )
     }
 
     const questionsContainerSegmentStyle = { maxHeight: '100vh', width: "95vh" }
