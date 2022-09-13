@@ -46,7 +46,7 @@ The home page is available to all users and displays annotation results for comp
 
 The outline of the platform architecture can be seen below:
 
-![System architecture](./readme_iimages/system_architecture.png)
+![System architecture](./readme_images/system_architecture.png)
 
 ## Lambda functions
 
@@ -70,7 +70,7 @@ It is assumed that the Administrator has access to the AWS account hosting the p
 
 Documents for annotation will be stored in the S3 bucket associated with created Amplify environment. Document will also have to be uploaded by use of the AWS console. Navigate to the S3, and select the image bucket for the relevant Amplify environment. Create a “public” folder, and navigate to it. Within this folder, create new folders to subdivide the annotation documents. Documents can then be stored within these folders. These documents can then be selected from the task creation page. 
 
-- image here
+![File structure](./readme_images/file_structure.jpg)
 
 ## Curators per document
 
@@ -139,15 +139,15 @@ Now you need to create an ECR repository and create a new repository to store th
 
 Navigate to Elastic Container Registry interface and click “Create Repository” in the right hand corner.
 
-- image here
+![System architecture](./readme_images/lambda_setup_1.png)
 
 Enter the name of the repository (e.g. semantic-agreement) and click “Create repository”
 
-- image here
+![System architecture](./readme_images/lambda_setup_2.png)
 
 Navigate to the newly created repository and click “View push commands” at the top right hand corner of the site. Some instructions should be available in the format as follows:
 
-- image here
+![System architecture](./readme_images/lambda_setup_3.png)
 
 Simply copy and paste these instructions in order while within the lambda-docker folder, and the image should be built and pushed to the ECR repository.
 
@@ -155,16 +155,56 @@ Simply copy and paste these instructions in order while within the lambda-docker
 
 Navigate to the Lambda management console within the AWS user interface, and select “Create function” as shown here:
 
-- image here
+![System architecture](./readme_images/lambda_setup_4.png)
 
 Within the create function page, click “Container image”. Enter the function name (e.g. semantic-agreement) and paste the URI of the ECR repository created earlier.
 
--image here
+![System architecture](./readme_images/lambda_setup_5.png)
 
 Change the default execution to an existing one. From the dropdown, select the Lambda role associated with the project environment, which should have been created upon project initialisation.
 
 After creation, click “Add trigger” and select the “Annotation task” table for the project environment. Be sure to reduce the batch size from 100 to 20. 
 
-- image here
+![System architecture](./readme_images/lambda_setup_6.png)
 
 A final step is to change the timeout in “General configuration” from 3 secs to 60 secs, change the max memory used to 3000MB and the ephemeral storage to 2048.
+
+# Deployment
+
+To deploy the platform, navigate to the Amplify console within the AWS web user interface and select the annotation platform application. Within “Hosting environments”, connect a new branch and select the desired branch as well as the amplify environment. Make sure the GitHub account is authenticated. Confirm and deploy. The amplify.yml build file is shown here: 
+
+```sh
+version: 1
+env:
+  variables:
+    VERSION_AMPLIFY: 8.4.0
+backend:
+  phases:
+    preBuild:
+      commands:
+        - npm i aws-amplify
+        - npm i @aws-amplify/auth
+    build:
+      commands:
+        - '# Execute Amplify CLI with the helper script'
+        - amplifyPush --simple
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+```
+
+Within Rewrites and Redirects, also make sure to add the following rule:
+
+![System architecture](./readme_images/deployment_rule.png)
