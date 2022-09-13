@@ -23,7 +23,7 @@ def lambda_handler(event, context):
             continue
         else:
             task_question_id = record.get("dynamodb").get("NewImage").get("questionID").get("S")
-            task_document_title = record.get("dynamodb").get("NewImage").get("document_title").get("S")
+            task_document_title = record.get("dynamodb").get("NewImage").get("documentFileName").get("S")
         
         print("task question id:")
         print(task_question_id)
@@ -59,7 +59,7 @@ def lambda_handler(event, context):
         document_tasks = []
 
         for task in resp["Items"]:
-            if task["document_title"]["S"] == task_document_title:
+            if task["documentFileName"]["S"] == task_document_title:
                 document_tasks.append(task)
         
  
@@ -179,14 +179,14 @@ def group_tasks_by_document(tasks):
         duplicate_document = False
 
         for item in final_grouped_tasks:
-            if item[0]["document_title"]["S"] == task["document_title"]["S"]:
+            if item[0]["documentFileName"]["S"] == task["documentFileName"]["S"]:
                 duplicate_document = True 
 
         if not duplicate_document:
             grouped_tasks = []
             for result in tasks:
 
-                if result["document_title"]["S"] == task["document_title"]["S"]:
+                if result["documentFileName"]["S"] == task["documentFileName"]["S"]:
                     grouped_tasks.append(result)
 
             final_grouped_tasks.append(grouped_tasks)

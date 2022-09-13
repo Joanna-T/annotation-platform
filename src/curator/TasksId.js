@@ -276,7 +276,7 @@ const TasksId = () => {
             menuItem: 'Text labels',
             pane: (
                 <Tab.Pane key='text-labels' style={tabStyle}>
-                    {labelDescriptions && annotationPage}
+                    {labelDescriptions !== null && annotationPage}
                 </Tab.Pane>
             ),
 
@@ -403,7 +403,7 @@ const TasksId = () => {
                                 duration={400}
                                 animation="fade up"
                             >
-                                {annotationPage}
+                                {labelDescriptions && annotationPage}
                             </Transition.Group>
 
                         </Grid.Column>
