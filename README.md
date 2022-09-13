@@ -207,4 +207,10 @@ frontend:
 
 Within Rewrites and Redirects, also make sure to add the following rule:
 
-![System architecture](./readme_images/deployment_rule.png)
+Source address: </^((?!\.(css|gif|ico|jpg|js|png|txt|svg|woff|ttf)$).)*$/>
+
+Target addres: /index.html
+
+Type: 200 (Rewrite)
+
+Country code: -
