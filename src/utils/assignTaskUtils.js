@@ -6,49 +6,49 @@ export async function distributeAnnotationTasks(questionForm, medicalQuestion, c
 
   let annotationTasks = []
 
-  try {
+  //try {
 
-    let shuffledDocuments = shuffleArray(chosenDocuments)
-
-
-    let shuffledUsers = shuffleArray(curators.slice());
-
-    let documentCounter = 0;
-
-    const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
-
-    if (curators.length < minimumCuratorNumber) {
-      throw new Error("Insufficient curators to distribute tasks")
-    }
+  let shuffledDocuments = shuffleArray(chosenDocuments)
 
 
-    while (documentCounter < shuffledDocuments.length) {
-      for (let i = 0; i < minimumCuratorNumber; i++) {
-        if (shuffledUsers.length === 0) {
-          shuffledUsers = shuffleArray(curators.slice())
-        }
+  let shuffledUsers = shuffleArray(curators.slice());
 
-        let pickedDocument = shuffledDocuments[documentCounter]
-        let curator = findCurator(shuffledUsers, annotationTasks, pickedDocument);
-        let newTask = {
-          documentFileName: pickedDocument,
-          documentTitle: (await fetchDocument(pickedDocument)).title,
-          questionID: medicalQuestion.id,
-          owner: curator,
-          questionFormID: questionForm.id,
-          completed: false,
-          labels: "[]"
-        }
-        await submitTask(newTask, "AMAZON_COGNITO_USER_POOLS")
-        annotationTasks.push(newTask)
+  let documentCounter = 0;
 
-      }
-      documentCounter++;
-    }
+  const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
 
-  } catch (err) {
-    console.log(err)
+  if (curators.length < minimumCuratorNumber) {
+    throw new Error("Insufficient curators to distribute tasks")
   }
+
+
+  while (documentCounter < shuffledDocuments.length) {
+    for (let i = 0; i < minimumCuratorNumber; i++) {
+      if (shuffledUsers.length === 0) {
+        shuffledUsers = shuffleArray(curators.slice())
+      }
+
+      let pickedDocument = shuffledDocuments[documentCounter]
+      let curator = findCurator(shuffledUsers, annotationTasks, pickedDocument);
+      let newTask = {
+        documentFileName: pickedDocument,
+        documentTitle: (await fetchDocument(pickedDocument)).title,
+        questionID: medicalQuestion.id,
+        owner: curator,
+        questionFormID: questionForm.id,
+        completed: false,
+        labels: "[]"
+      }
+      await submitTask(newTask, "AMAZON_COGNITO_USER_POOLS")
+      annotationTasks.push(newTask)
+
+    }
+    documentCounter++;
+  }
+
+  // } catch (err) {
+  //   console.log(err)
+  // }
 
 }
 

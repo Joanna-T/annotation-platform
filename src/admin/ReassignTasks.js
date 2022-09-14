@@ -179,17 +179,17 @@ const ReassignTasks = () => {
                                     <Button color="green" onClick={async () => {
                                         setLoading(true)
 
-                                        let result = await createReassignedTasks(allQuestionTasks[chosenQuestion.id])
-                                        if (result !== "") {
+
+                                        try {
+                                            await createReassignedTasks(allQuestionTasks[chosenQuestion.id])
+                                            setLoading(false)
+                                            navigate("/")
+                                        } catch (err) {
                                             setWarningMessage(true)
-                                            setWarningText(result)
+                                            setWarningText(err.message)
                                             setOpen(false)
                                             setLoading(false)
                                             window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-                                        }
-                                        else {
-                                            setLoading(false)
-                                            navigate("/")
                                         }
 
                                     }}>

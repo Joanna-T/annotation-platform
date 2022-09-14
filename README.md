@@ -106,10 +106,19 @@ npm install -g docker
 
 The project can then cloned with the command whilst in an empty directory:
 ```sh
-amplify init –app <project-github-url>
+git clone https://github.com/PanSurg/annotate-it.git
+```
+
+Initialize the Amplify application with:
+```sh
+amplify init
 ```
 
 Accept all existing configurations. You will then be issued with a series of prompts. Enter the new name for the Amplify environment which will host the resources for the platform. Choose the default editor of your choice, and use the AWS profile that was set up previously. 
+
+More details are available here: 
+
+[https://docs.amplify.aws/cli/start/workflows/#amplify-console](https://docs.amplify.aws/cli/start/workflows/#amplify-console)
 
 Once the resources have been successfully set up, run the following command: 
 

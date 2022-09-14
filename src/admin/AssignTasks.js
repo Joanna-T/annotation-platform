@@ -161,6 +161,7 @@ const AssignTasks = () => {
       setWarningMessage(true)
       setSubmitOpen(false)
       setLoading(false)
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       return
     }
     let questionToSubmit = {
@@ -173,15 +174,15 @@ const AssignTasks = () => {
     }
 
     submitQuestion(questionToSubmit)
-      .then(result => {
+      .then(async result => {
 
         try {
 
-          distributeAnnotationTasks(chosenQuestionForm, result, curators, chosenDocuments)
-            .then(() => {
-              setLoading(false)
-              navigate("/")
-            })
+          await distributeAnnotationTasks(chosenQuestionForm, result, curators, chosenDocuments)
+
+          setLoading(false)
+          navigate("/")
+
 
         } catch (err) {
           console.log(err.message)
@@ -193,8 +194,10 @@ const AssignTasks = () => {
 
         }
 
+
       })
     //.catch(err => console.log(err))
+
 
   }
 

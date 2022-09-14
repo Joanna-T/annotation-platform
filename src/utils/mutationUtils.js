@@ -19,13 +19,19 @@ export async function deleteTask(taskID, authMethod) {
         id: taskID
     }
 
-    let deletedTask = await API.graphql({
-        query: deleteAnnotationTask,
-        variables: {
-            input: deleteObj
-        },
-        authMode: authMethod
-    })
+    var deletedTask
+
+    try {
+        deletedTask = await API.graphql({
+            query: deleteAnnotationTask,
+            variables: {
+                input: deleteObj
+            },
+            authMode: authMethod
+        })
+    } catch (err) {
+        console.log(err)
+    }
 
     return deletedTask
 
@@ -38,13 +44,19 @@ export async function deleteQuestion(questionID, authMethod) {
     let deleteObj = {
         id: questionID
     }
-    let deletedQuestion = await API.graphql({
-        query: deleteMedicalQuestion,
-        variables: {
-            input: deleteObj
-        },
-        authMode: authMethod
-    })
+
+    var deletedQuestion
+    try {
+        deletedQuestion = await API.graphql({
+            query: deleteMedicalQuestion,
+            variables: {
+                input: deleteObj
+            },
+            authMode: authMethod
+        })
+    } catch (err) {
+        console.log(err)
+    }
 
     return deletedQuestion
 
@@ -57,13 +69,19 @@ export async function deleteSuggestion(suggestionID, authMethod) {
     let deleteObj = {
         id: suggestionID
     }
-    let deletedSuggestion = await API.graphql({
-        query: deleteQuestionSuggestions,
-        variables: {
-            input: deleteObj
-        },
-        authMode: authMethod
-    })
+
+    var deletedSuggestion
+    try {
+        deletedSuggestion = await API.graphql({
+            query: deleteQuestionSuggestions,
+            variables: {
+                input: deleteObj
+            },
+            authMode: authMethod
+        })
+    } catch (err) {
+        console.log(err)
+    }
 
     return deletedSuggestion
 
@@ -73,13 +91,20 @@ export async function submitSuggestion(suggestion, authMethod) {
     if (!authMethod) {
         authMethod = "AMAZON_COGNITO_USER_POOLS"
     }
-    let submittedSuggestion = await API.graphql({
-        query: createQuestionSuggestions,
-        variables: {
-            input: suggestion
-        },
-        authMode: authMethod
-    })
+
+    var submittedSuggestion
+
+    try {
+        submittedSuggestion = await API.graphql({
+            query: createQuestionSuggestions,
+            variables: {
+                input: suggestion
+            },
+            authMode: authMethod
+        })
+    } catch (err) {
+        console.log(err)
+    }
 
     return submittedSuggestion
 
@@ -89,13 +114,19 @@ export async function submitTask(task, authMethod) {
     if (!authMethod) {
         authMethod = "AMAZON_COGNITO_USER_POOLS"
     }
-    let createdTask = await API.graphql({
-        query: createAnnotationTask,
-        variables: {
-            input: task
-        },
-        authMode: authMethod
-    })
+
+    var createdTask
+    try {
+        createdTask = await API.graphql({
+            query: createAnnotationTask,
+            variables: {
+                input: task
+            },
+            authMode: authMethod
+        })
+    } catch (err) {
+        console.log(err)
+    }
 
     return createdTask
 
@@ -105,26 +136,37 @@ export async function submitForm(form, authMethod) {
     if (!authMethod) {
         authMethod = "AMAZON_COGNITO_USER_POOLS"
     }
-    let createdForm = await API.graphql({
-        query: createQuestionForm,
-        variables: {
-            input: form
-        },
-        authMode: authMethod
-    })
+
+    var createdForm
+    try {
+        createdForm = await API.graphql({
+            query: createQuestionForm,
+            variables: {
+                input: form
+            },
+            authMode: authMethod
+        })
+    } catch (err) {
+        console.log(err)
+    }
 
     return createdForm
 
 }
 
 export async function updateTask(inputTask) {
-    await API.graphql({
-        query: updateAnnotationTask,
-        variables: {
-            input: inputTask
-        },
-        authMode: "AMAZON_COGNITO_USER_POOLS"
-    })
+
+    try {
+        await API.graphql({
+            query: updateAnnotationTask,
+            variables: {
+                input: inputTask
+            },
+            authMode: "AMAZON_COGNITO_USER_POOLS"
+        })
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 export async function submitQuestion(question, authMethod) {
@@ -132,13 +174,18 @@ export async function submitQuestion(question, authMethod) {
         authMethod = "AMAZON_COGNITO_USER_POOLS"
     }
 
-    const createdQuestion = await API.graphql({
-        query: createMedicalQuestion,
-        variables: {
-            input: question
-        },
-        authMode: authMethod
-    })
+    var createdQuestion
+    try {
+        createdQuestion = await API.graphql({
+            query: createMedicalQuestion,
+            variables: {
+                input: question
+            },
+            authMode: authMethod
+        })
+    } catch (err) {
+        console.log(err)
+    }
 
     return createdQuestion.data.createMedicalQuestion
 }

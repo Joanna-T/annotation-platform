@@ -58,13 +58,15 @@ const Tasks = () => {
 
                     </p>
                 </Segment>
+                {documentTitles && tasks &&
+                    <ListTasks
+                        tasks={tasks}
+                        documentTitles={documentTitles}
+                        path={"/annotation_tasks/"}>
 
-                <ListTasks
-                    tasks={tasks}
-                    documentTitles={documentTitles}
-                    path={"/annotation_tasks/"}>
+                    </ListTasks>
+                }
 
-                </ListTasks>
 
 
             </Layout>

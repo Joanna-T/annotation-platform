@@ -53,8 +53,10 @@ const ListTasks = ({ tasks, documentTitles, path }) => {
     }
     const searchTasks = () => {
         let newTasks = allTasks.filter((task) => {
-            return documentTitles[task.id].toLowerCase().includes(searchInput.toLowerCase())
+            return (documentTitles[task.id].toLowerCase().includes(searchInput.toLowerCase()) ||
+                task.question.text.toLowerCase().includes(searchInput.toLowerCase()))
         })
+
         setVisibleTasks(newTasks)
     }
 

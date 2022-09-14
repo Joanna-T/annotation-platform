@@ -37,11 +37,16 @@ export async function fetchSuggestions(authMethod) {
   if (!authMethod) {
     authMethod = "AMAZON_COGNITO_USER_POOLS"
   }
-  const suggestionsData = await API.graphql({
-    query: listQuestionSuggestions,
-    authMode: authMethod
+  var suggestionsData
+  try {
+    suggestionsData = await API.graphql({
+      query: listQuestionSuggestions,
+      authMode: authMethod
 
-  })
+    })
+  } catch (err) {
+    console.log(err)
+  }
 
   return suggestionsData.data.listQuestionSuggestions.items
 
@@ -51,22 +56,32 @@ export async function fetchQuestions(authMethod) {
   if (!authMethod) {
     authMethod = "AMAZON_COGNITO_USER_POOLS"
   }
-  const questionsData = await API.graphql({
-    query: listMedicalQuestions,
-    authMode: authMethod
+  var questionsData
+  try {
+    questionsData = await API.graphql({
+      query: listMedicalQuestions,
+      authMode: authMethod
 
-  })
+    })
+  } catch (err) {
+    console.log(err)
+  }
 
   return questionsData.data.listMedicalQuestions.items
 
 }
 
 export async function fetchTasks() {
-  const taskData = await API.graphql({
-    query: listAnnotationTasks,
-    authMode: "AMAZON_COGNITO_USER_POOLS"
+  var taskData
+  try {
+    taskData = await API.graphql({
+      query: listAnnotationTasks,
+      authMode: "AMAZON_COGNITO_USER_POOLS"
 
-  })
+    })
+  } catch (err) {
+    console.log(err)
+  }
 
   return taskData.data.listAnnotationTasks.items
 
@@ -74,11 +89,16 @@ export async function fetchTasks() {
 }
 
 export async function fetchTask(taskId) {
-  const taskData = await API.graphql({
-    query: getAnnotationTask,
-    variables: { id: taskId },
-    authMode: "AMAZON_COGNITO_USER_POOLS"
-  })
+  var taskData
+  try {
+    taskData = await API.graphql({
+      query: getAnnotationTask,
+      variables: { id: taskId },
+      authMode: "AMAZON_COGNITO_USER_POOLS"
+    })
+  } catch (err) {
+    console.log(err)
+  }
 
   return taskData.data.getAnnotationTask;
 
@@ -87,7 +107,12 @@ export async function fetchTask(taskId) {
 
 export async function fetchDocument(documentTitle) {
 
-  const text = await Storage.get(documentTitle, { download: true });
+  var text
+  try {
+    text = await Storage.get(documentTitle, { download: true });
+  } catch (err) {
+    console.log(err)
+  }
 
   const finalString = await text.Body.text();
 
@@ -98,11 +123,16 @@ export async function fetchDocument(documentTitle) {
 }
 
 export async function fetchQuestionForms() {
-  const formsData = await API.graphql({
-    query: listQuestionForms,
-    authMode: "AMAZON_COGNITO_USER_POOLS"
+  var formsData
+  try {
+    formsData = await API.graphql({
+      query: listQuestionForms,
+      authMode: "AMAZON_COGNITO_USER_POOLS"
 
-  })
+    })
+  } catch (err) {
+    console.log(err)
+  }
 
   return formsData.data.listQuestionForms.items
 }
@@ -112,11 +142,16 @@ export async function fetchQuestion(questionId, authMethod) {
   if (!authMethod) {
     authMethod = "AMAZON_COGNITO_USER_POOL"
   }
-  const questionData = await API.graphql({
-    query: getMedicalQuestion,
-    variables: { id: questionId },
-    authMode: authMethod
-  })
+  var questionData
+  try {
+    questionData = await API.graphql({
+      query: getMedicalQuestion,
+      variables: { id: questionId },
+      authMode: authMethod
+    })
+  } catch (err) {
+    console.log(err)
+  }
 
   return questionData.data.getMedicalQuestion
 }
@@ -125,11 +160,16 @@ export async function fetchQuestionForm(questionFormId, authMethod) {
   if (!authMethod) {
     authMethod = "AMAZON_COGNITO_USER_POOL"
   }
-  const formData = await API.graphql({
-    query: getQuestionForm,
-    variables: { id: questionFormId },
-    authMode: authMethod,
-  })
+  var formData
+  try {
+    formData = await API.graphql({
+      query: getQuestionForm,
+      variables: { id: questionFormId },
+      authMode: authMethod,
+    })
+  } catch (err) {
+    console.log(err)
+  }
 
   return formData.data.getQuestionForm
 }
