@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { Segment, Card } from "semantic-ui-react";
+import { Segment } from "semantic-ui-react";
 import Layout from "../common/Layout";
 import { fetchTasks } from "../utils/queryUtils"
-import { getTaskDocumentTitles } from "../utils/queryUtils";
 import ListTasks from "./ListTasks";
 import { checkIfCurator } from "../utils/authUtils";
 import UnauthorisedAccess from "../common/UnauthorisedAccess";
@@ -15,12 +14,13 @@ const Tasks = () => {
     useEffect(() => {
         fetchTasks()
             .then(results => {
-                console.log("tasks", results)
+
                 const incompleteTasks = results.filter(result => result.completed === false)
                 setTasks(incompleteTasks);
                 let titles = {}
                 incompleteTasks.map(task => {
                     titles[task.id] = task.documentTitle
+                    return null
                 })
                 setDocumentTitles(titles)
                 return incompleteTasks
@@ -46,7 +46,6 @@ const Tasks = () => {
         )
     }
 
-    const cardStyle = { "marginTop": 5, "marginBottom": 5, "textAlign": "left", "padding": "2%" }
     return (
         <div className="tasks">
 
@@ -59,12 +58,6 @@ const Tasks = () => {
 
                     </p>
                 </Segment>
-                {/* {
-                    tasks.length == 0 &&
-                    <Segment style={{ width: "100%" }}>
-                        <p>No tasks currently available</p>
-                    </Segment>
-                } */}
 
                 <ListTasks
                     tasks={tasks}

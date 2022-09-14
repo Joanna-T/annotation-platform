@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Segment, Card } from "semantic-ui-react";
+import { Segment } from "semantic-ui-react";
 import Layout from "../common/Layout";
 import { fetchQuestions } from "../utils/queryUtils";
 import { returnActiveQuestions } from "../utils/documentUtils";
@@ -29,8 +29,6 @@ const ActiveTasks = () => {
             </Layout>
         )
     }
-
-    const viewCardStyle = { "marginTop": 5, "marginBottom": 5, "textAlign": "left", "padding": "2%" }
 
     if (!checkIfAdmin()) {
         return (

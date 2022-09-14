@@ -20,7 +20,6 @@ export const checkIfAdmin = () => {
 
 export const checkIfCurator = () => {
     var userGroups = cookies.get("groups")
-    console.log("checkifcurator", userGroups)
 
     if (userGroups === undefined) {
         return false

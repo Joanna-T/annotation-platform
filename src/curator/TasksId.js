@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import AnnotationPage from "./AnnotationPage";
 import AnnotationQuestions from "./AnnotationQuestions";
 import { useNavigate } from "react-router-dom";
@@ -36,7 +36,6 @@ const TasksId = () => {
     const [answers, setAnswers] = useState(null);
 
     const [question, setQuestion] = useState(null);
-    const [questionForm, setQuestionForm] = useState(null)
     const [labelDescriptions, setLabelDescriptions] = useState(null)
 
     const [instructionsVisible, setInstructionsVisible] = useState(true);
@@ -57,7 +56,7 @@ const TasksId = () => {
             ...answers,
             [questionDescription]: questionValue
         })
-        console.log(e.target.name, e.target.value)
+
     })
 
     async function handleSubmit() {
@@ -72,6 +71,35 @@ const TasksId = () => {
         navigate("/");
     }
 
+    const storeAnswers = useCallback(async () => {
+        const submittedAnswers = JSON.stringify(answers);
+
+        if (task) {
+            const finalStoredAnswer = {
+                id: task.id,
+                question_answers: submittedAnswers
+            }
+
+            updateTask(finalStoredAnswer)
+        }
+
+    }, [answers, task])
+
+    const storeLabels = useCallback(async () => {
+        const submittedLabels = JSON.stringify(parentLabels);
+
+        if (task) {
+            const finalStoreLabels = {
+                id: task.id,
+                labels: submittedLabels
+            }
+
+            updateTask(finalStoreLabels)
+        }
+
+
+    }, [parentLabels, task])
+
 
     useEffect(() => {
         fetchTask(id)
@@ -81,21 +109,18 @@ const TasksId = () => {
                 const parsedQuestions = JSON.parse(result.questionForm.questions);
 
                 setQuestions(parsedQuestions)
-                setQuestionForm(result.questionForm)
                 setQuestion(result.question)
                 setLabelDescriptions(JSON.parse(result.question.labelDescriptions))
 
                 const savedAnswers = JSON.parse(result.question_answers);
                 setAnswers(savedAnswers);
 
-                //console.log("ansewrs, questions length", savedAnswers, parsedQuestions.length,)
-                //console.log("ansewrs, questions length", savedAnswers !== null)
                 const savedLabels = JSON.parse(result.labels);
                 setParentLabels(savedLabels);
 
                 fetchDocument(result.documentFileName)
                     .then(result => {
-                        //console.log("taskid results", result)
+
                         setDocumentText(result["abstract"] + "\n\n" + result["mainText"])
                         setDocumentTitle(result["title"])
                     })
@@ -103,19 +128,19 @@ const TasksId = () => {
 
             })
 
-    }, [])
+    }, [id])
 
     useEffect(() => {
-        //console.log("answer in parent", answers);
+
         storeAnswers();
-    }, [answers])
+    }, [answers, storeAnswers])
 
     useEffect(() => {
-        //console.log("parent labels", parentLabels);
+
         if (parentLabels) {
             storeLabels();
         }
-    }, [parentLabels])
+    }, [parentLabels, storeLabels])
 
 
 
@@ -147,40 +172,6 @@ const TasksId = () => {
         }
     }, [questionsVisible, instructionsVisible])
 
-
-    async function storeAnswers() {
-        const submittedAnswers = JSON.stringify(answers);
-
-        if (task) {
-            const finalStoredAnswer = {
-                id: task.id,
-                question_answers: submittedAnswers
-            }
-
-            updateTask(finalStoredAnswer)
-        }
-        //console.log("answer submitted")
-    }
-
-    async function storeLabels() {
-        const submittedLabels = JSON.stringify(parentLabels);
-
-        //console.log("The labels being stored are:")
-        //console.log(parentLabels);
-
-        if (task) {
-            const finalStoreLabels = {
-                id: task.id,
-                labels: submittedLabels
-            }
-
-            updateTask(finalStoreLabels)
-        }
-
-
-        //console.log("answer submitted")
-
-    }
 
     const handleLabelChange = (labels) => {
         setParentLabels(labels);
@@ -292,15 +283,6 @@ const TasksId = () => {
         },
     ]
 
-    const questionsStyle = {
-        "padding-left": "10%",
-        "padding-right": "10%",
-        color: "white"
-
-
-    }
-
-
     if (task && task.completed === true) {
         return (
             <h3>This task has already been submitted</h3>
@@ -319,7 +301,7 @@ const TasksId = () => {
                                     checked={instructionsVisible}
                                     label={{ children: <code>Instructions</code> }}
                                     onChange={(e, data) => {
-                                        console.log("data checked", data.checked)
+
                                         setInstructionsVisible(data.checked);
                                     }}
                                 />
@@ -327,7 +309,7 @@ const TasksId = () => {
                                     checked={questionsVisible}
                                     label={{ children: <code>Questions</code> }}
                                     onChange={(e, data) => {
-                                        console.log("data checked", data.checked)
+
                                         setQuestionsVisible(data.checked)
 
                                     }}

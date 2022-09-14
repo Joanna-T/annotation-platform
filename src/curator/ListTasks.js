@@ -33,7 +33,7 @@ const ListTasks = ({ tasks, documentTitles, path }) => {
         if (itemsPerPage >= visibleTasks.length) {
             activeTasks = visibleTasks
         } else {
-            console.log("activepage", activePage)
+
             let startIndex = ((activePage - 1) * itemsPerPage)
             activeTasks = visibleTasks.slice(startIndex, startIndex + itemsPerPage)
         }

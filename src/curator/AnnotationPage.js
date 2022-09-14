@@ -26,7 +26,7 @@ const AnnotationPage = ({ annotationText, handleLabelChange, parentLabels, label
   }
 
   const handleChange = label => {
-    console.log(label)
+
     handleLabelChange(label);
   }
 
@@ -46,7 +46,7 @@ const AnnotationPage = ({ annotationText, handleLabelChange, parentLabels, label
         labelDescriptions && labelDescriptions.map(labelDescription => {
           return (
             <Button key={labelDescription.buttonColour} inverted color={labelDescription.buttonColour}
-              active={(tag == labelDescription.tagName)}
+              active={(tag === labelDescription.tagName)}
               onClick={() => setTag(labelDescription.tagName)}>
               {labelDescription.tagName}
             </Button>

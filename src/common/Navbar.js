@@ -1,10 +1,11 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Auth, Hub } from "aws-amplify";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { Menu, Icon, Dropdown } from "semantic-ui-react";
+import { Menu, Icon } from "semantic-ui-react";
 import useWindowSize from "./useWindowSize";
 import Cookies from 'universal-cookie';
+import { useCallback } from "react";
 
 
 const Navbar = () => {
@@ -15,7 +16,37 @@ const Navbar = () => {
     const location = useLocation()
     const [currentItem, setCurrentItem] = useState("Home")
 
-    const cookies = new Cookies();
+    const cookies = useMemo(() => new Cookies(), [])
+
+    const authListener = useCallback(async () => {
+        Hub.listen("auth", (data) => {
+            switch (data.payload.event) {
+                case "signin":
+                    return setSignedUser(true);
+                case "signout":
+                    setAdmin(false);
+                    return setSignedUser(false);
+                default:
+                    return null
+
+            }
+        })
+        try {
+            const user = await Auth.currentAuthenticatedUser();
+            const groups = user.signInUserSession.accessToken.payload["cognito:groups"];
+
+            setUserEmail(user.attributes.email)
+            if (groups) {
+                if (groups.includes("Admin")) {
+                    setAdmin(true);
+                }
+                cookies.set('groups', groups, { path: '/' });
+            }
+
+            setSignedUser(true);
+
+        } catch (err) { }
+    }, [cookies])
 
     useEffect(() => {
 
@@ -39,35 +70,9 @@ const Navbar = () => {
 
     useEffect(() => {
         authListener();
-    }, [])
+    }, [authListener])
 
-    async function authListener() {
-        Hub.listen("auth", (data) => {
-            switch (data.payload.event) {
-                case "signin":
-                    return setSignedUser(true);
-                case "signout":
-                    setAdmin(false);
-                    return setSignedUser(false);
 
-            }
-        })
-        try {
-            const user = await Auth.currentAuthenticatedUser();
-            const groups = user.signInUserSession.accessToken.payload["cognito:groups"];
-
-            setUserEmail(user.attributes.email)
-            if (groups) {
-                if (groups.includes("Admin")) {
-                    setAdmin(true);
-                }
-                cookies.set('groups', groups, { path: '/' });
-            }
-
-            setSignedUser(true);
-
-        } catch (err) { }
-    }
 
 
     return (
@@ -184,8 +189,8 @@ const Navbar = () => {
                         name='SignIn'
                         active={currentItem === 'SignIn'}
                         onClick={() => handleItemClick('SignIn')}
-                    >Sign In</Menu.Item>
-                    // ><Icon name="sign-in"></Icon>{size.width > 940 ? "  Sign in" : ""}</Menu.Item> //changes here to icon and text 
+                    //>Sign In</Menu.Item>
+                    ><Icon name="sign-in"></Icon>{size.width > 940 ? "  Sign in" : ""}</Menu.Item> //changes here to icon and text 
                 )
             }
 
@@ -210,8 +215,8 @@ const Navbar = () => {
                             handleItemClick('SignOut');
                             signOut();
                         }}
-                    >Sign out</Menu.Item>
-                    // ><Icon name="sign-out"></Icon>{size.width > 940 ? "  Sign out" : ""}</Menu.Item> //changes here to icon and text
+                    //>Sign out</Menu.Item>
+                    ><Icon name="sign-out"></Icon>{size.width > 940 ? "  Sign out" : ""}</Menu.Item> //changes here to icon and text
                 )
             }
 

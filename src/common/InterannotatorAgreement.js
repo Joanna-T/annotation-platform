@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Icon, Button, Modal, Segment } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 import { memo } from "react";
+import { colours } from "./commonConstants";
 
 const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
 
@@ -25,7 +26,7 @@ const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
 
     if (score <= 0) {
       return "No agreement"
-      //return "(Poor agreement)"
+      //return "(Poor agreement)" //Cohen agreement threshold
     }
     if (score <= 0.2) {
       return "(No agreement)"
@@ -51,16 +52,6 @@ const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
       return "Insufficient results"
     }
   }
-
-  const colours = [
-    "#009E73",
-    "#F0E442",
-    "#56B4E9",
-    "#E69F00",
-    "#CC79A7",
-    "#D55E00"
-  ]
-
 
   const marginProperties = { top: 50, right: 50, bottom: 50, left: 100 }
   const containerDivStyle = { textAlign: "center", "maxHeight": "50vh", "overflow": "auto" }
@@ -96,6 +87,7 @@ const InterannotatorAgreement = ({ medicalQuestion, grouped_tasks }) => {
                 <p key={innerIndex} style={{ display: "inline" }}>{option}<Icon style={{ color: keyColor }} name="circle"></Icon></p>
               )
             }
+            return ""
 
           })}
           <ResponsiveBar

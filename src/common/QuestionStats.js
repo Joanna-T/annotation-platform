@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Icon, Segment } from "semantic-ui-react";
 import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 import { memo } from "react";
+import { colours } from "./commonConstants";
 
 const QuestionStats = ({ questionAnswers, questionForm }) => {
   const [formQuestions, setFormQuestions] = useState([]);
@@ -9,20 +10,18 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
 
 
   useEffect(() => {
-    //console.log("Answers", questionAnswers);
-    //console.log("form", questionForm)
     createBarData(questionAnswers, questionForm)
   }, [questionAnswers, questionForm])
 
   async function createBarData(answers, inputQuestionsForm) {
     let questions = JSON.parse(inputQuestionsForm.questions);
-    //console.log("createbardataanswers", answers)
+
     setFormQuestions(questions)
-    //console.log("createBarData");
+
     let allDataItems = [];
-    let kappaValues = [];
+
     for (let i = 0; i < questions.length; i++) {
-      //console.log("createBarData", questions[i])
+
       let newQuestion = {
         "category": questions[i].question_description,
 
@@ -44,18 +43,11 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
       }
       allDataItems.push(newQuestion)
     }
-    //console.log("ENDcreatebardata", allDataItems)
+
     setBarData([...allDataItems])
   }
 
-  const colours = [
-    "#009E73",
-    "#F0E442",
-    "#56B4E9",
-    "#E69F00",
-    "#CC79A7",
-    "#D55E00"
-  ]
+
 
   const orderColours = (item, option) => {
     let index = 0
@@ -93,7 +85,7 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
           {formQuestions[index].options.map((option, innerIndex) => {
             let coloursIndex = orderColours(item, option)
             let keyColor = colours[coloursIndex - 1];
-            //console.log("KEY COLOR", keyColor)
+
             return (
               <p key={option} style={{ display: "inline" }}>{option}<Icon style={{ color: keyColor }} name="circle"></Icon></p>
 
@@ -108,6 +100,7 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
             padding={0.3}
             height={20}
             colors={colours}
+
 
 
             legends={[

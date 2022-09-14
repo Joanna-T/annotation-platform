@@ -9,7 +9,6 @@ import { returnCompletedQuestions } from "../utils/documentUtils";
 const Home = () => {
 
     const [allQuestions, setAllQuestions] = useState([])
-    const [admin, setAdmin] = useState(false)
     const [open, setOpen] = useState(false)
     const [confirmationMessage, setConfirmationMessage] = useState(false)
     const [suggestionInput, setSuggestionInput] = useState("")
@@ -47,7 +46,7 @@ const Home = () => {
         if (itemsPerPage >= visibleQuestions.length) {
             activeQuestions = visibleQuestions
         } else {
-            console.log("activepage", activePage)
+
             let startIndex = ((activePage - 1) * itemsPerPage)
             activeQuestions = visibleQuestions.slice(startIndex, startIndex + itemsPerPage)
         }

@@ -18,15 +18,15 @@ const DocumentSelection = ({ documents, folders, chosenDocuments, chosenFolders,
     const [documentTextFile, setDocumentTextFile] = useState("")
 
     const findFilesForFolder = (folderName) => {
-        //console.log("findFilesForFolder", documents)
+
         const filesForFolder = documents.filter(document => {
-            return document.slice(0, folderName.length) == folderName
+            return document.slice(0, folderName.length) === folderName
         })
-        //console.log("findFilesForFolder", filesForFolder)
+
         return filesForFolder
     }
     useEffect(() => {
-        //console.log("document selection", folders, chosenDocuments, documents)
+
     }, [folders])
 
     async function displayDocumentText(file) {

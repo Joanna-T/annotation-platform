@@ -1,27 +1,19 @@
 import { useState } from "react";
 import {
     Segment,
-    Button,
-    Input,
     Label,
     Card,
     Accordion,
     Icon,
     Checkbox,
-    Message,
-    Modal,
-    List,
-    Tab
 } from "semantic-ui-react";
 
 
 const FormSelection = ({ questionForms, chosenQuestionForm, setChosenQuestionForm }) => {
-    //const [questionForms, setQuestionForms] = useState(null);
-    //const [chosenQuestionForm, setChosenQuestionForm] = useState(null);
     const [activeIndex, setActiveIndex] = useState(null);
 
     const handleAccordionClick = (index) => {
-        //console.log(index);
+
         if (index === activeIndex) {
             setActiveIndex(-1);
             return

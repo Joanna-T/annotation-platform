@@ -18,6 +18,7 @@ export async function deleteTask(taskID, authMethod) {
     let deleteObj = {
         id: taskID
     }
+
     let deletedTask = await API.graphql({
         query: deleteAnnotationTask,
         variables: {
@@ -25,7 +26,7 @@ export async function deleteTask(taskID, authMethod) {
         },
         authMode: authMethod
     })
-    //console.log("this is the final deleted task", deletedQuestion)
+
     return deletedTask
 
 }
@@ -44,7 +45,7 @@ export async function deleteQuestion(questionID, authMethod) {
         },
         authMode: authMethod
     })
-    //console.log("this is the final deleted question", deletedQuestion)
+
     return deletedQuestion
 
 }
@@ -63,7 +64,7 @@ export async function deleteSuggestion(suggestionID, authMethod) {
         },
         authMode: authMethod
     })
-    //console.log("this is the final submitted task", deletedSuggestion)
+
     return deletedSuggestion
 
 }
@@ -79,7 +80,7 @@ export async function submitSuggestion(suggestion, authMethod) {
         },
         authMode: authMethod
     })
-    //console.log("this is the final submitted task", submittedSuggestion)
+
     return submittedSuggestion
 
 }
@@ -95,7 +96,7 @@ export async function submitTask(task, authMethod) {
         },
         authMode: authMethod
     })
-    //console.log("this is the final submitted task", createdTasks)
+
     return createdTask
 
 }
@@ -111,7 +112,7 @@ export async function submitForm(form, authMethod) {
         },
         authMode: authMethod
     })
-    //console.log("this is the final submitted task", createdTasks)
+
     return createdForm
 
 }
@@ -138,7 +139,7 @@ export async function submitQuestion(question, authMethod) {
         },
         authMode: authMethod
     })
-    //console.log("this is the created question", createdQuestion.data.createMedicalQuestion);
+
     return createdQuestion.data.createMedicalQuestion
 }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, Segment, Label, Button, Icon, Message, Modal } from "semantic-ui-react";
 import { groupTasksByDocument, findCompletedTasks } from "../utils/documentUtils";
 import { createReassignedTasks } from "../utils/reassignTaskUtils";
@@ -24,22 +24,13 @@ const ReassignTasks = () => {
 
     const minimumRequiredCurators = process.env.REACT_APP_NUMBER_CURATORS
 
-    useEffect(() => {
-        fetchQuestions("AMAZON_COGNITO_USER_POOLS").then(result => {
-            findIncompleteQuestions(result);
-        })
-    }, [])
-
-    const findIncompleteQuestions = (questions) => {
+    const findIncompleteQuestions = useCallback((questions) => {
         let questionItems = {};
         let tempIncompleteQuestions = []
-        console.log(questions)
-
-
 
         for (const question of questions) {
             let questionTasks = groupTasksByDocument(question.tasks.items)
-            console.log(questionTasks)
+
             for (const tasks of questionTasks) {
                 let numCompletedTasks = tasks.filter(task => task.completed === true).length;
                 if (numCompletedTasks < minimumRequiredCurators) {
@@ -50,11 +41,18 @@ const ReassignTasks = () => {
             }
         }
 
-        console.log(tempIncompleteQuestions)
         setIncompleteQuestions(tempIncompleteQuestions)
         setAllQuestionTasks(questionItems)
-        console.log("function finished")
-    }
+
+    }, [minimumRequiredCurators])
+
+    useEffect(() => {
+        fetchQuestions("AMAZON_COGNITO_USER_POOLS").then(result => {
+            findIncompleteQuestions(result);
+        })
+    }, [findIncompleteQuestions])
+
+
 
     const findTotalTasks = (questionID) => {
         return allQuestionTasks[questionID].length;
@@ -180,8 +178,9 @@ const ReassignTasks = () => {
                                     :
                                     <Button color="green" onClick={async () => {
                                         setLoading(true)
+
                                         let result = await createReassignedTasks(allQuestionTasks[chosenQuestion.id])
-                                        if (result != "") {
+                                        if (result !== "") {
                                             setWarningMessage(true)
                                             setWarningText(result)
                                             setOpen(false)

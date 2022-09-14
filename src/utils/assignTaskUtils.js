@@ -2,30 +2,23 @@ import { Storage } from "aws-amplify";
 import { submitTask } from "./mutationUtils";
 import { fetchDocument } from "./queryUtils";
 
-export async function distributeAnnotationTasks(questionForm, documentFolder, medicalQuestion, curators, chosenDocuments) {
-  console.log("distributetasks")
-  console.log(chosenDocuments)
-  let annotationTasks = []
-  //console.log("distributeAT inputs", questionForm, "folder", documentFolder, "curators", curators, "queaiton", medicalQuestion)
-  try {
+export async function distributeAnnotationTasks(questionForm, medicalQuestion, curators, chosenDocuments) {
 
-    //change filter documents to chosen files
-    // documents = await Storage.list(documentFolder)
-    // let filterDocuments = documents.filter(document => document.key[document.key.length - 1] !== "/")
-    // let shuffledDocuments = shuffleArray(filterDocuments);
+  let annotationTasks = []
+
+  try {
 
     let shuffledDocuments = shuffleArray(chosenDocuments)
 
 
     let shuffledUsers = shuffleArray(curators.slice());
-    console.log("distribute tasks", shuffledUsers, shuffledDocuments);
 
     let documentCounter = 0;
 
     const minimumCuratorNumber = process.env.REACT_APP_NUMBER_CURATORS;
 
     if (curators.length < minimumCuratorNumber) {
-      throw "Insufficient curators to distribute tasks"
+      throw new Error("Insufficient curators to distribute tasks")
     }
 
 
@@ -38,7 +31,6 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
         let pickedDocument = shuffledDocuments[documentCounter]
         let curator = findCurator(shuffledUsers, annotationTasks, pickedDocument);
         let newTask = {
-          // document_title: pickedDocument,
           documentFileName: pickedDocument,
           documentTitle: (await fetchDocument(pickedDocument)).title,
           questionID: medicalQuestion.id,
@@ -53,7 +45,6 @@ export async function distributeAnnotationTasks(questionForm, documentFolder, me
       }
       documentCounter++;
     }
-    console.log("These are the annotation tasks", annotationTasks)
 
   } catch (err) {
     console.log(err)
@@ -65,9 +56,10 @@ const findCurator = (curators, annotationTasks, document) => {
   let chosenCurator;
   let prevCurators = []
   annotationTasks.map(task => {
-    if (task.document_title == document) {
+    if (task.document_title === document) {
       prevCurators.push(task.owner)
     }
+    return null
   }
   )
 
@@ -94,14 +86,13 @@ function shuffleArray(array) {
 export async function fetchDocumentsAndFolders() {
 
   let result = await Storage.list("")
-  console.log("fetchDocumentFolders", result)
 
   let files = []
   let folders = []
 
   result.forEach(res => {
     if (res.size) {
-      //files.push(res)
+
       let possibleFile = res.key.split('/')
       if (possibleFile.length === 2) {
         files.push(res.key)
@@ -114,10 +105,8 @@ export async function fetchDocumentsAndFolders() {
       folders.push(res.key)
     }
   })
-  console.log("possiblefiles", files)
-  console.log("fetcDocumentFolders", folders)
+
   const filteredFolders = folders.filter(folder => folder.includes("/"))
-  console.log("filteredFolders", filteredFolders)
 
   return [filteredFolders, files]
 

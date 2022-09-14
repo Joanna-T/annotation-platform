@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
 import { Segment, Card, Input, Pagination, Button } from "semantic-ui-react";
-import Layout from "../common/Layout";
-import { fetchQuestions } from "../utils/queryUtils";
-import { returnActiveQuestions } from "../utils/documentUtils";
 import { itemsPerPage } from "./adminConstants";
 
 const ListQuestions = ({ questions, path }) => {
@@ -35,7 +32,7 @@ const ListQuestions = ({ questions, path }) => {
         if (itemsPerPage >= visibleQuestions.length) {
             activeQuestions = visibleQuestions
         } else {
-            //console.log("activepage", activePage)
+
             let startIndex = ((activePage - 1) * itemsPerPage)
             activeQuestions = visibleQuestions.slice(startIndex, startIndex + itemsPerPage)
         }

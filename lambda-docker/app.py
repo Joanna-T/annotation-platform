@@ -4,8 +4,8 @@ import boto3
 import spacy
 
 dynamodb_client = boto3.client('dynamodb', region_name="eu-west-2")
-medicalQuestionTable = "MedicalQuestion-kqekm2jpfndc5c3rjjb3xpdbgi-local"
-annotationTaskTable = 'AnnotationTask-kqekm2jpfndc5c3rjjb3xpdbgi-local'
+medicalQuestionTable = "MedicalQuestion-<your-api-endpoint>-<your-environment>"
+annotationTaskTable = 'AnnotationTask-<your-api-endpoint>-<your-environment>'
 number_required_annotators = 2
 
 
@@ -121,9 +121,6 @@ def lambda_handler(event, context):
                 string2 = model(concatonated_text[j])
                 #remove stop words
                 string2_no_stop = model(' '.join([str(t) for t in string2 if not t.is_stop]))
-
-                # similarity_score = string1.similarity(string2)
-                # similarity_scores.append(string1.similarity(string2))
 
                 similarity_score = string1_no_stop.similarity(string2_no_stop)
                 similarity_scores.append(string1_no_stop.similarity(string2_no_stop))

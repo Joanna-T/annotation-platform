@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Segment,
     Button,
@@ -9,31 +9,14 @@ import {
 } from "semantic-ui-react";
 import { submitForm } from "../utils/mutationUtils";
 
-// [
-//     {
-//         "question_text": "Is this data relevant to the curation question",
-//         "question_type": "radio",
-//         "options": [
-//             "Relevant",
-//             "Irrelevant"
-//         ],
-//         "question_description": "Relevance"
-//     }
-// ]
+
 const QuestionFormCreation = ({ setWarningMessage, setWarningText }) => {
     const [createdQuestions, setCreatedQuestions] = useState([])
     const [formName, setFormName] = useState("")
 
-    useEffect(() => {
-        console.log("createdQuestion", createdQuestions)
-    }, [createdQuestions])
 
     const updateQuestionText = (text, index) => {
-        // var updatedQuestion = { ...createdQuestions }
-        // updatedQuestion[index].question_text = text
-        // let updatedObject = {
-        //     question_text: text
-        // }
+
         setCreatedQuestions(createdQuestions.map((question, innerIndex) =>
             (innerIndex === index) ? {
                 ...question,
@@ -43,11 +26,7 @@ const QuestionFormCreation = ({ setWarningMessage, setWarningText }) => {
     }
 
     const updateQuestionCategory = (text, index) => {
-        // var updatedQuestion = { ...createdQuestions }
-        // updatedQuestion[index].question_description = text
-        // let updatedObject = {
-        //     question_description: text
-        // }
+
         setCreatedQuestions(createdQuestions.map((question, innerIndex) =>
             (innerIndex === index) ? {
                 ...question,
@@ -57,14 +36,8 @@ const QuestionFormCreation = ({ setWarningMessage, setWarningText }) => {
     }
 
     const updateQuestionOptions = (text, index, optionIndex) => {
-        //var updatedQuestion = createdQuestions
+
         var updatedQuestion = { ...createdQuestions }
-        //updatedQuestion[index].options[optionIndex] = text
-        // let updatedObject = {
-        //     options: updatedQuestion[index].options.map((option, innerOptionIndex) =>
-        //         (optionIndex === innerOptionIndex) ? text : option
-        //     )
-        // }
 
         let updatedObject = updatedQuestion[index].options.map((option, innerOptionIndex) =>
             (optionIndex === innerOptionIndex) ? text : option
@@ -79,9 +52,7 @@ const QuestionFormCreation = ({ setWarningMessage, setWarningText }) => {
     }
 
     const addOption = (index) => {
-        // let updatedObject = {
-        //     options: [...createdQuestions]
-        // }
+
         setCreatedQuestions(createdQuestions.map((question, innerIndex) =>
             (innerIndex === index) ? {
                 ...question,
@@ -127,7 +98,7 @@ const QuestionFormCreation = ({ setWarningMessage, setWarningText }) => {
     }
 
     async function submitCreatedQuestionForm() {
-        console.log("submit", createdQuestions)
+
         if (createdQuestions.length === 0) {
             setWarningMessage(true)
             setWarningText("Please enter atleast one question to create new form")
@@ -150,8 +121,6 @@ const QuestionFormCreation = ({ setWarningMessage, setWarningText }) => {
             questions: JSON.stringify(createdQuestions)
         }
 
-        console.log("form to submit", formToSubmit)
-
         await submitForm(formToSubmit)
         setCreatedQuestions([])
         setFormName("")
@@ -172,7 +141,9 @@ const QuestionFormCreation = ({ setWarningMessage, setWarningText }) => {
                 if (option === "") {
                     incompleteField = true
                 }
+                return true
             })
+            return true
         })
 
         return incompleteField

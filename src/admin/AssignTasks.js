@@ -4,19 +4,15 @@ import {
   Button,
   Input,
   Label,
-  Card,
-  Accordion,
   Icon,
-  Checkbox,
   Message,
   Modal,
-  List,
   Tab
 } from "semantic-ui-react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../common/Layout";
 import { fetchQuestionForms, listCurators, fetchSuggestions } from "../utils/queryUtils";
-import { submitQuestion, deleteSuggestion } from "../utils/mutationUtils";
+import { submitQuestion } from "../utils/mutationUtils";
 import { distributeAnnotationTasks } from "../utils/assignTaskUtils";
 import { fetchDocumentsAndFolders } from "../utils/assignTaskUtils";
 import DocumentSelection from "./DocumentSelection";
@@ -25,13 +21,11 @@ import { isValidURL } from "../utils/assignTaskUtils";
 import QuestionFormCreation from "./QuestionFormCreation";
 import SuggestionSelection from "./SuggestionSelection";
 import FormSelection from "./FormSelection";
-//import Cookies from 'universal-cookie';
 import { checkIfAdmin } from "../utils/authUtils";
 import UnauthorisedAccess from "../common/UnauthorisedAccess";
 
 
 const AssignTasks = () => {
-  //const cookies = new Cookies();
 
   const [medicalQuestion, setMedicalQuestion] = useState("");
   const [instructionLink, setInstructionLink] = useState("")
@@ -41,11 +35,9 @@ const AssignTasks = () => {
   const [currentLabel, setCurrentLabel] = useState("")
 
   const [folders, setFolders] = useState(null)
-  const [chosenFolder, setChosenFolder] = useState(null)
 
   const [questionForms, setQuestionForms] = useState(null);
   const [chosenQuestionForm, setChosenQuestionForm] = useState(null);
-  const [activeIndex, setActiveIndex] = useState(null);
 
   const [submitOpen, setSubmitOpen] = useState(false)
 
@@ -66,7 +58,7 @@ const AssignTasks = () => {
 
   const navigate = useNavigate();
   useEffect(() => {
-    //console.log("cookie", cookies.get("groups"))
+
     fetchDocumentsAndFolders()
       .then(result => {
         setFolders(result[0])
@@ -91,9 +83,9 @@ const AssignTasks = () => {
     const folderFiles = documents.filter(document => {
       return document.slice(0, folder.length) === folder
     })
-    //console.log("folderfiles", folderFiles)
+
     if (data.checked) {
-      //console.log("handlefolderscheckbox entered if")
+
       setChosenFolders([...chosenFolders, folder]);
       let filesToAdd = []
       folderFiles.forEach(file => {
@@ -103,7 +95,7 @@ const AssignTasks = () => {
       })
       setChosenDocuments([...chosenDocuments, ...filesToAdd])
     } else {
-      setChosenFolders(chosenFolders.filter(folder => folder !== folder));
+      setChosenFolders(chosenFolders.filter(chosenFolder => chosenFolder !== folder));
       setChosenDocuments(chosenDocuments.filter(document => !folderFiles.includes(document)))
 
     }
@@ -143,7 +135,7 @@ const AssignTasks = () => {
 
   const addLabel = () => {
     var newLabel = {};
-    if (labels.length < 7 && currentLabel !== "") {
+    if (labels.length < labelColours.length && currentLabel !== "") {
       for (let i = 0; i < labelColours.length; i++) {
 
         let labelColourAlreadyUsed = labels.filter(result => result.buttonColour === labelColours[i].buttonColour)
@@ -185,20 +177,24 @@ const AssignTasks = () => {
 
         try {
 
-          distributeAnnotationTasks(chosenQuestionForm, chosenFolder, result, curators, chosenDocuments)
+          distributeAnnotationTasks(chosenQuestionForm, result, curators, chosenDocuments)
             .then(() => {
               setLoading(false)
               navigate("/")
             })
 
         } catch (err) {
-          console.log(err)
+          console.log(err.message)
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
           setWarningMessage(true)
-          setWarningText(err)
+          setWarningText(err.message)
+          setSubmitOpen(false)
+          setLoading(false)
+
         }
 
       })
-      .catch(err => console.log(err))
+    //.catch(err => console.log(err))
 
   }
 
@@ -290,7 +286,7 @@ const AssignTasks = () => {
         <Input value={instructionLink} fluid icon='linkify' placeholder='Link here...' onChange={event => handleInstructionLinkChange(event.target.value)} />
       </Segment>
 
-      {chosenDocuments.length === 0 || !chosenQuestionForm || !medicalQuestion || !linkIsValid || labels.length === 0 ? //{!chosenFolder || 
+      {chosenDocuments.length === 0 || !chosenQuestionForm || !medicalQuestion || !linkIsValid || labels.length === 0 ?
         <Button
           color='grey'
           onClick={() => {
@@ -302,7 +298,7 @@ const AssignTasks = () => {
         </Button>
         :
         <Modal
-          submitOpen={submitOpen}
+          open={submitOpen}
           onClose={() => setSubmitOpen(false)}
           onOpen={() => setSubmitOpen(true)}
           trigger={<Button
@@ -311,7 +307,7 @@ const AssignTasks = () => {
           </Button>}
         >
           <Modal.Header> Are you sure you want to create new tasks?</Modal.Header>
-          <Modal.Content>Documents from {chosenFolder} will be distributed to curators.</Modal.Content>
+          <Modal.Content>Documents for annotation will be distributed to curators.</Modal.Content>
           <Modal.Actions>
             {
               loading ?

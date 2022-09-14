@@ -1,6 +1,6 @@
 export const labelColours = [
     {
-        buttonColour: "red",
+        buttonColour: "red", //semantic ui react button colour preset
         labelColour: "#ff928a"
     },
     {
@@ -26,7 +26,21 @@ export const labelColours = [
     {
         buttonColour: "black",
         labelColour: "#cccccc"
+    },
+    {
+        buttonColour: "orange",
+        labelColour: "#ffb463"
+    },
+    {
+        buttonColour: "violet",
+        labelColour: "#a699f2"
+    },
+    {
+        buttonColour: "olive",
+        labelColour: "#d7eba7"
     }
+
+
 ]
 
 export const itemsPerPage = 5

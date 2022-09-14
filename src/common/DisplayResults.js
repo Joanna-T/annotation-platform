@@ -1,11 +1,11 @@
 import { Button, Grid, Segment, Modal, Dropdown, Tab, Label } from "semantic-ui-react";
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import TextHeatMap from "./TextHeatMap"
 import QuestionStats from "./QuestionStats";
 import InterannotatorAgreement from "./InterannotatorAgreement";
 import { fetchQuestion, fetchQuestionForm } from "../utils/queryUtils";
-import { fetchDocument, getTaskDocumentTitles } from "../utils/queryUtils";
+import { fetchDocument } from "../utils/queryUtils";
 import useWindowSize from "./useWindowSize";
 
 
@@ -32,11 +32,42 @@ const DisplayResults = () => {
   //stores all task data seen so far
   const [storedDocumentInfo, setStoredDocumentInfo] = useState({})
 
+  const parseQuestionAnswers = useCallback(() => {
+    let answers = [];
+    for (let i = 0; i < currentTasks.length; i++) {
+      let parsedAnswers = JSON.parse(currentTasks[i].question_answers);
+      answers.push(parsedAnswers);
+    }
+
+    setQuestionAnswers(answers);
+  }, [currentTasks])
+
+  const parseLabels = useCallback(() => {
+    let labels = []
+    for (let i = 0; i < currentTasks.length; i++) {
+      let parsedLabels = JSON.parse(currentTasks[i].labels);
+      labels.push(...parsedLabels);
+    }
+    setDocumentLabels(labels);
+  }, [currentTasks])
+
+  //sets data for the current chosen document
+  const retrieveStoredDocumentData = useCallback((documentTitle) => {
+    parseLabels();
+    parseQuestionAnswers();
+    setQuestionForms(storedDocumentInfo[documentTitle]["questionFormData"])
+    setDocumentText(storedDocumentInfo[documentTitle]["documentData"]["abstract"] + "\n\n" + storedDocumentInfo[documentTitle]["documentData"]["mainText"]);
+    setDocumentTitle(storedDocumentInfo[documentTitle]["documentData"]["title"])
+    setmedicalQuestion(storedDocumentInfo[documentTitle]["medicalQuestionData"])
+    setSemanticAgreement(JSON.parse(JSON.parse(storedDocumentInfo[documentTitle]["medicalQuestionData"].semanticAgreement)))
+    setLabelDescriptions(JSON.parse(storedDocumentInfo[documentTitle]["medicalQuestionData"].labelDescriptions))
+  }, [parseLabels, parseQuestionAnswers, storedDocumentInfo])
+
   useEffect(() => {
 
     setAllTasks(findGroupedDocuments(chosenTasks));
     setCurrentTasks(annotationTasks);
-    console.log(chosenTasks)
+
     let taskDocumentTitles = {}
     chosenTasks.map(tasks => {
       return (
@@ -44,19 +75,9 @@ const DisplayResults = () => {
       )
     })
 
-    console.log(taskDocumentTitles)
     setDocumentTitles(taskDocumentTitles)
 
-    // getTaskDocumentTitles(
-    //   chosenTasks.map(tasks => tasks[0])
-    // )
-    //   .then(result => {
-    //     console.log("results", result)
-    //     setDocumentTitles(taskDocumentTitles)
-
-    //     //setDocumentTitles(result)
-    //   })
-  }, [])
+  }, [annotationTasks, chosenTasks])
 
   useEffect(() => {
 
@@ -64,7 +85,7 @@ const DisplayResults = () => {
       retrieveStoredDocumentData(currentTasks[0].documentFileName)
     }
 
-  }, [storedDocumentInfo])
+  }, [storedDocumentInfo, currentTasks, retrieveStoredDocumentData])
 
 
   useEffect(() => {
@@ -94,19 +115,9 @@ const DisplayResults = () => {
       retrieveStoredDocumentData(currentTasks[0].documentFileName)
     }
 
-  }, [currentTasks])
+  }, [currentTasks, retrieveStoredDocumentData, storedDocumentInfo])
 
-  //sets data for the current chosen document
-  const retrieveStoredDocumentData = (documentTitle) => {
-    parseLabels();
-    parseQuestionAnswers();
-    setQuestionForms(storedDocumentInfo[documentTitle]["questionFormData"])
-    setDocumentText(storedDocumentInfo[documentTitle]["documentData"]["abstract"] + "\n\n" + storedDocumentInfo[documentTitle]["documentData"]["mainText"]);
-    setDocumentTitle(storedDocumentInfo[documentTitle]["documentData"]["title"])
-    setmedicalQuestion(storedDocumentInfo[documentTitle]["medicalQuestionData"])
-    setSemanticAgreement(JSON.parse(JSON.parse(storedDocumentInfo[documentTitle]["medicalQuestionData"].semanticAgreement)))
-    setLabelDescriptions(JSON.parse(storedDocumentInfo[documentTitle]["medicalQuestionData"].labelDescriptions))
-  }
+
 
 
 
@@ -120,25 +131,6 @@ const DisplayResults = () => {
     return groupedDoc
   }
 
-  const parseQuestionAnswers = () => {
-    let answers = [];
-    for (let i = 0; i < currentTasks.length; i++) {
-      let parsedAnswers = JSON.parse(currentTasks[i].question_answers);
-      answers.push(parsedAnswers);
-    }
-
-    setQuestionAnswers(answers);
-  }
-
-  const parseLabels = () => {
-    let labels = []
-    for (let i = 0; i < currentTasks.length; i++) {
-      let parsedLabels = JSON.parse(currentTasks[i].labels);
-      labels.push(...parsedLabels);
-    }
-    setDocumentLabels(labels);
-  }
-
   const getDocumentOptions = () => {
     let options = []
     Object.keys(allTasks).map((document, index) => {
@@ -147,6 +139,7 @@ const DisplayResults = () => {
         text: documentTitles[allTasks[document][0].id],
         value: document
       })
+      return true
     })
 
     return options
@@ -217,7 +210,7 @@ const DisplayResults = () => {
           labelDescriptions && labelDescriptions.map(labelDescription => {
             return (
               <Button key={labelDescription.buttonColour} inverted color={labelDescription.buttonColour}
-                active={(tag == labelDescription.tagName)}
+                active={(tag === labelDescription.tagName)}
                 onClick={() => setTag(labelDescription.tagName)}>
                 {labelDescription.tagName}
               </Button>

@@ -29,8 +29,7 @@ export async function listCurators() {
   nextToken = NextToken;
   let users = [];
   rest.Users.map(user => users.push(user.Username))
-  //console.log("curators")
-  //console.log(users)
+
   return users;
 }
 
@@ -43,7 +42,7 @@ export async function fetchSuggestions(authMethod) {
     authMode: authMethod
 
   })
-  //console.log("questions", suggestionsData.data.listQuestionSuggestions.items);
+
   return suggestionsData.data.listQuestionSuggestions.items
 
 }
@@ -57,7 +56,7 @@ export async function fetchQuestions(authMethod) {
     authMode: authMethod
 
   })
-  console.log("questions", questionsData);
+
   return questionsData.data.listMedicalQuestions.items
 
 }
@@ -68,7 +67,7 @@ export async function fetchTasks() {
     authMode: "AMAZON_COGNITO_USER_POOLS"
 
   })
-  //console.log("tasks", taskData.data.listAnnotationTasks.items);
+
   return taskData.data.listAnnotationTasks.items
 
 
@@ -89,7 +88,7 @@ export async function fetchTask(taskId) {
 export async function fetchDocument(documentTitle) {
 
   const text = await Storage.get(documentTitle, { download: true });
-  //console.log("document text", text)
+
   const finalString = await text.Body.text();
 
   const formattedText = parseDocumentContents(finalString)
@@ -104,7 +103,7 @@ export async function fetchQuestionForms() {
     authMode: "AMAZON_COGNITO_USER_POOLS"
 
   })
-  //console.log("question forms", formData.data.listQuestionForms.items);
+
   return formsData.data.listQuestionForms.items
 }
 
@@ -118,7 +117,7 @@ export async function fetchQuestion(questionId, authMethod) {
     variables: { id: questionId },
     authMode: authMethod
   })
-  //console.log("fetch", questionData);
+
   return questionData.data.getMedicalQuestion
 }
 
@@ -131,7 +130,7 @@ export async function fetchQuestionForm(questionFormId, authMethod) {
     variables: { id: questionFormId },
     authMode: authMethod,
   })
-  //console.log("setQuestionForm", form.data.getQuestionForm);
+
   return formData.data.getQuestionForm
 }
 

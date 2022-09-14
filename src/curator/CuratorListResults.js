@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Segment, Card } from "semantic-ui-react";
+import { Segment } from "semantic-ui-react";
 import Layout from "../common/Layout";
-import { fetchTasks, getTaskDocumentTitles } from "../utils/queryUtils";
+import { fetchTasks } from "../utils/queryUtils";
 import ListTasks from "./ListTasks";
 import { checkIfCurator } from "../utils/authUtils";
 import UnauthorisedAccess from "../common/UnauthorisedAccess";
@@ -19,8 +19,10 @@ const CuratorListResults = () => {
                 let titles = {}
                 completeTasks.map(task => {
                     titles[task.id] = task.documentTitle
+                    return null
                 })
                 setDocumentTitles(titles)
+
 
             })
 
@@ -31,8 +33,6 @@ const CuratorListResults = () => {
             <UnauthorisedAccess></UnauthorisedAccess>
         )
     }
-
-    const cardStyle = { "margin-top": 5, "margin-bottom": 5, "text-align": "left", "padding": "2%" }
 
     return (
         <div className="completed-tasks">
