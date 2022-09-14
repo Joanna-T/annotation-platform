@@ -6,8 +6,8 @@ import spacy
 dynamodb_client = boto3.client('dynamodb', region_name="eu-west-2")
 
 
-medicalQuestionTable = "MedicalQuestion-6j2p3k44t5fatdzsuqbo7hvy44-final"
-annotationTaskTable = 'AnnotationTask-6j2p3k44t5fatdzsuqbo7hvy44-final'
+medicalQuestionTable = "MedicalQuestion-<your-api-endpoint>-<your-environment>"
+annotationTaskTable = 'AnnotationTask-<your-api-endpoint>-<your-environment>'
 number_required_annotators = 2
 
 def lambda_handler(event, context):
