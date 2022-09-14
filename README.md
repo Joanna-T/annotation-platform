@@ -117,6 +117,11 @@ Once the resources have been successfully set up, run the following command:
 amplify push
 ```
 
+Set the codegen parameter to a value of 6
+```sh
+amplify codegen –maxDepth 6
+```
+
 Install all dependencies with the following command:
 
 ```sh
