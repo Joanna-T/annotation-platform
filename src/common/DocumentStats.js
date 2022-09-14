@@ -4,7 +4,7 @@ import { ResponsiveBar } from "nivo/lib/components/charts/bar";
 import { memo } from "react";
 import { colours } from "./commonConstants";
 
-const QuestionStats = ({ questionAnswers, questionForm }) => {
+const DocumentStats = ({ questionAnswers, questionForm }) => {
   const [formQuestions, setFormQuestions] = useState([]);
   const [barData, setBarData] = useState([])
 
@@ -137,4 +137,4 @@ const QuestionStats = ({ questionAnswers, questionForm }) => {
 }
 
 
-export default memo(QuestionStats);
+export default memo(DocumentStats);

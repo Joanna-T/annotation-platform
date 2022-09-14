@@ -4,10 +4,11 @@ import boto3
 import spacy
 
 dynamodb_client = boto3.client('dynamodb', region_name="eu-west-2")
-medicalQuestionTable = "MedicalQuestion-<your-api-endpoint>-<your-environment>"
-annotationTaskTable = 'AnnotationTask-<your-api-endpoint>-<your-environment>'
-number_required_annotators = 2
 
+
+medicalQuestionTable = "MedicalQuestion-6j2p3k44t5fatdzsuqbo7hvy44-final"
+annotationTaskTable = 'AnnotationTask-6j2p3k44t5fatdzsuqbo7hvy44-final'
+number_required_annotators = 2
 
 def lambda_handler(event, context):
         
@@ -25,7 +26,7 @@ def lambda_handler(event, context):
             task_question_id = record.get("dynamodb").get("NewImage").get("questionID").get("S")
             task_document_title = record.get("dynamodb").get("NewImage").get("documentFileName").get("S")
         
-        print("task question id:")
+        print("task question id")
         print(task_question_id)
 
         medicalQuestion = dynamodb_client.get_item(
@@ -35,9 +36,9 @@ def lambda_handler(event, context):
             }
         )
 
-        print("medical question retrieved:")
+        print("medical question retrieved")
         print(medicalQuestion)
-
+        
         resp = dynamodb_client.query(
            TableName=annotationTaskTable,
            IndexName='byQuestion',
@@ -62,17 +63,14 @@ def lambda_handler(event, context):
             if task["documentFileName"]["S"] == task_document_title:
                 document_tasks.append(task)
         
- 
         if "semanticAgreement" in medicalQuestion["Item"]:
             final_similarity_scores = json.loads(medicalQuestion["Item"]["semanticAgreement"]["S"])
         else:
             final_similarity_scores = {}
         
-        print("final similarity scores")
+        print("retrieved semantic agreement")
         print(final_similarity_scores)
 
-
-        #######   
         completed_tasks = []
         incomplete_tasks = []
             
@@ -84,7 +82,7 @@ def lambda_handler(event, context):
             else:
                 completed_tasks.append(task)
 
-        print("completed tasks")
+        print("completed_tasks")
         print(completed_tasks)
         print("incomplete tasks")
         print(incomplete_tasks)
@@ -107,24 +105,27 @@ def lambda_handler(event, context):
 
             concatonated_text.append(all_labels_string)
             
-        print("contatonated text")
+        print("contatonate text")
         print(concatonated_text)
 
         similarity_scores = []
+
         model = spacy.load("en_core_web_md")
 
         for i in range(len(concatonated_text)):
             string1 = model(concatonated_text[i])
-            #remove stop words
+
+            #calculate no stop value NEW 
             string1_no_stop = model(' '.join([str(t) for t in string1 if not t.is_stop]))
+
             for j in range(i + 1, len(concatonated_text) ):
                 string2 = model(concatonated_text[j])
-                #remove stop words
+                #calculate no stop value NEW
                 string2_no_stop = model(' '.join([str(t) for t in string2 if not t.is_stop]))
 
                 similarity_score = string1_no_stop.similarity(string2_no_stop)
                 similarity_scores.append(string1_no_stop.similarity(string2_no_stop))
-
+                
                 print(similarity_score)
                 
         average_similarity = 0
@@ -151,7 +152,6 @@ def lambda_handler(event, context):
         print("this is the final similarity object")
         print(final_similarity_scores)
         inputItem = json.dumps(final_similarity_scores)
-     
         dynamodb_client.update_item(
             TableName=medicalQuestionTable,
             Key={
@@ -167,7 +167,6 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps('Hello from Lambda!')
     }
-
 
 def group_tasks_by_document(tasks):
     final_grouped_tasks = []
@@ -188,12 +187,6 @@ def group_tasks_by_document(tasks):
 
             final_grouped_tasks.append(grouped_tasks)
     return final_grouped_tasks
-
-
-
-
-
-
 
 
 

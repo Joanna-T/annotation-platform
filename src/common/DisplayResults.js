@@ -2,7 +2,7 @@ import { Button, Grid, Segment, Modal, Dropdown, Tab, Label } from "semantic-ui-
 import { useLocation } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import TextHeatMap from "./TextHeatMap"
-import QuestionStats from "./QuestionStats";
+import DocumentStats from "./DocumentStats";
 import InterannotatorAgreement from "./InterannotatorAgreement";
 import { fetchQuestion, fetchQuestionForm } from "../utils/queryUtils";
 import { fetchDocument } from "../utils/queryUtils";
@@ -180,7 +180,7 @@ const DisplayResults = () => {
           />
 
           {questionAnswers.length && questionForms.questions &&
-            <QuestionStats questionAnswers={questionAnswers} questionForm={questionForms}></QuestionStats>
+            <DocumentStats questionAnswers={questionAnswers} questionForm={questionForms}></DocumentStats>
           }
         </Tab.Pane>
       ),

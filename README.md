@@ -2,7 +2,7 @@
 
 This platform was developed with the help of the Pansurg community, with the aim of providing a way to accommodate the document annotation and evaluation method currently used by Pansurg. 
 
-The platforms makes use of Amazon Web Services resources such as S3 and DynamoDB through use the AWS Amplify framework. A GraphQL API is used to interact with data items stored in DynamoDB. 
+The platforms makes use of Amazon Web Services resources such as S3 and DynamoDB through use the AWS Amplify framework. An AppSync GraphQL API is used to interact with data items stored in DynamoDB. 
 
 It is important to note that it is assumed that administrators have full access to the AWS account on which the resources will be hosted.
 
@@ -54,11 +54,11 @@ The semantic agreement and the inter-annotator agreement are calculated with Lam
 
 ## Data Storage
 
-All annotation data is stored as items in DynamoDB, and is free for retrieval. NER  labels for each annotation task in the annotation task DynamoDB table within the “labels” item. Categorical question answers are stored in the “question_answers” item.
+All annotation data is stored as items in DynamoDB, and is free for retrieval. NER  labels for each annotation task are stored in the annotation task DynamoDB table within the “labels” item. Categorical question answers are stored in the “question_answers” item.
 
 The semantic agreement and inter-annotator agreement, calculated by the lambda functions,  is stored within the “Medical Question” data item. 
 
-Annotation documents are stored within an S3 image bucket. 
+Annotation documents are stored within the platform S3 image bucket. 
 
 # Administrative process
 
@@ -71,6 +71,32 @@ It is assumed that the Administrator has access to the AWS account hosting the p
 Documents for annotation will be stored in the S3 bucket associated with created Amplify environment. Document will also have to be uploaded by use of the AWS console. Navigate to the S3, and select the image bucket for the relevant Amplify environment. Create a “public” folder, and navigate to it. Within this folder, create new folders to subdivide the annotation documents. Documents can then be stored within these folders. These documents can then be selected from the task creation page. 
 
 ![File structure](./readme_images/file_structure.jpg)
+
+The documents for annotation will have to be formatted as follows:
+
+```sh
+# URL to online version
+
+Url_to_online_version
+
+
+# Title
+
+Document title
+
+
+# Abstract
+
+Abstract paragraph 1
+
+
+# Main text
+
+Main text paragraph 1
+
+Main text paragraph 2
+
+```
 
 ## Curators per document
 
@@ -147,7 +173,7 @@ npm start
 
 The semantic agreement lambda function requires separate setup, as Amplify unfortunately does not support deployment of Docker images as Lambda functions. Docker is required, so make sure this is installed.
 
-Navigate to the “lambda-docker” folder within the project directory and change the variables medicalQuestionTable and annotationTaskTable to the names of your project tables. Change <your-api-endpoint> to the relevant endpoint for your api (accessible via the Appsync console>API for platform environment> Settings>API ID), and replace <your-environment> with the name of your environment. 
+Navigate to the “lambda-docker” folder within the project directory and change the variables medicalQuestionTable and annotationTaskTable within app.py to the names of your project tables. Change <your-api-endpoint> to the relevant endpoint for your api (accessible via the Appsync console>API for platform environment> Settings>API ID), and replace <your-environment> with the name of your environment. The number of curators can be set with the number_required_curators variable.
 
 Now you need to create an ECR repository and create a new repository to store the image.
 
