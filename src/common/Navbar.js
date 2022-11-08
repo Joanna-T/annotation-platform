@@ -11,6 +11,7 @@ import { useCallback } from "react";
 const Navbar = () => {
     const [signedUser, setSignedUser] = useState(false);
     const [admin, setAdmin] = useState(false);
+    const [curator, setCurator] = useState(false);
     const [userEmail, setUserEmail] = useState("")
     const size = useWindowSize();
     const location = useLocation()
@@ -39,6 +40,9 @@ const Navbar = () => {
             if (groups) {
                 if (groups.includes("Admin")) {
                     setAdmin(true);
+                }
+                if (groups.includes("Curators")) {
+                    setCurator(true);
                 }
                 cookies.set('groups', groups, { path: '/' });
             }
@@ -90,7 +94,7 @@ const Navbar = () => {
                 onClick={() => handleItemClick('Home')}
             ><Icon name="home"></Icon>{size.width > 940 ? "  Home" : ""}</Menu.Item>
             {
-                signedUser && !admin && (
+                signedUser && !admin && curator && (
                     <Menu.Item
                         as={Link} to="/annotation_tasks"
                         name='Tasks'
@@ -101,7 +105,7 @@ const Navbar = () => {
             }
 
             {
-                signedUser && !admin && (
+                signedUser && !admin && curator && (
                     <Menu.Item
                         as={Link} to="/completed_curator_tasks"
                         name='CompletedTasks'
